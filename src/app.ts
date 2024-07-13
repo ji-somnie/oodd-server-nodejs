@@ -1,26 +1,11 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import 'reflect-metadata';
+import app from './app.module';
+import { AppDataSource } from './data-source';
 
-const app = express();
-const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-
-app.get('/users', async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
-
-app.post('/users', async (req, res) => {
-  const { email, name } = req.body;
-  const user = await prisma.user.create({
-    data: { email, name },
+AppDataSource.initialize().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
-  res.json(user);
-});
-
-export default app;
+}).catch(error => console.log(error));
