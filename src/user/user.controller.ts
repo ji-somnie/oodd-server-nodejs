@@ -16,3 +16,8 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+
+//controller + dto + service
+//entity
+//repo

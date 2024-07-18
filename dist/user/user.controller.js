@@ -23,3 +23,6 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(user);
 }));
 exports.default = router;
+//controller + dto + service
+//entity
+//repo
