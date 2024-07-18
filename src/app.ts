@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+// import 'reflect-metadata';
 import app from './app.module';
 import { AppDataSource } from './data-source';
 
