@@ -1,9 +1,9 @@
-import { DataSource } from 'typeorm';
-import { User } from './user/user.entity';
+import { DataSource } from "typeorm";
+import { User } from "./user/user.entity";
 
 export const AppDataSource = new DataSource({
-  type: 'sqlite',
-  database: 'database.sqlite',
+  type: "sqlite",
+  database: "database.sqlite",
   synchronize: true,
   logging: false,
   entities: [User],
@@ -13,8 +13,8 @@ export const AppDataSource = new DataSource({
 
 AppDataSource.initialize()
   .then(() => {
-    console.log('Data Source initialized');
+    console.log("Data Source initialized");
   })
   .catch((err) => {
-    console.error('Error during initialization:', err);
+    console.error("Error during initialization:", err);
   });
