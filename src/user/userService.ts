@@ -1,5 +1,5 @@
-import { userRepository } from './user.repository';
-import { User } from './user.entity';
+import { userRepository } from "../repositories/userRepository";
+import { User } from "../entities/userEntity";
 
 export class UserService {
   async getAllUsers(): Promise<User[]> {
