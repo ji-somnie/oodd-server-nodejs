@@ -1,5 +1,5 @@
 import express from "express";
-import userRouter from "./user/userController";
+import userRouter from "./domain/user/userController";
 
 const app = express();
 
