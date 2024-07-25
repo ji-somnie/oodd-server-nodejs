@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_module_1 = __importDefault(require("./app.module"));
 const data_source_1 = require("./data-source");
 const PORT = process.env.PORT || 3000;
-data_source_1.AppDataSource.initialize().then(() => {
+data_source_1.myDataBase.initialize().then(() => {
     app_module_1.default.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
