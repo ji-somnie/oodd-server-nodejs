@@ -3,6 +3,7 @@ import { PostRequestDto } from './dtos/postRequest.dto';
 import { PostResponseDto } from './dtos/postResponse.dto';
 import { UserRepository } from '../repositories/userRepository';
 import { Post } from '../entities/postEntity';
+import { status } from '../variables/httpCode';
 
 export class PostService {
   private postRepository: PostRepository;
@@ -16,7 +17,7 @@ export class PostService {
   async createPost(token: string, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
     const user = await this.userRepository.findOneByToken(token);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error(status.USER_NOT_FOUND.message);
     }
 
     const newPost = new Post();
@@ -40,4 +41,18 @@ export class PostService {
 
     return postResponseDto;
   }
+    
+    async deletePost(token: string, postId: number): Promise<void> {
+      const user = await this.userRepository.findOneByToken(token);
+      if (!user) {
+        throw new Error(status.USER_NOT_FOUND.message);
+      }
+  
+      const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
+      if (!post) {
+        throw new Error(status.ARTICLE_NOT_FOUND.message);
+      }
+  
+      await this.postRepository.remove(post);
+    }
 }
