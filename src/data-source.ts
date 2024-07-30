@@ -1,5 +1,5 @@
+//src/data-source.ts
 import {DataSource} from 'typeorm';
-//import { User } from "./user/user.entity";
 import * as dotenv from 'dotenv';
 
 dotenv.config();

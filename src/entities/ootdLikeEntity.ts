@@ -1,21 +1,11 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+//src/entities/ootdLikeEntity.ts
+import {Entity, Column, ManyToOne, JoinColumn} from 'typeorm';
 import {User} from './userEntity';
-import {Post} from './postEntity'; //아직
+import {Post} from './postEntity';
+import {BaseEntity} from '../base/baseEntity';
 
 @Entity('Likes')
-export class Like {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
+export class Like extends BaseEntity {
   @ManyToOne(() => User, user => user.likes)
   @JoinColumn({name: 'userId'})
   user!: User;
@@ -25,29 +15,8 @@ export class Like {
   post!: Post;
 
   @Column()
-  userId: number;
+  userId!: number;
 
   @Column()
-  postId: number;
-
-  @Column({default: true})
-  status: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
-
-  constructor(userId: number, postId: number, status: boolean, createdAt: Date, updatedAt: Date, deletedAt: Date) {
-    this.userId = userId;
-    this.postId = postId;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
-  }
+  postId!: number;
 }
