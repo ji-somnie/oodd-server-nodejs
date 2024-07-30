@@ -9,8 +9,4 @@ app.use(express.json());
 app.use('/users', userRouter);
 app.use('/ootdLike', ootdLikeRouter);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the API');
-}); //기본 라우트 추가
-
 export default app;
