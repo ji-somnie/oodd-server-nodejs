@@ -89,4 +89,29 @@ export class PostService {
 
     await this.postRepository.remove(post);
   }
+
+  // 게시물 조회
+  async getPost(token: string, postId: number): Promise<PostResponseDto> {
+    const user = await this.userRepository.findOneByToken(token);
+    if (!user) {
+      throw new Error(status.USER_NOT_FOUND.message);
+    }
+
+    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
+    if (!post) {
+      throw new Error(status.ARTICLE_NOT_FOUND.message);
+    }
+
+    const postResponseDto = new PostResponseDto();
+    postResponseDto.postId = post.id;
+    postResponseDto.userId = user.id;
+    postResponseDto.photoUrl = post.photoUrl;
+    postResponseDto.content = post.caption;
+    postResponseDto.hashtags = post.hashtags;
+    postResponseDto.clothingInfo = post.clothingInfo;
+    postResponseDto.likes = post.likes;
+    postResponseDto.comments = post.comments;
+
+    return postResponseDto;
+  }
 }

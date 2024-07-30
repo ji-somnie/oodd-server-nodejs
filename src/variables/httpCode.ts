@@ -9,9 +9,9 @@ export const status = {
     UNAUTHORIZED: {status: StatusCodes.UNAUTHORIZED, "isSuccess": false, "code": "COMMON003", "message": "권한이 잘못되었습니다.", err_code: 'HTTP_UNAUTHORIZED'},
 
     // user err
-    USER_NOT_FOUND: {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "USER4001", "message": "사용자가 없습니다."},
+    USER_NOT_FOUND: {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "USER4001", "message": "사용자가 없습니다.", err_code: 'USER_NOT_FOUND'},
 
     // post err
-    ARTICLE_NOT_FOUND: {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ARTICLE4001", "message": "게시글이 없습니다."}
+    ARTICLE_NOT_FOUND: {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ARTICLE4001", "message": "게시글이 없습니다.", err_code: 'ARTICLE_NOT_FOUND'}
 }
 

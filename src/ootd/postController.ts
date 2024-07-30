@@ -11,17 +11,17 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ message: status.UNAUTHORIZED, err_code: status.UNAUTHORIZED });
+      return res.status(status.UNAUTHORIZED.status).json({ message: status.UNAUTHORIZED.message, err_code: status.UNAUTHORIZED.err_code });
     }
     
     const postRequestDto: PostRequestDto = req.body;
     const newPost = await postService.createPost(token, postRequestDto);
-    res.status(201).json(newPost);
+    res.status(status.SUCCESS.status).json(newPost);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ message: status.BAD_REQUEST, err_code: status.BAD_REQUEST });
+      res.status(status.BAD_REQUEST.status).json({ message: status.BAD_REQUEST.message, err_code: status.BAD_REQUEST.err_code });
     } else {
-      res.status(500).json({ message: status.INTERNAL_SERVER_ERROR, err_code: status.INTERNAL_SERVER_ERROR });
+      res.status(status.INTERNAL_SERVER_ERROR.status).json({ message: status.INTERNAL_SERVER_ERROR.message, err_code: status.INTERNAL_SERVER_ERROR.err_code });
     }
   }
 });
@@ -31,22 +31,22 @@ router.patch('/:id', async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ message: status.UNAUTHORIZED, err_code: status.UNAUTHORIZED });
+      return res.status(status.UNAUTHORIZED.status).json({ message: status.UNAUTHORIZED.message, err_code: status.UNAUTHORIZED.err_code });
     }
 
     const postId = parseInt(req.params.id, 10);
     if (isNaN(postId)) {
-      return res.status(400).json({ message: status.ARTICLE_NOT_FOUND, err_code: status.ARTICLE_NOT_FOUND });
+      return res.status(status.ARTICLE_NOT_FOUND.status).json({ message: status.ARTICLE_NOT_FOUND.message, err_code: status.ARTICLE_NOT_FOUND.err_code });
     }
 
     const postRequestDto: PostRequestDto = req.body;
     const updatedPost = await postService.updatePost(token, postId, postRequestDto);
-    res.status(200).json({ message: status.SUCCESS, err_code: status.SUCCESS });
+    res.status(status.SUCCESS.status).json({ message: status.SUCCESS.message });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ message: status.BAD_REQUEST, err_code: status.BAD_REQUEST });
+      res.status(status.BAD_REQUEST.status).json({ message: status.BAD_REQUEST.message, err_code: status.BAD_REQUEST.err_code });
     } else {
-      res.status(500).json({ message: status.INTERNAL_SERVER_ERROR, err_code: status.INTERNAL_SERVER_ERROR });
+      res.status(status.INTERNAL_SERVER_ERROR.status).json({ message: status.INTERNAL_SERVER_ERROR.message, err_code: status.INTERNAL_SERVER_ERROR.err_code });
     }
   }
 });
@@ -56,22 +56,46 @@ router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ message: status.UNAUTHORIZED, err_code: status.UNAUTHORIZED });
+      return res.status(status.UNAUTHORIZED.status).json({ message: status.UNAUTHORIZED.message, err_code: status.UNAUTHORIZED.err_code });
     }
 
     const postId = parseInt(req.params.id, 10);
     if (isNaN(postId)) {
-      return res.status(400).json({ message: status.ARTICLE_NOT_FOUND, err_code: status.ARTICLE_NOT_FOUND });
+      return res.status(status.ARTICLE_NOT_FOUND.status).json({ message: status.ARTICLE_NOT_FOUND.message, err_code: status.ARTICLE_NOT_FOUND.err_code });
     }
 
     await postService.deletePost(token, postId);
-    res.status(200).json({ message: status.SUCCESS, err_code: status.SUCCESS }); // "message": "Post deleted successfully"
+    res.status(status.SUCCESS.status).json({ message: status.SUCCESS }); // "message": "Post deleted successfully"
  
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ message: status.BAD_REQUEST, err_code: status.BAD_REQUEST });
+      res.status(status.BAD_REQUEST.status).json({ message: status.BAD_REQUEST.message, err_code: status.BAD_REQUEST.err_code });
     } else {
-      res.status(500).json({ message: status.INTERNAL_SERVER_ERROR, err_code: status.INTERNAL_SERVER_ERROR });
+      res.status(status.INTERNAL_SERVER_ERROR.status).json({ message: status.INTERNAL_SERVER_ERROR.message, err_code: status.INTERNAL_SERVER_ERROR.err_code });
+    }
+  }
+});
+
+// 게시물 조회
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(status.UNAUTHORIZED.status).json({ message: status.UNAUTHORIZED.message, err_code: status.UNAUTHORIZED.err_code });
+    }
+
+    const postId = parseInt(req.params.id, 10);
+    if (isNaN(postId)) {
+      return res.status(status.ARTICLE_NOT_FOUND.status).json({ message: status.ARTICLE_NOT_FOUND.message, err_code: status.ARTICLE_NOT_FOUND.err_code });
+    }
+
+    const post = await postService.getPost(token, postId);
+    res.status(status.SUCCESS.status).json(post);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(status.BAD_REQUEST.status).json({ message: status.BAD_REQUEST.message, err_code: status.BAD_REQUEST.err_code });
+    } else {
+      res.status(status.INTERNAL_SERVER_ERROR.status).json({ message: status.INTERNAL_SERVER_ERROR.message, err_code: status.INTERNAL_SERVER_ERROR.err_code });
     }
   }
 });
