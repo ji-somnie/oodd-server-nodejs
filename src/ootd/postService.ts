@@ -14,10 +14,11 @@ export class PostService {
     this.userRepository = new UserRepository();
   }
 
+  // 게시물 업로드
   async createPost(token: string, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
     const user = await this.userRepository.findOneByToken(token);
     if (!user) {
-      throw new Error(status.USER_NOT_FOUND.message);
+      throw new Error(status.USER_NOT_FOUND);
     }
 
     const newPost = new Post();
@@ -42,17 +43,50 @@ export class PostService {
     return postResponseDto;
   }
     
-    async deletePost(token: string, postId: number): Promise<void> {
-      const user = await this.userRepository.findOneByToken(token);
-      if (!user) {
-        throw new Error(status.USER_NOT_FOUND.message);
-      }
-  
-      const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
-      if (!post) {
-        throw new Error(status.ARTICLE_NOT_FOUND.message);
-      }
-  
-      await this.postRepository.remove(post);
+  // 게시물 수정
+  async updatePost(token: string, postId: number, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
+    const user = await this.userRepository.findOneByToken(token);
+    if (!user) {
+      throw new Error(status.USER_NOT_FOUND.message);
     }
+
+    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
+    if (!post) {
+      throw new Error(status.ARTICLE_NOT_FOUND.message);
+    }
+
+    post.photoUrl = postRequestDto.photoUrl;
+    post.caption = postRequestDto.caption;
+    post.hashtags = postRequestDto.hashtags;
+    post.clothingInfo = postRequestDto.clothingInfo;
+
+    const updatedPost = await this.postRepository.save(post);
+
+    const postResponseDto = new PostResponseDto();
+    postResponseDto.postId = updatedPost.id;
+    postResponseDto.userId = user.id;
+    postResponseDto.photoUrl = updatedPost.photoUrl;
+    postResponseDto.content = updatedPost.caption;
+    postResponseDto.hashtags = updatedPost.hashtags;
+    postResponseDto.clothingInfo = updatedPost.clothingInfo;
+    postResponseDto.likes = updatedPost.likes;
+    postResponseDto.comments = updatedPost.comments;
+
+    return postResponseDto;
+  }
+
+  // 게시물 삭제
+  async deletePost(token: string, postId: number): Promise<void> {
+    const user = await this.userRepository.findOneByToken(token);
+    if (!user) {
+      throw new Error(status.USER_NOT_FOUND.message);
+    }
+
+    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
+    if (!post) {
+      throw new Error(status.ARTICLE_NOT_FOUND.message);
+    }
+
+    await this.postRepository.remove(post);
+  }
 }

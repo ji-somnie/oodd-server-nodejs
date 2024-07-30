@@ -7,4 +7,3 @@ export class PostRepository extends Repository<Post> {
     super(Post, myDataBase.manager);
   }
 }
-
