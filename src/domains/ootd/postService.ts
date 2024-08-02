@@ -1,9 +1,9 @@
-import { PostRepository } from '../repositories/postRepository';
+import { PostRepository } from '../../repositories/postRepository';
 import { PostRequestDto } from './dtos/postRequest.dto';
 import { PostResponseDto } from './dtos/postResponse.dto';
-import { UserRepository } from '../repositories/userRepository';
-import { Post } from '../entities/postEntity';
-import { status } from '../variables/httpCode';
+import { UserRepository } from '../../repositories/userRepository';
+import { Post } from '../../entities/postEntity';
+import { status } from '../../variables/httpCode';
 
 export class PostService {
   private postRepository: PostRepository;

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PostService } from './postService';
 import { PostRequestDto } from './dtos/postRequest.dto';
-import { status } from '../variables/httpCode'; 
+import { status } from '../../variables/httpCode'; 
 
 const router = Router();
 const postService = new PostService();

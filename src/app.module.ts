@@ -1,6 +1,6 @@
 import express from "express";
-import userRouter from "./user/userController";
-import postRouter from "./ootd/postController";
+import userRouter from "./domains/user/userController";
+import postRouter from "./domains/ootd/postController";
 
 const app = express();
 
