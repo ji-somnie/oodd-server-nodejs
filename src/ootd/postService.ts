@@ -18,7 +18,7 @@ export class PostService {
   async createPost(token: string, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
     const user = await this.userRepository.findOneByToken(token);
     if (!user) {
-      throw new Error(status.USER_NOT_FOUND);
+      throw new Error(status.USER_NOT_FOUND.message);
     }
 
     const newPost = new Post();

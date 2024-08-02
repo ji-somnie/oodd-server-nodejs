@@ -31,22 +31,4 @@ export class Post {
 
   @Column('json', { default: '[]' })
   comments!: any[];
-
-  constructor(
-    user: User,
-    photoUrl: string,
-    caption: string,
-    hashtags: string[],
-    clothingInfo: { brand: string; model: string; modelNumber: string; url: string },
-    likes: number = 0,
-    comments: any[] = []
-  ) {
-    this.user = user;
-    this.photoUrl = photoUrl;
-    this.caption = caption;
-    this.hashtags = hashtags;
-    this.clothingInfo = clothingInfo;
-    this.likes = likes;
-    this.comments = comments;
-  }
 }
