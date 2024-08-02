@@ -2,7 +2,6 @@
 import {Repository} from 'typeorm';
 import {myDataBase} from '../../data-source';
 import {Like} from '../../entities/ootdLikeEntity';
-import {OotdLikeRequest} from './dto/request';
 
 export class OotdLikeService {
   private ootdLikeRepository: Repository<Like>;
