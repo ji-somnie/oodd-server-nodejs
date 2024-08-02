@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Post } from './postEntity'; // 파일 경로가 정확한지 확인
+import { Post } from './postEntity'; 
 
 @Entity()
 export class User {

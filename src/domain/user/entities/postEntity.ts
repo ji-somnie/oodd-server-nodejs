@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './userEntity'; // 파일 경로가 정확한지 확인
+import { User } from './userEntity'; 
 
 @Entity()
 export class Post {
@@ -13,5 +13,5 @@ export class Post {
   content!: string;
 
   @ManyToOne(() => User, (user) => user.posts)
-  user!: User; // user 매개변수의 타입 명시
+  user!: User; 
 }
