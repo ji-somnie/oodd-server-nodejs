@@ -1,4 +1,3 @@
-//src/app.ts
 import 'reflect-metadata';
 import app from './app.module';
 import {myDataBase} from './data-source';

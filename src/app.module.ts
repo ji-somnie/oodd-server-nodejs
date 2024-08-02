@@ -1,4 +1,3 @@
-//src/app.module.ts
 import express from 'express';
 import userRouter from './domain/user/userController';
 import ootdLikeRouter from './domain/ootdLike/ootdLikeController';
