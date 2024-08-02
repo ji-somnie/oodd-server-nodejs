@@ -11,7 +11,7 @@ const router = Router();
 router.get('/comments', async (req: Request, res: Response) => {
   try {
     const {postId}: CommentGetRequest = req.query as any;
-    const comments = await commentService.fetchComments({postId});
+    const comments = await commentService.getComments({postId});
 
     if (comments.length === 0) {
       const response: BaseResponse<null> = {

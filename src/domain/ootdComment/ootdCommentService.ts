@@ -12,10 +12,11 @@ export class CommentService {
     this.commentRepository = commentRepository;
   }
 
-  async fetchComments(request: CommentGetRequest): Promise<CommentResponse[]> {
+  async getComments(request: CommentGetRequest): Promise<CommentResponse[]> {
+    //이름수정 (Fetch 노노)
     const {postId} = request;
     const comments = await this.commentRepository.find({
-      where: {postId, status: true},
+      where: {postId, status: true}, //id: postId로 명시
       order: {createdAt: 'DESC'},
     });
 
