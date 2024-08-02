@@ -1,3 +1,1 @@
-export interface CommentDeleteRequest {
-  commentId: number;
-}
+src / domain / ootdComment / dto / request.ts;

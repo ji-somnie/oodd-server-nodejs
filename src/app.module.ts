@@ -1,4 +1,3 @@
-//src/app.module.ts
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/post/postController';
