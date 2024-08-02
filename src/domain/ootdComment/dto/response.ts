@@ -5,6 +5,7 @@ export class CommentResponse {
   userId!: number;
   postId!: number;
   content!: string;
+  status!: boolean;
   createdAt!: dayjs.Dayjs;
   updatedAt?: dayjs.Dayjs;
   deletedAt?: dayjs.Dayjs;

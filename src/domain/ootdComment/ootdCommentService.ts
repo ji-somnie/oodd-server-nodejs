@@ -1,7 +1,8 @@
 import {Repository} from 'typeorm';
 import {commentRepository} from '../../repositories/ootdCommentRepository';
 import {Comment} from '../../entities/ootdCommentEntity';
-import {CommentDeleteRequest} from './dto/request';
+import {CommentGetRequest} from './dto/request';
+import {CommentResponse} from './dto/response';
 import dayjs from 'dayjs';
 
 export class CommentService {
@@ -11,17 +12,22 @@ export class CommentService {
     this.commentRepository = commentRepository;
   }
 
-  async deleteComment(request: CommentDeleteRequest): Promise<Comment | null> {
-    const {commentId} = request;
-    const comment = await this.commentRepository.findOne({where: {id: commentId}});
+  async fetchComments(request: CommentGetRequest): Promise<CommentResponse[]> {
+    const {postId} = request;
+    const comments = await this.commentRepository.find({
+      where: {postId, status: true},
+      order: {createdAt: 'DESC'},
+    });
 
-    if (!comment) {
-      return null;
-    }
-
-    comment.status = false;
-    comment.deletedAt = dayjs();
-
-    return await this.commentRepository.save(comment);
+    return comments.map(comment => ({
+      id: comment.id,
+      userId: comment.userId,
+      postId: comment.postId,
+      content: comment.content,
+      status: comment.status,
+      createdAt: dayjs(comment.createdAt),
+      updatedAt: comment.updatedAt ? dayjs(comment.updatedAt) : undefined,
+      deletedAt: comment.deletedAt ? dayjs(comment.deletedAt) : undefined,
+    }));
   }
 }
