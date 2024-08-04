@@ -1,18 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column } from "typeorm";
+import { BaseEntity } from "../base/baseEntity";
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id!: number; 
+export class UserEntity extends BaseEntity {
+    @Column()
+    name: string;
 
-  @Column()
-  name: string;
+    @Column()
+    email: string;
 
-  @Column()
-  email: string;
-
-  constructor(name: string, email: string) {
-    this.name = name;
-    this.email = email;
-  }
+    @Column({ default: "active" })
+    status: string;
 }
