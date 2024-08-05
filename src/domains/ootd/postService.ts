@@ -1,117 +1,64 @@
-import { PostRepository } from '../../repositories/postRepository';
+import { myDataBase } from '../../data-source';
+import { Post } from '../../entities/postEntity';
 import { PostRequestDto } from './dtos/postRequest.dto';
 import { PostResponseDto } from './dtos/postResponse.dto';
-import { UserRepository } from '../../repositories/userRepository';
-import { Post } from '../../entities/postEntity';
-import { status } from '../../variables/httpCode';
+import { BaseResponse } from '../../base/baseResponse';
+import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
+import { User } from '../../entities/userEntity';
+import { validatedUser } from '../../validationTest/userValidation';
 
 export class PostService {
-  private postRepository: PostRepository;
-  private userRepository: UserRepository;
-
-  constructor() {
-    this.postRepository = new PostRepository();
-    this.userRepository = new UserRepository();
-  }
+  // 생성자 사용 안 하고 DB에서 바로 가져옴
+  private postRepository = myDataBase.getRepository(Post);
+  private userRepository = myDataBase.getRepository(User);
 
   // 게시물 업로드
-  async createPost(token: string, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
-    const user = await this.userRepository.findOneByToken(token);
-    if (!user) {
-      throw new Error(status.USER_NOT_FOUND.message);
+  async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      const newPost = new Post();
+      newPost.user = user;
+      newPost.photoUrl = postRequestDto.photoUrl;
+      newPost.caption = postRequestDto.caption;
+      newPost.hashtags = postRequestDto.hashtags;
+      newPost.clothingInfo = postRequestDto.clothingInfo;
+
+      const savedPost = await this.postRepository.save(newPost);
+
+      const postResponseDto: PostResponseDto = {
+        postId: savedPost.id,
+        userId: user.id,
+        photoUrl: savedPost.photoUrl,
+        content: savedPost.caption,
+        hashtags: savedPost.hashtags,
+        clothingInfo: savedPost.clothingInfo,
+        likes: savedPost.likes,
+        comments: savedPost.comments,
+      };
+
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: postResponseDto, // result에 실 데이터가 담김
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
     }
-
-    const newPost = new Post();
-    newPost.user = user;
-    newPost.photoUrl = postRequestDto.photoUrl;
-    newPost.caption = postRequestDto.caption;
-    newPost.hashtags = postRequestDto.hashtags;
-    newPost.clothingInfo = postRequestDto.clothingInfo;
-
-    const savedPost = await this.postRepository.save(newPost);
-
-    const postResponseDto = new PostResponseDto();
-    postResponseDto.postId = savedPost.id;
-    postResponseDto.userId = user.id;
-    postResponseDto.photoUrl = savedPost.photoUrl;
-    postResponseDto.content = savedPost.caption;
-    postResponseDto.hashtags = savedPost.hashtags;
-    postResponseDto.clothingInfo = savedPost.clothingInfo;
-    postResponseDto.likes = savedPost.likes;
-    postResponseDto.comments = savedPost.comments;
-
-    return postResponseDto;
-  }
-    
-  // 게시물 수정
-  async updatePost(token: string, postId: number, postRequestDto: PostRequestDto): Promise<PostResponseDto> {
-    const user = await this.userRepository.findOneByToken(token);
-    if (!user) {
-      throw new Error(status.USER_NOT_FOUND.message);
-    }
-
-    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
-    if (!post) {
-      throw new Error(status.ARTICLE_NOT_FOUND.message);
-    }
-
-    post.photoUrl = postRequestDto.photoUrl;
-    post.caption = postRequestDto.caption;
-    post.hashtags = postRequestDto.hashtags;
-    post.clothingInfo = postRequestDto.clothingInfo;
-
-    const updatedPost = await this.postRepository.save(post);
-
-    const postResponseDto = new PostResponseDto();
-    postResponseDto.postId = updatedPost.id;
-    postResponseDto.userId = user.id;
-    postResponseDto.photoUrl = updatedPost.photoUrl;
-    postResponseDto.content = updatedPost.caption;
-    postResponseDto.hashtags = updatedPost.hashtags;
-    postResponseDto.clothingInfo = updatedPost.clothingInfo;
-    postResponseDto.likes = updatedPost.likes;
-    postResponseDto.comments = updatedPost.comments;
-
-    return postResponseDto;
-  }
-
-  // 게시물 삭제
-  async deletePost(token: string, postId: number): Promise<void> {
-    const user = await this.userRepository.findOneByToken(token);
-    if (!user) {
-      throw new Error(status.USER_NOT_FOUND.message);
-    }
-
-    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
-    if (!post) {
-      throw new Error(status.ARTICLE_NOT_FOUND.message);
-    }
-
-    await this.postRepository.remove(post);
-  }
-
-  // 게시물 조회
-  async getPost(token: string, postId: number): Promise<PostResponseDto> {
-    const user = await this.userRepository.findOneByToken(token);
-    if (!user) {
-      throw new Error(status.USER_NOT_FOUND.message);
-    }
-
-    const post = await this.postRepository.findOneBy({ id: postId, user: { id: user.id } });
-    if (!post) {
-      throw new Error(status.ARTICLE_NOT_FOUND.message);
-    }
-
-    const postResponseDto = new PostResponseDto();
-    postResponseDto.postId = post.id;
-    postResponseDto.userId = user.id;
-    postResponseDto.photoUrl = post.photoUrl;
-    postResponseDto.content = post.caption;
-    postResponseDto.hashtags = post.hashtags;
-    postResponseDto.clothingInfo = post.clothingInfo;
-    postResponseDto.likes = post.likes;
-    postResponseDto.comments = post.comments;
-
-    return postResponseDto;
   }
 }
