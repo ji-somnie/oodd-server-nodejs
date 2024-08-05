@@ -1,3 +1,4 @@
+// src/domain/matchRequest/matchRequestController.ts
 import { Request, Response } from 'express';
 import { MatchRequestService } from './matchRequestService';
 import { BaseResponse } from '../../base/baseResponse';
@@ -15,4 +16,15 @@ export class MatchRequestController {
       return res.json(new BaseResponse(false, HttpCode.INVALID_USER, error.message));
     }
   }
+
+  async respondToMatchRequest(req: Request, res: Response): Promise<Response> {
+    const { matchRequestId, response } = req.body;
+    try {
+      const matchRequest = await this.matchRequestService.respondToMatchRequest(matchRequestId, response);
+      return res.json(new BaseResponse(true, HttpCode.SUCCESS, "Match request response recorded", matchRequest));
+    } catch (error) {
+      return res.json(new BaseResponse(false, HttpCode.INVALID_USER, error.message));
+    }
+  }
 }
+
