@@ -12,11 +12,11 @@ const router = Router();
 
 router.post('/friend-requests', async (req: Request, res: Response) => {
   try {
-    const {requesterId, targetId}: FriendRequestRequest = req.body;
+    const {requester, receiver, message}: FriendRequestRequest = req.body;
 
     // 유효성 검사
-    const requesterExists = await userService.getUserByID(requesterId);
-    const receiverExists = await userService.getUserByID(targetId);
+    const requesterExists = await userService.getUserByID(requester.id);
+    const receiverExists = await userService.getUserByID(receiver.id);
 
     if (!requesterExists || !receiverExists) {
       //throw new Error('Invalid user IDs');
@@ -29,10 +29,10 @@ router.post('/friend-requests', async (req: Request, res: Response) => {
     }
 
     const friendRequest = await friendRequestService.createFriendRequest({
-      requesterId,
-      targetId,
+      requesterExists,
+      receiverExists,
       message,
-      requestStatus,
+      //requestStatus,
     });
 
     const response: BaseResponse<FriendRequestResponse> = {

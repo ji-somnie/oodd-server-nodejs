@@ -7,11 +7,11 @@ export class FriendRequestService {
   private friendRepository: Repository<UserRelationship> = myDataBase.getRepository(UserRelationship);
 
   async createFriendRequest(requestDTO: FriendRequestRequest): Promise<UserRelationship> {
-    const {requesterId, targetId} = requestDTO;
+    const {requester, receiver} = requestDTO;
     const friendRequest = this.friendRepository.create({
-      requesterId,
-      targetId,
-      requestStatus: 'friend',
+      requester: requester,
+      receiver: receiver,
+      //requestStatus: 'friend',
       status: 'activated',
     });
     return this.friendRepository.save(friendRequest);

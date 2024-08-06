@@ -14,16 +14,10 @@ export class UserRelationship extends BaseEntity {
   receiver!: User;
 
   @Column()
-  requesterId!: number;
-
-  @Column()
-  targetId!: number;
-
-  @Column()
   message!: string;
 
-  @Column()
-  requestStatus!: 'friend' | 'matching';
+  //@Column()
+  //requestStatus!: 'friend' | 'matching';
 
   @Column()
   isRejected!: boolean;
