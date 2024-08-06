@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '../base/baseEntity';
 import { Post } from './postEntity';
+import { Comment } from './commentEntity';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -27,4 +28,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Post, post => post.user)
   posts!: Post[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments!: Comment[];
 }
