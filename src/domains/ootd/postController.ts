@@ -66,4 +66,20 @@ router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// 게시물 조회
+router.get('/:postId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+
+    const getPostResponse = await postService.getPostById(userId, postId);
+
+    if (getPostResponse.isSuccess) {
+      res.status(HTTP_OK.code).json(getPostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
 export default router;

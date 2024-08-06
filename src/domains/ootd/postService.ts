@@ -176,4 +176,65 @@ export class PostService {
       };
     }
   }
+
+  // 게시물 조회
+  async getPostById(userId: number, postId: number): Promise<BaseResponse<PostResponseDto | null>> {
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+  
+      const post = await validatePost(userId, postId);
+      if (!post) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+  
+      const postResponseDto: PostResponseDto = {
+        postId: post.id,
+        userId: post.user.id,
+        photoUrl: post.images?.length > 0 ? post.images[0].url : '',
+        content: post.content,
+        hashtags: post.postStyletags ? post.postStyletags.map(tag => tag.styletag.tag) : [],
+        clothingInfo: post.clothings.length > 0 ? {
+          brand: post.clothings[0].brandName,
+          model: post.clothings[0].modelName,
+          modelNumber: post.clothings[0].modelNumber,
+          url: post.clothings[0].url,
+        } : {
+          brand: '',
+          model: '',
+          modelNumber: '',
+          url: '',
+        },
+        likes: post.likes?.length || 0,
+        comments: post.comments || [],
+      };
+  
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: postResponseDto,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
+  }  
 }
