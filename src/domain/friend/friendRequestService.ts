@@ -1,18 +1,18 @@
 import {Repository} from 'typeorm';
-import {friendRequestRepository} from '../../repositories/friendRequestRepository';
+import {myDataBase} from '../../data-source';
 import {FriendRequest} from '../../entities/friendRequestEntity';
-import {FriendRequestDTO} from './dto/request';
-import {FriendRequestResponseDTO} from './dto/response';
+import {FriendRequest} from './dto/request';
+import {FriendRequestResponse} from './dto/response';
 import dayjs from 'dayjs';
 
 export class FriendRequestService {
-  private friendRequestRepository: Repository<FriendRequest>;
+  private friendRequestRepository: Repository<FriendRequest> = myDataBase.getRepository(Friend);
 
   constructor() {
     this.friendRequestRepository = friendRequestRepository;
   }
 
-  async createFriendRequest(requestDTO: FriendRequestDTO): Promise<FriendRequestResponseDTO> {
+  async createFriendRequest(requestDTO: FriendRequest): Promise<FriendRequestResponse> {
     const {requesterId, receiverId} = requestDTO;
     const newFriendRequest = this.friendRequestRepository.create({requesterId, receiverId});
     await this.friendRequestRepository.save(newFriendRequest);

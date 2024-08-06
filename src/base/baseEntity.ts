@@ -6,7 +6,7 @@ export abstract class BaseEntity {
   id!: number;
 
   @Column({default: true})
-  status!: boolean;
+  status!: 'deactivated' | 'activated';
 
   @CreateDateColumn({type: 'timestamp'})
   createdAt!: dayjs.Dayjs;

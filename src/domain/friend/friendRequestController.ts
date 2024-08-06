@@ -1,19 +1,19 @@
 import {Request, Response, Router} from 'express';
 import {FriendRequestService} from './friendRequestService';
-import {FriendRequestDTO} from './dto/request';
+import {FriendRequestRequest} from './dto/request';
+import {FriendRequestResponse} from './dto/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {HTTP_OK} from '../../variables/httpCode';
-import {FriendRequestResponseDTO} from './dto/response';
 
 const friendRequestService = new FriendRequestService();
 const router = Router();
 
 router.post('/friend-requests', async (req: Request, res: Response) => {
   try {
-    const {requesterId, receiverId}: FriendRequestDTO = req.body;
+    const {requesterId, receiverId}: FriendRequestRequest = req.body;
     const friendRequest = await friendRequestService.createFriendRequest({requesterId, receiverId});
 
-    const response: BaseResponse<FriendRequestResponseDTO> = {
+    const response: BaseResponse<FriendRequestResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,

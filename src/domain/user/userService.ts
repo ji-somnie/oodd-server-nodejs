@@ -1,13 +1,21 @@
-import { userRepository } from "../repositories/userRepository";
-import { User } from "../entities/userEntity";
+import {Repository} from 'typeorm';
+import {User} from '../../entities/userEntity';
+import {myDataBase} from '../../data-source';
 
 export class UserService {
+  private userRepository: Repository<User> = myDataBase.getRepository(User);
+
   async getAllUsers(): Promise<User[]> {
-    return userRepository.find();
+    return this.userRepository.find();
   }
 
   async createUser(name: string, email: string): Promise<User> {
-    const user = userRepository.create({ name, email });
-    return userRepository.save(user);
+    const user = this.userRepository.create({name, email});
+    return this.userRepository.save(user);
+  }
+
+  //유저 유효성 검사
+  async getUserByID(id: number): Promise<User | null> {
+    return this.userRepository.findOne({where: {id}});
   }
 }

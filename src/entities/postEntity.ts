@@ -29,23 +29,8 @@ export class Post {
 
   @Column({ default: false })
   isRepresentative: boolean;
-
-  @Column({ default: true })
-  status: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date; */
+ */
 
   @OneToMany(() => Like, like => like.post)
-  likes: Like[];
-
-  constructor(likes: Like[]) {
-    this.likes = likes;
-  }
+  likes?: Like[];
 }
