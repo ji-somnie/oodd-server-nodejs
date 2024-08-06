@@ -1,13 +1,13 @@
-import { userRepository } from "../../repositories/userRepository";
+import { UserRepository } from "../../repositories/userRepository";
 import { User } from "../../entities/userEntity";
 
 export class UserService {
   async getAllUsers(): Promise<User[]> {
-    return userRepository.find();
+    return UserRepository.find();
   }
 
   async createUser(name: string, email: string): Promise<User> {
-    const user = userRepository.create({ name, email });
-    return userRepository.save(user);
+    const user = UserRepository.create({ name, email });
+    return UserRepository.save(user);
   }
 }

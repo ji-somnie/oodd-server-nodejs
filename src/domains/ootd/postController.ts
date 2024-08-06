@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PostService } from './postService';
 import { PostRequestDto } from './dtos/postRequest.dto';
-import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
+import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
 
 const router = Router();
 const postService = new PostService();
@@ -20,15 +20,13 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
     if (newPostResponse.isSuccess) {
       res.status(HTTP_OK.code).json(newPostResponse);
-    } else {
-      res.status(newPostResponse.code).json(newPostResponse);
     }
   } catch (error) {
     console.error(error); 
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.code).json({ message: HTTP_BAD_REQUEST.message, err_code: HTTP_BAD_REQUEST.err_code });
+      res.status(HTTP_BAD_REQUEST.code).json({ message: HTTP_BAD_REQUEST.message });
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message, err_code: HTTP_INTERNAL_SERVER_ERROR.err_code });
+      res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
     }
   }
 });

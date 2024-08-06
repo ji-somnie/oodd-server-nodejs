@@ -1,32 +1,36 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import { User } from '../entities/userEntity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { User } from './userEntity';
+import { Like } from './likeEntity';
+import { Comment } from './commentEntity';
+import { PostStyletag } from './postStyletagEntity';
+import { Clothing } from './clothingEntity';
+import { Image } from './imageEntity';
 import { BaseEntity } from '../base/baseEntity';
 
-@Entity()
-export class Post extends BaseEntity {
-  @ManyToOne(() => User)
+@Entity('Post')
+export class Post extends BaseEntity{
+  
+  @ManyToOne(() => User, user => user.posts)
   user!: User;
 
-  @Column()
-  photoUrl!: string;
+  @Column('text')
+  content!: string;
 
   @Column()
-  caption!: string;
+  isRepresentative!: boolean;
 
-  @Column('simple-array')
-  hashtags!: string[];
+  @OneToMany(() => Like, like => like.post)
+  likes!: Like[];
 
-  @Column('json')
-  clothingInfo!: {
-    brand: string;
-    model: string;
-    modelNumber: string;
-    url: string;
-  };
+  @OneToMany(() => Comment, comment => comment.post)
+  comments!: Comment[];
 
-  @Column({ default: 0 })
-  likes!: number;
+  @OneToMany(() => PostStyletag, postStyletag => postStyletag.post)
+  postStyletags!: PostStyletag[];
 
-  @Column('json', { default: '[]' })
-  comments!: any[];
+  @OneToMany(() => Clothing, clothing => clothing.post)
+  clothings!: Clothing[];
+
+  @OneToMany(() => Image, image => image.post)
+  images!: Image[];
 }
