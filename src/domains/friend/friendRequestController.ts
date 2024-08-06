@@ -11,6 +11,7 @@ const userService = new UserService();
 const router = Router();
 
 router.post('/friend-requests', async (req: Request, res: Response) => {
+  console.log('Received a POST request to /add-contact'); //
   try {
     const {requester, receiver, message}: FriendRequestRequest = req.body;
 

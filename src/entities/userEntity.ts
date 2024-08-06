@@ -3,7 +3,7 @@ import {Like} from './ootdLikeEntity';
 import {BaseEntity} from '../base/baseEntity';
 import {UserRelationship} from './userRelationshipEntity';
 
-@Entity('User')
+@Entity('Users')
 export class User extends BaseEntity {
   @Column()
   name!: string;
@@ -18,10 +18,10 @@ export class User extends BaseEntity {
   phoneNumber!: string;
 
   @Column()
-  profilePictureUrl!: string;
+  profilePictureUrl?: string;
 
   @Column()
-  bio!: string;
+  bio?: string;
 
   @Column()
   joinStatus!: 'deactivated' | 'activated';
@@ -30,8 +30,8 @@ export class User extends BaseEntity {
   likes?: Like[];
 
   @OneToMany(() => UserRelationship, userRelationship => userRelationship.requester)
-  sentFriendRequests!: UserRelationship[];
+  sentFriendRequests?: UserRelationship[];
 
   @OneToMany(() => UserRelationship, userRelationship => userRelationship.receiver)
-  receivedFriendRequests!: UserRelationship[];
+  receivedFriendRequests?: UserRelationship[];
 }

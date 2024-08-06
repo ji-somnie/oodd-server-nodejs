@@ -10,6 +10,6 @@ app.use(express.json());
 app.use('/users', userRouter);
 app.use('/ootdLike', ootdLikeRouter);
 app.use('/ootdComment', ootdCommentRouter);
-app.use('friendRequest', friendRequestRouter);
+app.use('/friendRequest', friendRequestRouter);
 
 export default app;
