@@ -4,8 +4,6 @@ APP_NAME=node_app
 
 cd $REPOSITORY
 
-sudo yarn install
-
 # Check if the app is already running
 if pm2 list | grep $APP_NAME > /dev/null
 then

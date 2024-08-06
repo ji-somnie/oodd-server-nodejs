@@ -30,6 +30,9 @@ jobs:
       - name: Check Npm -v
         run: npm -v
 
+      - name: Yarn install
+        run: yarn install
+
       - name: create env file
         working-directory: ./
         run: |
@@ -50,7 +53,7 @@ jobs:
           yarn
           yarn run build
       - name: zip file
-        run: zip -r build.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
+        run: zip -r build.zip ./dist ./scripts ./appspec.yml ./.env ./package.json ./node_modules ./yarn.lock ./package-lock.json
 
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v1
