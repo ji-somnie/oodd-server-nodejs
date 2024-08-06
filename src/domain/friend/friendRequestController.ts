@@ -3,32 +3,65 @@ import {FriendRequestService} from './friendRequestService';
 import {FriendRequestRequest} from './dto/request';
 import {FriendRequestResponse} from './dto/response';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK} from '../../variables/httpCode';
+import {UserService} from '../user/userService';
+import {HTTP_OK, INTERNAL_SERVER_ERROR, INVALID_USER} from '../../variables/httpCode';
 
 const friendRequestService = new FriendRequestService();
+const userService = new UserService();
 const router = Router();
 
 router.post('/friend-requests', async (req: Request, res: Response) => {
   try {
-    const {requesterId, receiverId}: FriendRequestRequest = req.body;
-    const friendRequest = await friendRequestService.createFriendRequest({requesterId, receiverId});
+    const {requesterId, targetId}: FriendRequestRequest = req.body;
+
+    // 유효성 검사
+    const requesterExists = await userService.getUserByID(requesterId);
+    const receiverExists = await userService.getUserByID(targetId);
+
+    if (!requesterExists || !receiverExists) {
+      //throw new Error('Invalid user IDs');
+      console.error('Invalid User');
+      res.status(400).json({
+        isSuccess: false,
+        code: INVALID_USER.code,
+        message: INVALID_USER.message,
+      });
+    }
+
+    const friendRequest = await friendRequestService.createFriendRequest({
+      requesterId,
+      targetId,
+      message,
+      requestStatus,
+    });
 
     const response: BaseResponse<FriendRequestResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
-      result: friendRequest,
+      result: {
+        id: friendRequest.id,
+        requesterId: friendRequest.requesterId,
+        targetId: friendRequest.targetId,
+        isRejected: friendRequest.isRejected,
+        isAccepted: friendRequest.isAccepted,
+        requestedAt: friendRequest.requestedAt,
+        acceptedAt: friendRequest.acceptedAt,
+        createdAt: friendRequest.createdAt,
+        status: friendRequest.status,
+        updatedAt: friendRequest.updatedAt,
+        deletedAt: friendRequest.deletedAt,
+      },
     };
 
-    res.status(HTTP_OK.code).json(response);
+    res.status(200).json(response);
   } catch (error: any) {
     console.error('Create Friend Request Error:', error);
-    const response: BaseResponse<null> = {
+    res.status(500).json({
       isSuccess: false,
-      code: 500,
-      message: error.message,
-    };
-    res.status(500).json(response);
+      code: INTERNAL_SERVER_ERROR.code,
+      message: INTERNAL_SERVER_ERROR.message,
+    });
   }
 });
 

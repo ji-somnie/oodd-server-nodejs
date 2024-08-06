@@ -16,6 +16,6 @@ export class UserService {
 
   //유저 유효성 검사
   async getUserByID(id: number): Promise<User | null> {
-    return this.userRepository.findOne({where: {id}});
+    return this.userRepository.findOneBy({id, status: 'activated', joinStatus: 'activated'});
   }
 }

@@ -3,8 +3,13 @@ import dayjs from 'dayjs';
 export interface FriendRequestResponse {
   id: number;
   requesterId: number;
-  receiverId: number;
-  matchStatus: 'pending' | 'accepted' | 'rejected';
+  targetId: number;
+  isRejected: boolean;
+  isAccepted: boolean;
+  requestedAt: dayjs.Dayjs;
+  acceptedAt: dayjs.Dayjs;
+  status: 'deactivated' | 'activated';
   createdAt: dayjs.Dayjs;
   updatedAt: dayjs.Dayjs;
+  deletedAt: dayjs.Dayjs;
 }

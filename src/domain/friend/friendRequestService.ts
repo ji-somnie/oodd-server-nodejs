@@ -1,29 +1,19 @@
 import {Repository} from 'typeorm';
 import {myDataBase} from '../../data-source';
-import {FriendRequest} from '../../entities/friendRequestEntity';
-import {FriendRequest} from './dto/request';
-import {FriendRequestResponse} from './dto/response';
-import dayjs from 'dayjs';
+import {UserRelationship} from '../../entities/userRelationshipEntity';
+import {FriendRequestRequest} from './dto/request';
 
 export class FriendRequestService {
-  private friendRequestRepository: Repository<FriendRequest> = myDataBase.getRepository(Friend);
+  private friendRepository: Repository<UserRelationship> = myDataBase.getRepository(UserRelationship);
 
-  constructor() {
-    this.friendRequestRepository = friendRequestRepository;
-  }
-
-  async createFriendRequest(requestDTO: FriendRequest): Promise<FriendRequestResponse> {
-    const {requesterId, receiverId} = requestDTO;
-    const newFriendRequest = this.friendRequestRepository.create({requesterId, receiverId});
-    await this.friendRequestRepository.save(newFriendRequest);
-
-    return {
-      id: newFriendRequest.id,
-      requesterId: newFriendRequest.requesterId,
-      receiverId: newFriendRequest.receiverId,
-      status: newFriendRequest.status,
-      createdAt: dayjs(newFriendRequest.createdAt),
-      updatedAt: newFriendRequest.updatedAt ? dayjs(newFriendRequest.updatedAt) : undefined,
-    };
+  async createFriendRequest(requestDTO: FriendRequestRequest): Promise<UserRelationship> {
+    const {requesterId, targetId} = requestDTO;
+    const friendRequest = this.friendRepository.create({
+      requesterId,
+      targetId,
+      requestStatus: 'friend',
+      status: 'activated',
+    });
+    return this.friendRepository.save(friendRequest);
   }
 }

@@ -10,8 +10,25 @@ export class User extends BaseEntity {
   @Column()
   email!: string;
 
+  @Column()
+  nickname!: string;
+
+  @Column()
+  phoneNumber!: string;
+
+  @Column()
+  profilePictureUrl!: string;
+
+  @Column()
+  bio!: string;
+
+  @Column()
+  joinStatus!: 'deactivated' | 'activated';
+
   @OneToMany(() => Like, like => like.post)
   likes?: Like[];
+
+  //@OneToMany(() => Friend, friend => friend.)
 
   //@OneToMany(() )
 }

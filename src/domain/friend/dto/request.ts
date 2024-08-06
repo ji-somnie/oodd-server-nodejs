@@ -1,4 +1,6 @@
 export interface FriendRequestRequest {
   requesterId: number;
-  receiverId: number;
+  targetId: number;
+  message: string;
+  requestStatus: 'friend' | 'matching';
 }
