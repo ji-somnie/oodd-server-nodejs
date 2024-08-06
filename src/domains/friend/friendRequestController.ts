@@ -10,17 +10,18 @@ const friendRequestService = new FriendRequestService();
 const userService = new UserService();
 const router = Router();
 
-router.post('/friend-requests', async (req: Request, res: Response) => {
-  console.log('Received a POST request to /add-contact'); //
+router.post('/request', async (req: Request, res: Response) => {
+  console.log('Received a POST request to /request'); //확인용
   try {
     const {requester, receiver, message}: FriendRequestRequest = req.body;
+    console.log('Request Body:', req.body); // 요청 바디 로그 추가
 
     // 유효성 검사
     const requesterExists = await userService.getUserByID(requester.id);
     const receiverExists = await userService.getUserByID(receiver.id);
 
     if (!requesterExists || !receiverExists) {
-      //console.error('Invalid User Id');
+      console.error('Invalid User Id');
       return res.status(400).json({
         isSuccess: false,
         code: INVALID_USER.code,
