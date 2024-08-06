@@ -1,8 +1,8 @@
 import express from 'express';
-import userRouter from './domain/user/userController';
-import ootdLikeRouter from './domain/ootdLike/ootdLikeController';
-import ootdCommentRouter from './domain/ootdComment/ootdCommentController';
-import friendRequestRouter from './domain/friend/friendRequestController';
+import userRouter from './domains/user/userController';
+import ootdLikeRouter from './domains/ootdLike/ootdLikeController';
+import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
+import friendRequestRouter from './domains/friend/friendRequestController';
 
 const app = express();
 

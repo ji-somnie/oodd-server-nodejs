@@ -7,7 +7,7 @@ export interface FriendRequestResponse {
   isRejected: boolean;
   isAccepted: boolean;
   requestedAt: dayjs.Dayjs;
-  acceptedAt: dayjs.Dayjs;
+  acceptedAt?: dayjs.Dayjs | null;
   status: 'deactivated' | 'activated';
   createdAt: dayjs.Dayjs;
   updatedAt: dayjs.Dayjs;

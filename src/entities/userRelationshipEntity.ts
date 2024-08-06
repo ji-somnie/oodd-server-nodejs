@@ -20,14 +20,14 @@ export class UserRelationship extends BaseEntity {
   //requestStatus!: 'friend' | 'matching';
 
   @Column()
-  isRejected!: boolean;
+  isRejected: boolean = false;
 
   @Column()
-  isAccepted!: boolean;
+  isAccepted: boolean = false;
 
   @Column()
-  requestedAt!: dayjs.Dayjs;
+  requestedAt: dayjs.Dayjs = dayjs();
 
   @Column()
-  acceptedAt!: dayjs.Dayjs;
+  acceptedAt?: dayjs.Dayjs;
 }

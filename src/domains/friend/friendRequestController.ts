@@ -19,18 +19,18 @@ router.post('/friend-requests', async (req: Request, res: Response) => {
     const receiverExists = await userService.getUserByID(receiver.id);
 
     if (!requesterExists || !receiverExists) {
-      //throw new Error('Invalid user IDs');
-      console.error('Invalid User');
-      res.status(400).json({
+      //console.error('Invalid User Id');
+      return res.status(400).json({
         isSuccess: false,
         code: INVALID_USER.code,
         message: INVALID_USER.message,
       });
     }
 
+    //FriendRequest 생성
     const friendRequest = await friendRequestService.createFriendRequest({
-      requesterExists,
-      receiverExists,
+      requester: requesterExists,
+      receiver: receiverExists,
       message,
       //requestStatus,
     });
@@ -41,12 +41,12 @@ router.post('/friend-requests', async (req: Request, res: Response) => {
       message: HTTP_OK.message,
       result: {
         id: friendRequest.id,
-        requesterId: friendRequest.requesterId,
-        targetId: friendRequest.targetId,
+        requesterId: friendRequest.requester.id,
+        targetId: friendRequest.receiver.id,
         isRejected: friendRequest.isRejected,
         isAccepted: friendRequest.isAccepted,
         requestedAt: friendRequest.requestedAt,
-        acceptedAt: friendRequest.acceptedAt,
+        acceptedAt: friendRequest.acceptedAt || null,
         createdAt: friendRequest.createdAt,
         status: friendRequest.status,
         updatedAt: friendRequest.updatedAt,

@@ -1,8 +1,9 @@
 import {Entity, Column, OneToMany} from 'typeorm';
 import {Like} from './ootdLikeEntity';
 import {BaseEntity} from '../base/baseEntity';
+import {UserRelationship} from './userRelationshipEntity';
 
-@Entity('Users')
+@Entity('User')
 export class User extends BaseEntity {
   @Column()
   name!: string;
@@ -28,7 +29,9 @@ export class User extends BaseEntity {
   @OneToMany(() => Like, like => like.post)
   likes?: Like[];
 
-  //@OneToMany(() => Friend, friend => friend.)
+  @OneToMany(() => UserRelationship, userRelationship => userRelationship.requester)
+  sentFriendRequests!: UserRelationship[];
 
-  //@OneToMany(() )
+  @OneToMany(() => UserRelationship, userRelationship => userRelationship.receiver)
+  receivedFriendRequests!: UserRelationship[];
 }
