@@ -1,3 +1,4 @@
-export interface CommentGetRequest {
-  postId: number;
+export class FriendRequestDTO {
+  requesterId!: number;
+  receiverId!: number;
 }

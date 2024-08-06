@@ -1,12 +1,10 @@
 import dayjs from 'dayjs';
 
-export class CommentResponse {
+export class FriendRequestResponseDTO {
   id!: number;
-  userId!: number;
-  postId!: number;
-  content!: string;
-  status!: boolean;
+  requesterId!: number;
+  receiverId!: number;
+  requestStatus!: string; // pending, accepted, rejected
   createdAt!: dayjs.Dayjs;
   updatedAt?: dayjs.Dayjs;
-  deletedAt?: dayjs.Dayjs;
 }
