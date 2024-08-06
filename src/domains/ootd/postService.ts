@@ -112,4 +112,68 @@ export class PostService {
       };
     }
   }
+
+  // 게시물 수정
+  async updatePost(userId: number, postId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      const post = await validatePost(userId, postId);
+      if (!post) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      post.content = postRequestDto.caption;
+      const updatedPost = await this.postRepository.save(post);
+
+      const postResponseDto: PostResponseDto = {
+        postId: updatedPost.id,
+        userId: user.id,
+        photoUrl: updatedPost.images?.length > 0 ? updatedPost.images[0].url : '',
+        content: updatedPost.content,
+        hashtags: updatedPost.postStyletags ? updatedPost.postStyletags.map(tag => tag.styletag.tag) : [],
+        clothingInfo: updatedPost.clothings.length > 0 ? {
+          brand: updatedPost.clothings[0].brandName,
+          model: updatedPost.clothings[0].modelName,
+          modelNumber: updatedPost.clothings[0].modelNumber,
+          url: updatedPost.clothings[0].url,
+        } : {
+          brand: '',
+          model: '',
+          modelNumber: '',
+          url: '',
+        },
+        likes: updatedPost.likes?.length || 0,
+        comments: updatedPost.comments || [],
+      };
+
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: postResponseDto,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
+  }
 }
