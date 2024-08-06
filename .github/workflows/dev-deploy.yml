@@ -41,13 +41,16 @@ jobs:
           echo DB_DATABASE=${{ secrets.DEV_DB_DATABASE }} >> .env
           cat .env
 
+      - name: copy appspec.yml
+        run: cp appspec/appspec-dev.yml appspec.yml
+
       - name: build server files
         working-directory: ./
         run: |
           yarn
           yarn run build
       - name: zip file
-        run: zip -r build.zip ./dist ./scripts ./dev-appspec.yml ./.env ./package.json
+        run: zip -r build.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
 
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v1
