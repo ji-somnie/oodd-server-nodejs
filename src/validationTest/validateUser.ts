@@ -5,5 +5,5 @@ const userRepository = myDataBase.getRepository(User);
 
 export const validatedUser = async (userId: number): Promise<User | null> => {
   const user = await userRepository.findOne({ where: { id: userId } });
-  return user;
+  return user || null;
 };

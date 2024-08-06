@@ -5,7 +5,8 @@ import { PostResponseDto } from './dtos/postResponse.dto';
 import { BaseResponse } from '../../base/baseResponse';
 import { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
 import { User } from '../../entities/userEntity';
-import { validatedUser } from '../../validationTest/userValidation';
+import { validatedUser } from '../../validationTest/validateUser';
+import { validatePost } from '../../validationTest/validatePost';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
@@ -58,6 +59,48 @@ export class PostService {
         code: HTTP_OK.code,
         message: HTTP_OK.message,
         result: postResponseDto, // result에 실 데이터가 담김
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
+  }
+
+  // 게시물 삭제
+  async deletePost(userId: number, postId: number): Promise<BaseResponse<null>> {
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+      
+      const post = await validatePost(userId, postId);
+      if (!post) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      await this.postRepository.remove(post);
+
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: 'Post deleted successfully',
+        result: null,
       };
     } catch (error) {
       console.error(error);
