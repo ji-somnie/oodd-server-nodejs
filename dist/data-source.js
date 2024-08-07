@@ -25,17 +25,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.myDataBase = void 0;
 const typeorm_1 = require("typeorm");
-//import { User } from "./user/user.entity";
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.myDataBase = new typeorm_1.DataSource({
-    type: "mysql",
-    host: process.env.DB_HOST,
+    type: 'mysql',
+    host: process.env.DEV_DB_HOST ? process.env.DEV_DB_HOST : process.env.DB_HOST,
     port: 3306,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE, // 스키마 이름
-    entities: ["src/entity/*.ts"], // 모델의 경로
+    username: process.env.DEV_DB_USER ? process.env.DEV_DB_USER : process.env.DB_USER,
+    password: process.env.DEV_DB_PASSWORD ? process.env.DEV_DB_PASSWORD : process.env.DB_PASSWORD,
+    database: process.env.DEV_DB_DATABASE ? process.env.DEV_DB_DATABASE : process.env.DB_DATABASE, // 스키마 이름
+    entities: ['src/entity/*.ts'], // 모델의 경로
     logging: true, // 정확히 어떤 sql 쿼리가 실행됐는지 로그 출력
-    synchronize: true, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
+    synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
 });

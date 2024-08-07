@@ -4,7 +4,7 @@ files:
   - source: /
     destination: /home/ubuntu/build
     overwrite: yes
-
+file_exists_behavior: OVERWRITE
 permissions:
   - object: /home/ubuntu
     pattern: '**'
@@ -14,5 +14,5 @@ permissions:
 hooks:
   AfterInstall:
     - location: scripts/after-deploy.sh
-      timeout: 300
+      timeout: 60
       runas: ubuntu
