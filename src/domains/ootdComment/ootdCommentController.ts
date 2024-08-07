@@ -1,12 +1,12 @@
 import {Request, Response, Router} from 'express';
+import {UserService} from '../user/userService';
+import {PostService} from '../post/postService';
 import {CommentService} from './ootdCommentService';
 import {CommentRequest} from './dto/request';
 import {CommentResponse} from './dto/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {HTTP_OK, INTERNAL_SERVER_ERROR, INVALID_USER, INVALID_POST} from '../../variables/httpCode';
 import dayjs from 'dayjs';
-import {UserService} from '../user/userService';
-import {PostService} from '../post/postService';
 
 const commentService = new CommentService();
 const userService = new UserService();
