@@ -1,16 +1,17 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../base/baseEntity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './userEntity';
 import { Post } from './postEntity';
+import { BaseEntity } from '../base/baseEntity';
 
-@Entity('Comment')
+@Entity()
 export class Comment extends BaseEntity {
-  @ManyToOne(() => Post, post => post.comments)
-  post!: Post;
-
-//   @ManyToOne(() => User, user => user.comments)
-//   user!: User;
-
+  
   @Column('text')
   content!: string;
+
+  @ManyToOne(() => User, user => user.comments)
+  user!: User;
+
+  @ManyToOne(() => Post, post => post.comments)
+  post!: Post;
 }
