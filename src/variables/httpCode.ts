@@ -4,6 +4,3 @@ export const HTTP_INTERNAL_SERVER_ERROR = { status: 500, isSuccess: false, code:
 export const HTTP_NOT_FOUND = { status: 404, isSuccess: false, code: 4040, message: 'Not Found' };
 
 //export const INVALID_USER = { code: 3000, message: 'INVALID USER', err_code: 'INVALID_USER' };
-
-//이렇게 만들어두면
-//res.status(500).json({message: HTTP_OK.message}) 이런식으로 사용 가능
