@@ -10,6 +10,9 @@ export const status = {
 
     // user err
     USER_NOT_FOUND: {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "USER4001", "message": "사용자가 없습니다.", err_code: 'USER_NOT_FOUND'},
+    KAKAO_TOKEN_FAIL: {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "USER4002", "message": "Error getting Kakao token", err_code: 'KAKAO_TOKEN_FAIL'},
+    KAKAO_USER_NOT_FOUND : {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "USER4002", "message": "카카오 계정의 정보를 불러오지 못했습니다.", err_code: 'KAKAO_USER_NOT_FOUND'},
+    
 
     // post err
     ARTICLE_NOT_FOUND: {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ARTICLE4001", "message": "게시글이 없습니다.", err_code: 'ARTICLE_NOT_FOUND'}
