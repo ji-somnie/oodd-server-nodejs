@@ -1,10 +1,11 @@
-import express from "express";
-import userRouter from "./domains/user/userController";
-import postRouter from "./domains/ootd/postController";
-import ootdRouter from "./domains/ootd/ootdController";
+import express from 'express';
+import userRouter from './domains/user/userController';
+import postRouter from './domains/ootd/postController';
+import ootdRouter from './domains/ootd/ootdController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
+import chatRoomRouter from './domains/chatRoom/chatRoomController';
 
 const app = express();
 
@@ -105,8 +106,9 @@ io.on('connect', socket => {
     }
   });
 });
-app.use("/users", userRouter);
-app.use("/posts", postRouter);
-app.use('/ootds', ootdRouter); 
+app.use('/users', userRouter);
+app.use('/posts', postRouter);
+app.use('/ootds', ootdRouter);
+app.use('/chat-rooms', chatRoomRouter);
 
 export default app;
