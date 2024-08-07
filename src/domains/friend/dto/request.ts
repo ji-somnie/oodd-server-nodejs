@@ -1,8 +1,5 @@
-import {User} from '../../../entities/userEntity';
-
-export interface FriendRequestRequest {
-  requester: User;
-  receiver: User;
-  message: string;
-  //requestStatus: 'friend' | 'matching';
+export interface FriendRequestActionRequest {
+  userId: number;
+  friendRequestId: number;
+  action: 'accept' | 'reject';
 }
