@@ -10,6 +10,13 @@ const friendRequestService = new FriendRequestService();
 const userService = new UserService();
 const router = Router();
 
+//for test
+/*
+router.get('/test', (req, res) => {
+  res.send('Friend request router is working');
+});
+*/
+
 router.post('/request', async (req: Request, res: Response) => {
   console.log('Received a POST request to /request'); //확인용
   try {
