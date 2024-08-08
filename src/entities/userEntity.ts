@@ -1,44 +1,46 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
-@Entity() // 이 클래스는 데이터베이스 테이블과 매핑되는 엔티티
+@Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User {
   @PrimaryGeneratedColumn()
-  id!: string; 
+  id!: number; // id는 int 타입, 자동 증가(primary key)
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 255 })
   kakaoId!: string; // 카카오 고유 ID를 저장하는 필드
 
-  @Column()
+  @Column({ unique: true, length: 255 })
+  googleId!: string; // 구글 고유 ID를 저장하는 필드
+
+  @Column({ length: 100 })
   name!: string;
 
-  @Column()
+  @Column({ length: 100 })
   email!: string;
 
-  @Column()
+  @Column({ length: 100 })
   nickname!: string;
 
-  @Column()
+  @Column({ length: 15 })
   phoneNumber!: string;
 
-  @Column()
-  profilePicture!: string;
+  @Column({ length: 255 })
+  profilePictureUrl!: string;
 
-  @Column()
+  @Column('text')
   bio!: string;
 
-  @Column()
+  @Column({ length: 50 })
   status!: string;
 
-  @Column()
-  joinedAt!: string;
+  @Column('datetime')
+  joinedAt!: Date; // joinedAt는 datetime 타입
   
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt!: string;
+  @CreateDateColumn({ type: 'datetime' })
+  createdAt!: Date; // createdAt는 datetime 타입
   
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-  updatedAt!: string;
+  @UpdateDateColumn({ type: 'datetime' })
+  updatedAt!: Date; // updatedAt는 datetime 타입
 
-  @Column()
-  deletedAt!: string
-
+  @DeleteDateColumn({ type: 'datetime' })
+  deletedAt!: Date // deletedAt는 datetime 타입
 }

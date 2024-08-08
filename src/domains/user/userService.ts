@@ -19,7 +19,7 @@ export class UserService {
     newUser.email = userRequestDto.email;
     newUser.nickname = userRequestDto.nickname;
     newUser.phoneNumber = userRequestDto.phoneNumber;
-    newUser.profilePicture = userRequestDto.profilePicture;
+    newUser.profilePictureUrl = userRequestDto.profilePictureUrl;
     newUser.bio = userRequestDto.bio;
     // status, joinedAt, createdAt, updatedAt, deletedAt은 서버 또는 데이터베이스에서 자동으로 설정됩니다.
 
@@ -33,7 +33,7 @@ export class UserService {
     userResponseDto.email = savedUser.email;
     userResponseDto.nickname = savedUser.nickname;
     userResponseDto.phoneNumber = savedUser.phoneNumber;
-    userResponseDto.profilePicture = savedUser.profilePicture;
+    userResponseDto.profilePictureUrl = savedUser.profilePictureUrl;
     userResponseDto.bio = savedUser.bio;
     userResponseDto.status = savedUser.status;
     userResponseDto.joinedAt = savedUser.joinedAt;

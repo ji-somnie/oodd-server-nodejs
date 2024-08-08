@@ -1,11 +1,11 @@
 export class UserRequestDto { //수정 필요
 
-  id!: string; 
+  id!: number; 
   name!: string;
   email!: string;
   nickname!: string;
   phoneNumber!: string;
-  profilePicture!: string;
+  profilePictureUrl!: string;
   bio!: string;
   // status!: string;
   // joinedAt!: string;
