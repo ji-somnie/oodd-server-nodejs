@@ -38,7 +38,7 @@ router.get("/login/kakao", (req: Request, res: Response) => {
 });
 
 // 카카오 소셜 로그인 콜백
-router.get("kakao/callback", async (req: Request, res: Response) => {
+router.get("/kakao/callback", async (req: Request, res: Response) => {
     const code = req.query.code as string;
 
     if (!code) {
