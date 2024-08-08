@@ -49,4 +49,22 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
   }
 });
 
+// 게시물 수정
+router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = tempUserId;
+    const postId = parseInt(req.params.postId, 10);
+    const postRequestDto: PostRequestDto = req.body;
+
+    const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
+
+    if (updatePostResponse.isSuccess) {
+      res.status(HTTP_OK.status).json(updatePostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
 export default router;
