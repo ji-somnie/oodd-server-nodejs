@@ -4,7 +4,7 @@ import { Post } from './postEntity';
 import dayjs from 'dayjs';
 
 @Entity('Image')
-export class Image {
+export class Image { // status 값 없어서 baseEntity 안 쓰고 정의함
   @PrimaryGeneratedColumn()
   id!: number;
 
