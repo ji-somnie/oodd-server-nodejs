@@ -11,6 +11,9 @@ export class User {
   @Column({ unique: true, length: 255 })
   googleId!: string; // 구글 고유 ID를 저장하는 필드
 
+  @Column({ unique: true, length: 255 })
+  naverId!: string; // 네이버 고유 ID를 저장하는 필드
+
   @Column({ length: 100 })
   name!: string;
 
