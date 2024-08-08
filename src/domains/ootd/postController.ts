@@ -17,14 +17,14 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const newPostResponse = await postService.createPost(userId, postRequestDto);
 
     if (newPostResponse.isSuccess) {
-      res.status(HTTP_OK.code).json(newPostResponse);
+      res.status(HTTP_OK.status).json(newPostResponse);
     }
   } catch (error) {
     console.error(error); 
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.code).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
     }
   }
 });
@@ -37,14 +37,14 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
     const deletePostResponse = await postService.deletePost(userId, postId);
 
     if (deletePostResponse.isSuccess) {
-      res.status(HTTP_OK.code).json(deletePostResponse);
+      res.status(HTTP_OK.status).json(deletePostResponse);
     } 
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.code).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
     }
   }
 });
@@ -58,11 +58,11 @@ router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
     const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
 
     if (updatePostResponse.isSuccess) {
-      res.status(HTTP_OK.code).json(updatePostResponse);
+      res.status(HTTP_OK.status).json(updatePostResponse);
     } 
   } catch (error) {
     console.error(error);
-    res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
 });
 
@@ -74,11 +74,11 @@ router.get('/:postId', async (req: Request, res: Response): Promise<void> => {
     const getPostResponse = await postService.getPostById(userId, postId);
 
     if (getPostResponse.isSuccess) {
-      res.status(HTTP_OK.code).json(getPostResponse);
+      res.status(HTTP_OK.status).json(getPostResponse);
     } 
   } catch (error) {
     console.error(error);
-    res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
 });
 
@@ -90,11 +90,11 @@ router.get('/:styletag', async (req: Request, res: Response): Promise<void> => {
     const getPostsByTagResponse = await postService.getPostsByTag(userId, tag);
 
     if (getPostsByTagResponse.isSuccess) {
-      res.status(HTTP_OK.code).json(getPostsByTagResponse);
+      res.status(HTTP_OK.status).json(getPostsByTagResponse);
     } 
   } catch (error) {
     console.error(error);
-    res.status(HTTP_INTERNAL_SERVER_ERROR.code).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
 });
 
