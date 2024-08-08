@@ -1,8 +1,7 @@
-import {myDataBase} from '../../data-source';
+import myDataBase from '../../data-source';
 import {User} from '../../entities/userEntity';
 import {Repository} from 'typeorm';
 import {ChatRoom} from '../../entities/chatRoomEntity';
-import {ChatMessage} from '../../entities/chatMessageEntity';
 
 export class ChatRoomService {
   private chatRoomRepository: Repository<ChatRoom>;
@@ -34,7 +33,7 @@ export class ChatRoomService {
         {toUser: user, status: 'activated'},
         {fromUser: user, status: 'activated'},
       ],
-      relations: ['toUser', 'fromUser', 'chatMessages'],
+      relations: ['toUser', 'fromUser'],
       order: {
         createdAt: 'DESC',
       },
@@ -42,10 +41,13 @@ export class ChatRoomService {
 
     // 각 채팅방의 최신 메시지를 찾습니다
     return chatRooms.map(chatRoom => {
-      const isCurrentUserToUser = chatRoom.toUser === user;
-      const latestMessage = chatRoom.chatMessages.reduce((latest, message) => {
-        return message.createdAt > latest.createdAt ? message : latest;
-      }, chatRoom.chatMessages[0]);
+      const isCurrentUserToUser = chatRoom.toUser.id === user.id;
+
+      const latestMessage = chatRoom.chatMessages
+        ? chatRoom.chatMessages.reduce((latest, message) => {
+            return message.createdAt > latest.createdAt ? message : latest;
+          }, chatRoom.chatMessages[0])
+        : null;
 
       return {
         ...chatRoom,

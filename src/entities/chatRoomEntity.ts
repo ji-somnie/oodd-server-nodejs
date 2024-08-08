@@ -14,5 +14,5 @@ export class ChatRoom extends BaseEntity {
   toUser!: User;
 
   @OneToMany(() => ChatMessage, chatMessage => chatMessage.chatRoom)
-  chatMessages!: ChatMessage[];
+  chatMessages?: ChatMessage[];
 }

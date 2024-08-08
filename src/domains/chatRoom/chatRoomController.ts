@@ -11,7 +11,7 @@ const userService = new UserService();
 
 // 채팅방 조회
 chatRoomRouter.get('/', async (req: Request, res: Response): Promise<void> => {
-  const user: User | null = await userService.getUserByUserId(1);
+  const user: User | null = await userService.getUserByUserId(2);
 
   if (!user) {
     res.status(404).json(new BaseResponse(false, NOT_FOUND_USER.code, NOT_FOUND_USER.message));

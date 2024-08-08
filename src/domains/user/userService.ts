@@ -1,4 +1,4 @@
-import {myDataBase} from '../../data-source';
+import myDataBase from '../../data-source';
 import {User} from '../../entities/userEntity';
 import {Repository} from 'typeorm';
 
@@ -19,6 +19,6 @@ export class UserService {
   }
 
   async getUserByUserId(userId: number): Promise<User | null> {
-    return this.userRepository.findOne({where: {id: userId}});
+    return await this.userRepository.findOne({where: {id: userId}});
   }
 }

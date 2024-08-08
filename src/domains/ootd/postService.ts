@@ -1,4 +1,4 @@
-import { myDataBase } from '../../data-source';
+import myDataBase from '../../data-source';
 import { Post } from '../../entities/postEntity';
 import { PostRequestDto } from './dtos/postRequest.dto';
 import { PostResponseDto } from './dtos/postResponse.dto';
