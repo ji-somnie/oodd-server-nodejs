@@ -13,6 +13,12 @@ export class ChatRoom extends BaseEntity {
   @JoinColumn({name: 'toUserId'})
   toUser!: User;
 
+  @Column({nullable: true, type: 'datetime'})
+  toUserLeavedAt?: Date;
+
+  @Column({nullable: true, type: 'datetime'})
+  fromUserLeavedAt?: Date;
+
   @OneToMany(() => ChatMessage, chatMessage => chatMessage.chatRoom)
   chatMessages?: ChatMessage[];
 }

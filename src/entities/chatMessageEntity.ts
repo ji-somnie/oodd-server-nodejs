@@ -20,6 +20,6 @@ export class ChatMessage extends BaseEntity {
   @Column('text')
   content!: string;
 
-  @Column('tinyint')
-  isRead: boolean = false;
+  @Column('datetime')
+  toUserReadAt?: Date | null;
 }

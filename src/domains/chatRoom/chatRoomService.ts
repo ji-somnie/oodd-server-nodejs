@@ -1,7 +1,10 @@
 import myDataBase from '../../data-source';
 import {User} from '../../entities/userEntity';
-import {Repository} from 'typeorm';
+import {Brackets, FindOptionsWhere, Repository} from 'typeorm';
 import {ChatRoom} from '../../entities/chatRoomEntity';
+import dayjs from 'dayjs';
+import {ChatMessage} from '../../entities/chatMessageEntity';
+import {ChatRoomsDto, ChatRoomsQueryDto} from './dto/dto';
 
 export class ChatRoomService {
   private chatRoomRepository: Repository<ChatRoom>;
@@ -26,34 +29,89 @@ export class ChatRoomService {
     });
   }
 
-  async getChatRoomsByUser(user: User): Promise<ChatRoom[]> {
+  async getChatRoomsByUser(user: User): Promise<ChatRoomsDto[]> {
     // 모든 활성 채팅방을 가져옵니다
-    const chatRooms = await this.chatRoomRepository.find({
-      where: [
-        {toUser: user, status: 'activated'},
-        {fromUser: user, status: 'activated'},
-      ],
-      relations: ['toUser', 'fromUser'],
-      order: {
-        createdAt: 'DESC',
-      },
-    });
+    const userId = user.id;
 
+    const chatRooms = await this.chatRoomRepository
+      .createQueryBuilder('chatRoom')
+      .select([
+        'chatRoom.id',
+        'chatRoom.createdAt',
+        'toUser.id',
+        'toUser.nickname',
+        'toUser.profilePictureUrl',
+        'toUser.name',
+        'fromUser.id',
+        'fromUser.nickname',
+        'fromUser.profilePictureUrl',
+        'fromUser.name',
+        'latestMessage.id AS latestMessageId',
+        'latestMessage.createdAt AS latestMessageCreatedAt',
+        'latestMessage.content AS latestMessageContent',
+        'latestMessage.toUserReadAt AS latestMessageToUserReadAt',
+      ])
+      .leftJoin('chatRoom.toUser', 'toUser') // toUser 관계 로드
+      .leftJoin('chatRoom.fromUser', 'fromUser') // fromUser 관계 로드
+      .leftJoin(
+        subQuery => {
+          return subQuery
+            .select('chatMessage.chatRoomId')
+            .addSelect('MAX(chatMessage.createdAt)', 'latestMessageCreatedAt')
+            .from(ChatMessage, 'chatMessage')
+            .groupBy('chatMessage.chatRoomId');
+        },
+        'latestMessages',
+        'latestMessages.chatRoomId = chatRoom.id',
+      )
+      .leftJoin(
+        ChatMessage,
+        'latestMessage',
+        'latestMessage.chatRoomId = chatRoom.id AND latestMessage.createdAt = latestMessages.latestMessageCreatedAt',
+      )
+      .where('chatRoom.status = :status', {status: 'activated'})
+      .andWhere(
+        new Brackets(qb => {
+          qb.where('chatRoom.fromUserId = :userId', {userId})
+            .andWhere('chatRoom.fromUserLeavedAt IS NULL')
+            .orWhere('chatRoom.toUserId = :userId', {userId})
+            .andWhere('chatRoom.toUserLeavedAt IS NULL');
+        }),
+      )
+      .orderBy('chatRoom.createdAt', 'DESC')
+      .getRawAndEntities(); // Raw 결과와 엔티티 결과를 동시에 가져옵니다.
+
+    const rawData = chatRooms.raw;
+    console.log(rawData);
     // 각 채팅방의 최신 메시지를 찾습니다
-    return chatRooms.map(chatRoom => {
-      const isCurrentUserToUser = chatRoom.toUser.id === user.id;
-
-      const latestMessage = chatRoom.chatMessages
-        ? chatRoom.chatMessages.reduce((latest, message) => {
-            return message.createdAt > latest.createdAt ? message : latest;
-          }, chatRoom.chatMessages[0])
-        : null;
+    return rawData.map((chatRoom: ChatRoomsQueryDto) => {
+      const isCurrentUserToUser = chatRoom.toUser_id === user.id;
 
       return {
-        ...chatRoom,
-        latestMessage,
-        opponent: isCurrentUserToUser ? chatRoom.fromUser : chatRoom.toUser,
+        id: chatRoom.chatRoom_id,
+        createdAt: chatRoom.chatRoom_createdAt,
+        opponent: {
+          id: isCurrentUserToUser ? chatRoom.fromUser_id : chatRoom.toUser_id,
+          nickname: isCurrentUserToUser ? chatRoom.fromUser_nickname : chatRoom.toUser_nickname,
+          profilePictureUrl: isCurrentUserToUser
+            ? chatRoom.fromUser_profilePictureUrl
+            : chatRoom.toUser_profilePictureUrl,
+          name: isCurrentUserToUser ? chatRoom.fromUser_name : chatRoom.toUser_name,
+        },
+        latestMessage: {
+          id: chatRoom.latestMessageId ?? null,
+          createdAt: chatRoom.latestMessageCreatedAt ?? null,
+          content: chatRoom.latestMessageContent ?? null,
+          toUserReadAt: chatRoom.latestMessageToUserReadAt ?? null,
+        },
       };
+    });
+  }
+
+  async getChatRoomById(id: number): Promise<ChatRoom | null> {
+    return this.chatRoomRepository.findOne({
+      where: {id: id, status: 'activated'},
+      relations: ['fromUser', 'toUser'],
     });
   }
 
@@ -62,8 +120,15 @@ export class ChatRoomService {
     return this.chatRoomRepository.save(chatRoom);
   }
 
-  async deleteChatRoom(chatRoom: ChatRoom): Promise<boolean> {
-    chatRoom.status = 'deactivated';
+  async deleteChatRoom(chatRoom: ChatRoom, user: User): Promise<boolean> {
+    if (chatRoom.fromUser.id === user.id) chatRoom.fromUserLeavedAt = dayjs().toDate();
+    else if (chatRoom.toUser.id === user.id) chatRoom.toUserLeavedAt = dayjs().toDate();
+
+    if (chatRoom.fromUserLeavedAt && chatRoom.toUserLeavedAt) {
+      chatRoom.status = 'deactivated';
+      chatRoom.deletedAt = dayjs().toDate();
+    }
+
     await this.chatRoomRepository.save(chatRoom);
     return true;
   }

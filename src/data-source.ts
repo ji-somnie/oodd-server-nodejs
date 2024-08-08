@@ -15,13 +15,16 @@ const myDataBase = new DataSource({
   synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
 });
 
-myDataBase
-  .initialize()
-  .then(() => {
-    console.log('Data Source has been initialized!');
-  })
-  .catch(err => {
+export const initializeDatabase = async (): Promise<DataSource | null> => {
+  try {
+    if (!myDataBase.isInitialized) {
+      await myDataBase.initialize();
+      console.log('Data Source has been initialized!');
+    }
+    return myDataBase;
+  } catch (err) {
     console.error('Error during Data Source initialization:', err);
-  });
-
+    return null;
+  }
+};
 export default myDataBase;
