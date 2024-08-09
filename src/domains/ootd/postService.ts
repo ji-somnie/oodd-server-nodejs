@@ -335,7 +335,7 @@ export class PostService {
       .where('postStyletag.postId = :postId', { postId })
       .getRawMany();
     
-      console.log('postStyletagIds:', postStyletagIds);
+      // console.log('postStyletagIds:', postStyletagIds);
     
       const styletagInfo: string[] = [];
 
@@ -346,7 +346,7 @@ export class PostService {
           .where('styletag.id = :styletagId', { styletagId: postStyletag.styletagId })
           .getRawOne();
 
-        console.log('styletag: ', styletag);
+        // console.log('styletag: ', styletag); 
 
         if (styletag) {
           styletagInfo.push(styletag.styletag_tag);
