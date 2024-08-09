@@ -7,7 +7,6 @@ import { initializeDatabase } from './data-source';
 
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
-import ootdRouter from './domains/ootd/ootdController';
 import chatRoomRouter from './domains/chatRoom/chatRoomController';
 import { ChatRoomService } from './domains/chatRoom/chatRoomService';
 import { ChatMessageService } from './domains/chatMessage/chatMessageService';
@@ -34,7 +33,7 @@ app.use(
 // 라우터 설정
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
-app.use('/ootds', ootdRouter);
+// app.use('/ootds', ootdRouter);
 app.use('/chat-rooms', chatRoomRouter);
 
 // HTTP 서버 생성
