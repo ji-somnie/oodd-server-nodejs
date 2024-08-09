@@ -7,12 +7,15 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.10",
+    "nodemon": "^3.1.4",
+    "pm2": "^5.4.2",
     "prisma": "^5.16.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",
+<<<<<<< HEAD
     "axios": "^1.7.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -20,12 +23,22 @@
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "qs": "^6.13.0",
+=======
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.12",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1",
+    "pm2": "^5.4.2",
+    "prettier": "^3.3.3",
+>>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
     "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.7.5",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20"
   },
   "scripts": {
-    "dev": "ts-node-dev src/server.ts",
+    "dev": "nodemon --exec ts-node ./src/app.ts --watch ./src",
     "build": "tsc",
     "start": "node dist/app.js",
     "prisma:migrate": "prisma migrate dev",

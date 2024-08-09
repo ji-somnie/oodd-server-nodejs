@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
+=======
+import {Router, Request, Response} from 'express';
+import {UserService} from './userService';
+>>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
 
-const router = Router();
+const userRouter = Router();
 const userService = new UserService();
 
+<<<<<<< HEAD
 
 //일반 회원가입 (추후 삭제 필요)
 router.post("/", async (req: Request, res: Response) => {
@@ -33,3 +39,21 @@ router.post("/login/google", async (req: Request, res: Response) => {
 });
 
 export default router;
+=======
+userRouter.get('/', async (req: Request, res: Response) => {
+  const users = await userService.getAllUsers();
+  res.json(users);
+});
+
+userRouter.post('/', async (req: Request, res: Response) => {
+  const {name, email} = req.body;
+  const user = await userService.createUser(name, email);
+  res.json(user);
+});
+
+export default userRouter;
+
+//controller + dto + service
+//entity
+//repo
+>>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
