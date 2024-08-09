@@ -25,9 +25,6 @@ export class PostService {
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
-    // const queryRunner = myDataBase.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
 
     try {
       const user = await validatedUser(userId);
