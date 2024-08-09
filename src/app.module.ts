@@ -1,8 +1,6 @@
 import express from 'express';
-<<<<<<< HEAD
 import userRoutes from './domain/user/userRoutes';
 import reportRoutes from './domain/report/reportRoutes';
-=======
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
 import ootdRouter from './domains/ootd/ootdController';
@@ -18,7 +16,6 @@ import {initializeDatabase} from './data-source';
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
->>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
 
 const app = express();
 app.use(express.json());
