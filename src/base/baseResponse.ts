@@ -1,6 +1,16 @@
-export class BaseResponse<T = any> {
-    isSuccess!: boolean;
-    code!: number; //성공코드
-    message!: string;
-    result?: T;
+export default class BaseResponse {
+  static success(result: any) {
+    return {
+      success: true,
+      result,
+    };
   }
+
+  static error(message: string, error: any = null) {
+    return {
+      success: false,
+      message,
+      error,
+    };
+  }
+}

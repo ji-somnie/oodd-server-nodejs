@@ -1,40 +1,19 @@
 import { Request, Response } from 'express';
 import { UserService } from './userService';
+import BaseResponse from '../../base/baseResponse';
+import HttpCode from '../../variables/httpCode';
 
-const userService = new UserService();
+export class UserController {
+  private userService = new UserService();
 
-export const getUserById = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id, 10);
-  const user = await userService.getUserById(id);
-
-  if (user) {
-    if (req.user && req.user.id === user.id) {
-      // 본인 정보 조회
-      res.json({
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        nickname: user.nickname,
-        posts: user.posts.map((post: any) => ({
-          id: post.id,
-          title: post.title,
-          content: post.content
-        }))
-      });
-    } else {
-      // 타인 정보 조회
-      res.json({
-        nickname: user.nickname,
-        bio: "User's bio", // 예시로 사용한 bio
-        posts: user.posts.map((post: any) => ({
-          id: post.id,
-          title: post.title,
-          content: post.content
-        }))
-      });
+  async getUserById(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    try {
+      const user = await this.userService.getUserById(Number(id));
+      return res.json(BaseResponse.success(user));
+    } catch (error) {
+      const err = error as Error;
+      return res.json(BaseResponse.error("Internal Server Error", err.message));
     }
-  } else {
-    res.status(404).send({ message: 'User not found' });
   }
-};
-
+}

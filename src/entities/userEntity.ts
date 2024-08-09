@@ -1,14 +1,25 @@
-import { Entity, Column } from "typeorm";
-import { BaseEntity } from "../base/baseEntity";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { MatchRequestEntity } from './matchRequestEntity';
+import Notification from './notificationEntity'; // 수정된 import
+import { ReportEntity } from './reportEntity';
 
-@Entity()
-export class UserEntity extends BaseEntity {
-    @Column()
-    name: string;
+@Entity('users')
+export class UserEntity {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    email: string;
+  @Column()
+  name!: string;
 
-    @Column({ default: "active" })
-    status: string;
+  @OneToMany(() => MatchRequestEntity, matchRequest => matchRequest.requester)
+  sentRequests!: MatchRequestEntity[];
+
+  @OneToMany(() => MatchRequestEntity, matchRequest => matchRequest.requestee)
+  receivedRequests!: MatchRequestEntity[];
+
+  @OneToMany(() => Notification, notification => notification.user)
+  notifications!: Notification[];
+
+  @OneToMany(() => ReportEntity, report => report.reporter)
+  reports!: ReportEntity[];
 }

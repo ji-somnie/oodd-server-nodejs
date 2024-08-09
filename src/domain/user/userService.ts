@@ -1,22 +1,10 @@
 import { getRepository } from 'typeorm';
-import { User } from './entities/userEntity'; // 올바른 경로로 수정
+import { UserEntity } from '../../entities/userEntity';
 
 export class UserService {
-  private userRepository = getRepository(User);
+  private userRepository = getRepository(UserEntity);
 
-  async getAllUsers() {
-    return await this.userRepository.find();
-  }
-
-  async createUser(name: string, email: string) {
-    const user = new User();
-    user.username = name;
-    user.email = email;
-    return await this.userRepository.save(user);
-  }
-
-  async getUserById(id: number) {
-    return await this.userRepository.findOne({ where: { id }, relations: ['posts'] });
+  async getUserById(userId: number): Promise<UserEntity | null> {
+    return await this.userRepository.findOne({ where: { id: userId } });
   }
 }
-
