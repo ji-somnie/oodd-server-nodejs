@@ -1,12 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { PostService } from './postService';
-import { PostRequestDto } from './dtos/postRequest.dto';
-import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
+import {Router, Request, Response} from 'express';
+import {PostService} from './postService';
+import {PostRequestDto} from './dtos/postRequest.dto';
+import {HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR} from '../../variables/httpCode';
 
 const router = Router();
 const postService = new PostService();
 
-// 토큰 검증 대신 일단 하드코딩    
+// 토큰 검증 대신 일단 하드코딩
 const tempUserId = 1;
 const userId = tempUserId;
 
@@ -20,11 +20,11 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       res.status(201).json(newPostResponse);
     }
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     if (error instanceof Error) {
-      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
@@ -38,13 +38,13 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
 
     if (deletePostResponse.isSuccess) {
       res.status(201).json(deletePostResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
-      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
@@ -59,10 +59,10 @@ router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
 
     if (updatePostResponse.isSuccess) {
       res.status(201).json(updatePostResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
   }
 });
 
@@ -75,14 +75,14 @@ router.get('/:postId', async (req: Request, res: Response): Promise<void> => {
 
     if (getPostResponse.isSuccess) {
       res.status(200).json(getPostResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
   }
 });
 
-// 스타일태그 검색 결과 조회 
+// 스타일태그 검색 결과 조회
 router.get('/:styletag', async (req: Request, res: Response): Promise<void> => {
   try {
     const tag = req.params.styletag;
@@ -91,10 +91,10 @@ router.get('/:styletag', async (req: Request, res: Response): Promise<void> => {
 
     if (getPostsByTagResponse.isSuccess) {
       res.status(200).json(getPostsByTagResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
   }
 });
 
