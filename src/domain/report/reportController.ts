@@ -13,7 +13,7 @@ export class ReportController {
 
     async reportPost(req: Request, res: Response): Promise<Response> {
         try {
-            // req.user가 존재하는지 확인
+            
             const userId = req.user?.id;
             if (!userId) {
                 return res.status(HttpCode.UNAUTHORIZED).json(BaseResponse.error('User not authenticated'));
