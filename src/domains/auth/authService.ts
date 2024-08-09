@@ -52,6 +52,10 @@ export class AuthService {
                 user.email = payload.email;
                 user.name = payload.username;
                 user.profilePictureUrl = payload.img;
+                user.status = 'activated';
+                user.joinedAt = new Date();
+                user.createdAt = new Date();
+                user.updatedAt = new Date();
                 await this.userRepository.save(user);
             }
     

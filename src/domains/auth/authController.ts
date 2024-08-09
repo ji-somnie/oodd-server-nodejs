@@ -148,14 +148,14 @@ router.get("/google/callback", async (req: Request, res: Response) => {
         };
         const response = await axios.get(url, { headers });
         console.log('Google user info response:', response.data);
-        const { name: nickname, picture: img, email, id: googleId } = response.data;
+        const { name: username, picture: img, email, id: googleId } = response.data;
 
-        if (!nickname || !googleId || !img || !email) {
+        if (!username || !googleId || !img || !email) {
             return res.status(status.GOOGLE_USER_NOT_FOUND.status).json({ message: status.GOOGLE_USER_NOT_FOUND.message, err_code: status.GOOGLE_USER_NOT_FOUND.err_code });
         }
 
         // JWT 토큰 생성
-        const payload = { nickname, googleId, img, email };
+        const payload = { username, googleId, img, email };
 
         // 유저 확인하고 없으면 회원가입 처리
         const user = await authService.handleGoogleUser(payload);
@@ -166,7 +166,7 @@ router.get("/google/callback", async (req: Request, res: Response) => {
         // 쿠키 옵션 설정
         const cookieOpt = { maxAge: 1000 * 60 * 60 * 24 }; // 1일 동안 유효
         res.cookie('accessToken', accessToken, cookieOpt);
-        res.status(200).json({ message: `${nickname}님 로그인 되었습니다`, accessToken });
+        res.status(200).json({ message: `${username}님 로그인 되었습니다`, accessToken });
 
     } catch (err) {
         console.error('Error getting user info from Google:', err);
