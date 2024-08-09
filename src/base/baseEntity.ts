@@ -1,12 +1,21 @@
-import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Column} from 'typeorm';
+import dayjs from 'dayjs';
 
-export abstract class BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number = 0; // 기본 값 할당
+export class BaseEntity {
+  //export abstract class BaseEnity - abstract 사용하면 인스턴스 생성X
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @CreateDateColumn()
-    createdAt: Date = new Date(); // 기본 값 할당
+  @Column({default: 'activated'})
+  status!: 'activated' | 'deactivated';
 
-    @UpdateDateColumn()
-    updatedAt: Date = new Date(); // 기본 값 할당
+  @CreateDateColumn({type: 'timestamp'})
+  createdAt!: Date;
+
+  @UpdateDateColumn({type: 'timestamp'})
+  updatedAt!: Date;
+
+  @DeleteDateColumn({type: 'timestamp'})
+  @Column({nullable: true})
+  deletedAt?: Date;
 }
