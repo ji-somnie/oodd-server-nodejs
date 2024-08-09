@@ -7,17 +7,32 @@ import { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../varia
 import { User } from '../../entities/userEntity';
 import { validatedUser } from '../../validationTest/validateUser';
 import { validatePost } from '../../validationTest/validatePost';
+import { Image } from '../../entities/imageEntity';
+import { PostStyletag } from '../../entities/postStyletagEntity';
+import { Clothing } from '../../entities/clothingEntity';
+import { Styletag } from '../../entities/styletagEntity';
+import { PostClothing } from '../../entities/postClothingEntity';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
   private postRepository = myDataBase.getRepository(Post);
   private userRepository = myDataBase.getRepository(User);
+  private imageRepository = myDataBase.getRepository(Image);
+  private postStyletagRepository = myDataBase.getRepository(PostStyletag);
+  private clothingRepository = myDataBase.getRepository(Clothing);
+  private styletagRepository = myDataBase.getRepository(Styletag);
+  private postClothingRepository = myDataBase.getRepository(PostClothing);
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
+    // const queryRunner = myDataBase.createQueryRunner();
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
+
     try {
       const user = await validatedUser(userId);
       if (!user) {
+        // await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: HTTP_NOT_FOUND.code,
@@ -33,22 +48,66 @@ export class PostService {
       // newPost.status = 'activated';
 
       const savedPost = await this.postRepository.save(newPost);
+      
+      // 이미지 저장
+      const newImage = new Image();
+      newImage.url = postRequestDto.photoUrl;
+      newImage.order = 1; // 일단 첫번째로 설정함
+      newImage.post = savedPost;
+      await this.imageRepository.save(newImage);
+
+      // 스타일 태그 저장
+      const savedStyletags: string[] = [];
+      for (const tag of postRequestDto.hashtags) {        
+        let styletag = await this.styletagRepository.findOne({ where: { tag } });
+        if (!styletag) { // db에 해당 스타일 태그 없을 때만 새로 생성
+          styletag = new Styletag();
+          styletag.tag = tag;
+          styletag = await this.styletagRepository.save(styletag);
+        }
+        const postStyletag = new PostStyletag();
+        postStyletag.post = savedPost;
+        postStyletag.styletag = styletag;
+        await this.postStyletagRepository.save(postStyletag);
+        savedStyletags.push(tag);
+      }
+
+      // 옷 정보 저장    
+      let clothing = await this.clothingRepository.findOne({
+        where: {
+          brandName: postRequestDto.clothingInfo.brand,
+          modelName: postRequestDto.clothingInfo.model,
+          modelNumber: postRequestDto.clothingInfo.modelNumber,
+          url: postRequestDto.clothingInfo.url,
+        }
+      });
+
+      if (!clothing) { // 옷 정보를 못 찾았으면 DB에 새롭게 저장
+        clothing = new Clothing();
+        clothing.brandName = postRequestDto.clothingInfo.brand;
+        clothing.modelName = postRequestDto.clothingInfo.model;
+        clothing.modelNumber = postRequestDto.clothingInfo.modelNumber;
+        clothing.url = postRequestDto.clothingInfo.url;
+        await this.clothingRepository.save(clothing);
+      }
+
+      // 게시물과 옷 정보도 저장
+      const postClothing = new PostClothing();
+      postClothing.post = savedPost;
+      postClothing.clothing = clothing;
+      await this.postClothingRepository.save(postClothing);
+
       const postResponseDto: PostResponseDto = {
         postId: savedPost.id,
         userId: user.id,
-        photoUrl: savedPost.images?.length > 0 ? savedPost.images[0].url : '',
+        photoUrl: newImage.url,
         content: savedPost.content,
-        hashtags: savedPost.postStyletags ? savedPost.postStyletags.map(tag => tag.styletag.tag) : [],
-        clothingInfo: savedPost.clothings.length > 0 ? {
-          brand: savedPost.clothings[0].brandName,
-          model: savedPost.clothings[0].modelName,
-          modelNumber: savedPost.clothings[0].modelNumber,
-          url: savedPost.clothings[0].url,
-        } : {
-          brand: '',
-          model: '',
-          modelNumber: '',
-          url: '',
+        hashtags: savedStyletags,
+        clothingInfo: {
+          brand: clothing.brandName,
+          model: clothing.modelName,
+          modelNumber: clothing.modelNumber,
+          url: clothing.url,
         },
         likes: savedPost.likes?.length || 0,
         comments: savedPost.comments || [],
@@ -73,19 +132,14 @@ export class PostService {
 
   // 게시물 삭제
   async deletePost(userId: number, postId: number): Promise<BaseResponse<null>> {
+    const queryRunner = myDataBase.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const user = await validatedUser(userId);
       if (!user) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-      
-      const post = await validatePost(userId, postId);
-      if (!post) {
+        await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: HTTP_NOT_FOUND.code,
@@ -94,7 +148,23 @@ export class PostService {
         };
       }
 
-      await this.postRepository.remove(post);
+      const post = await validatePost(userId, postId);
+      if (!post) {
+        await queryRunner.rollbackTransaction();
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+      // cascade 작동이 안 돼서 직접 연관된 엔티티 삭제
+      await queryRunner.manager.delete(PostStyletag, { post: { id: postId } });
+      await queryRunner.manager.delete(PostClothing, { post: { id: postId } });
+      await queryRunner.manager.delete(Image, { post: { id: postId } });
+
+      await queryRunner.manager.remove(post);
+      await queryRunner.commitTransaction();
 
       return {
         isSuccess: true,
@@ -103,6 +173,7 @@ export class PostService {
         result: null,
       };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.error(error);
       return {
         isSuccess: false,
@@ -110,195 +181,10 @@ export class PostService {
         message: HTTP_INTERNAL_SERVER_ERROR.message,
         result: null,
       };
+    } finally {
+      await queryRunner.release();
     }
   }
 
-  // 게시물 수정
-  async updatePost(userId: number, postId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
-    try {
-      const user = await validatedUser(userId);
-      if (!user) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-
-      const post = await validatePost(userId, postId);
-      if (!post) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-
-      post.content = postRequestDto.caption;
-      const updatedPost = await this.postRepository.save(post);
-
-      const postResponseDto: PostResponseDto = {
-        postId: updatedPost.id,
-        userId: user.id,
-        photoUrl: updatedPost.images?.length > 0 ? updatedPost.images[0].url : '',
-        content: updatedPost.content,
-        hashtags: updatedPost.postStyletags ? updatedPost.postStyletags.map(tag => tag.styletag.tag) : [],
-        clothingInfo: updatedPost.clothings.length > 0 ? {
-          brand: updatedPost.clothings[0].brandName,
-          model: updatedPost.clothings[0].modelName,
-          modelNumber: updatedPost.clothings[0].modelNumber,
-          url: updatedPost.clothings[0].url,
-        } : {
-          brand: '',
-          model: '',
-          modelNumber: '',
-          url: '',
-        },
-        likes: updatedPost.likes?.length || 0,
-        comments: updatedPost.comments || [],
-      };
-
-      return {
-        isSuccess: true,
-        code: HTTP_OK.code,
-        message: HTTP_OK.message,
-        result: postResponseDto,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        isSuccess: false,
-        code: HTTP_INTERNAL_SERVER_ERROR.code,
-        message: HTTP_INTERNAL_SERVER_ERROR.message,
-        result: null,
-      };
-    }
-  }
-
-  // 게시물 조회
-  async getPostById(userId: number, postId: number): Promise<BaseResponse<PostResponseDto | null>> {
-    try {
-      const user = await validatedUser(userId);
-      if (!user) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-  
-      const post = await validatePost(userId, postId);
-      if (!post) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-  
-      const postResponseDto: PostResponseDto = {
-        postId: post.id,
-        userId: post.user.id,
-        photoUrl: post.images?.length > 0 ? post.images[0].url : '',
-        content: post.content,
-        hashtags: post.postStyletags ? post.postStyletags.map(tag => tag.styletag.tag) : [],
-        clothingInfo: post.clothings.length > 0 ? {
-          brand: post.clothings[0].brandName,
-          model: post.clothings[0].modelName,
-          modelNumber: post.clothings[0].modelNumber,
-          url: post.clothings[0].url,
-        } : {
-          brand: '',
-          model: '',
-          modelNumber: '',
-          url: '',
-        },
-        likes: post.likes?.length || 0,
-        comments: post.comments || [],
-      };
-  
-      return {
-        isSuccess: true,
-        code: HTTP_OK.code,
-        message: HTTP_OK.message,
-        result: postResponseDto,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        isSuccess: false,
-        code: HTTP_INTERNAL_SERVER_ERROR.code,
-        message: HTTP_INTERNAL_SERVER_ERROR.message,
-        result: null,
-      };
-    }
-  }  
-
-  // 스타일태그 검색 결과 조회
-  async getPostsByTag(userId: number, tag: string): Promise<BaseResponse<PostResponseDto[] | null>> {
-    try {
-      const user = await validatedUser(userId);
-      if (!user) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-      
-      // 해당 스타일태그와 관련된 정보들 추출
-      const posts = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.user', 'user')
-        .leftJoinAndSelect('post.images', 'images')
-        .leftJoinAndSelect('post.postStyletags', 'postStyletags')
-        .leftJoinAndSelect('postStyletags.styletag', 'styletag')
-        .leftJoinAndSelect('post.clothings', 'clothings')
-        .leftJoinAndSelect('post.comments', 'comments')
-        .where('styletag.tag = :tag', { tag })
-        .getMany();
-  
-      const postResponseDtos: PostResponseDto[] = posts.map(post => ({
-        postId: post.id,
-        userId: post.user.id,
-        photoUrl: post.images?.length > 0 ? post.images[0].url : '',
-        content: post.content,
-        hashtags: post.postStyletags ? post.postStyletags.map(tag => tag.styletag.tag) : [],
-        clothingInfo: post.clothings.length > 0 ? {
-          brand: post.clothings[0].brandName,
-          model: post.clothings[0].modelName,
-          modelNumber: post.clothings[0].modelNumber,
-          url: post.clothings[0].url,
-        } : {
-          brand: '',
-          model: '',
-          modelNumber: '',
-          url: '',
-        },
-        likes: post.likes?.length || 0,
-        comments: post.comments || [],
-      }));
-  
-      return {
-        isSuccess: true,
-        code: HTTP_OK.code,
-        message: HTTP_OK.message,
-        result: postResponseDtos,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        isSuccess: false,
-        code: HTTP_INTERNAL_SERVER_ERROR.code,
-        message: HTTP_INTERNAL_SERVER_ERROR.message,
-        result: null,
-      };
-    }
-  }
-  
+ 
 }
