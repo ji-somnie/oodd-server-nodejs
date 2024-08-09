@@ -6,21 +6,12 @@ import { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../varia
 import { User } from '../../entities/userEntity';
 import { validatedUser } from '../../validationTest/validateUser';
 import { validatePost } from '../../validationTest/validatePost';
-import { Image } from '../../entities/imageEntity';
-import { PostStyletag } from '../../entities/postStyletagEntity';
-import { Clothing } from '../../entities/clothingEntity';
-import { Styletag } from '../../entities/styletagEntity';
 import { PostResponseDto } from './dtos/postResponse.dto';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
   private postRepository = myDataBase.getRepository(Post);
   private userRepository = myDataBase.getRepository(User);
-  private imageRepository = myDataBase.getRepository(Image);
-  private postStyletagRepository = myDataBase.getRepository(PostStyletag);
-  private clothingRepository = myDataBase.getRepository(Clothing);
-  private styletagRepository = myDataBase.getRepository(Styletag);
-
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
@@ -42,50 +33,22 @@ export class PostService {
       // newPost.status = 'activated';
 
       const savedPost = await this.postRepository.save(newPost);
-      
-      // 이미지 저장
-      const newImage = new Image();
-      newImage.url = postRequestDto.photoUrl;
-      newImage.order = 1; // 일단 첫번째로 설정함
-      newImage.post = savedPost;
-      await this.imageRepository.save(newImage);
-
-      // 스타일 태그 저장
-      const savedStyletags: string[] = [];
-      for (const tag of postRequestDto.hashtags) {        
-        let styletag = await this.styletagRepository.findOne({ where: { tag } });
-        if (!styletag) { // db에 해당 스타일 태그 없을 때만 새로 생성
-          styletag = new Styletag();
-          styletag.tag = tag;
-          styletag = await this.styletagRepository.save(styletag);
-        }
-        const postStyletag = new PostStyletag();
-        postStyletag.post = savedPost;
-        postStyletag.styletag = styletag;
-        await this.postStyletagRepository.save(postStyletag);
-        savedStyletags.push(tag);
-      }
-
-      // 옷 정보 저장    
-      const clothing = new Clothing();
-      clothing.brandName = postRequestDto.clothingInfo.brand;
-      clothing.modelName = postRequestDto.clothingInfo.model;
-      clothing.modelNumber = postRequestDto.clothingInfo.modelNumber;
-      clothing.url = postRequestDto.clothingInfo.url;
-      clothing.post = savedPost;
-      await this.clothingRepository.save(clothing);
-      
       const postResponseDto: PostResponseDto = {
         postId: savedPost.id,
         userId: user.id,
-        photoUrl: newImage.url,
+        photoUrl: savedPost.images?.length > 0 ? savedPost.images[0].url : '',
         content: savedPost.content,
-        hashtags: savedStyletags,
-        clothingInfo: {
-          brand: clothing.brandName,
-          model: clothing.modelName,
-          modelNumber: clothing.modelNumber,
-          url: clothing.url,
+        hashtags: savedPost.postStyletags ? savedPost.postStyletags.map(tag => tag.styletag.tag) : [],
+        clothingInfo: savedPost.clothings.length > 0 ? {
+          brand: savedPost.clothings[0].brandName,
+          model: savedPost.clothings[0].modelName,
+          modelNumber: savedPost.clothings[0].modelNumber,
+          url: savedPost.clothings[0].url,
+        } : {
+          brand: '',
+          model: '',
+          modelNumber: '',
+          url: '',
         },
         likes: savedPost.likes?.length || 0,
         comments: savedPost.comments || [],
