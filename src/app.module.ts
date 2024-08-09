@@ -19,7 +19,6 @@ const userService = new UserService();
 
 const app = express();
 app.use(express.json());
-<<<<<<< HEAD
 
 app.use('/users', userRoutes);
 app.use('/reports', reportRoutes);
@@ -28,7 +27,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-=======
 app.use(
   cors({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
@@ -37,7 +35,6 @@ app.use(
     exposedHeaders: ['set-cookie'],
   }),
 );
->>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
 
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
