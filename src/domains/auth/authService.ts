@@ -27,7 +27,7 @@ export class AuthService {
             user = new User();
             user.kakaoId = payload.kakaoId;
             user.email = payload.email;
-            user.nickname = payload.nickname;
+            user.name = payload.username;
             user.profilePictureUrl = payload.img;
             await this.userRepository.save(user);
         }
@@ -46,7 +46,7 @@ export class AuthService {
                 user = new User();
                 user.googleId = payload.googleId;
                 user.email = payload.email;
-                user.nickname = payload.nickname;
+                user.name = payload.username;
                 user.profilePictureUrl = payload.img;
                 await this.userRepository.save(user);
             }
