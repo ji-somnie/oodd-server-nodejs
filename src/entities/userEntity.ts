@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
@@ -27,11 +28,35 @@ export class User {
   phoneNumber!: string;
 
   @Column({ length: 255 })
+=======
+import {Entity, Column, OneToMany} from 'typeorm';
+import {BaseEntity} from '../base/baseEntity';
+import {Post} from './postEntity';
+import {Comment} from './commentEntity';
+import {ChatRoom} from './chatRoomEntity';
+
+@Entity('User')
+export class User extends BaseEntity {
+  @Column()
+  name!: string;
+
+  @Column()
+  email!: string;
+
+  @Column()
+  nickname!: string;
+
+  @Column()
+  phoneNumber!: string;
+
+  @Column()
+>>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
   profilePictureUrl!: string;
 
   @Column('text')
   bio!: string;
 
+<<<<<<< HEAD
   @Column({ length: 50 })
   status!: string;
 
@@ -46,4 +71,20 @@ export class User {
 
   @DeleteDateColumn({ type: 'datetime' })
   deletedAt!: Date // deletedAt는 datetime 타입
+=======
+  @Column('timestamp')
+  joinedAt!: Date;
+
+  @OneToMany(() => Post, post => post.user)
+  posts!: Post[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments!: Comment[];
+
+  @OneToMany(() => ChatRoom, chatRoom => chatRoom.toUser)
+  receivedChatRooms?: ChatRoom[];
+
+  @OneToMany(() => ChatRoom, chatRoom => chatRoom.fromUser)
+  sentChatRooms?: ChatRoom[];
+>>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
 }

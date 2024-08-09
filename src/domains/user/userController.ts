@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
@@ -78,3 +79,27 @@ router.post("/phone/verification/check", async (req: Request, res: Response) => 
 });
 
 export default router;
+=======
+import {Router, Request, Response} from 'express';
+import {UserService} from './userService';
+
+const userRouter = Router();
+const userService = new UserService();
+
+userRouter.get('/', async (req: Request, res: Response) => {
+  const users = await userService.getAllUsers();
+  res.json(users);
+});
+
+userRouter.post('/', async (req: Request, res: Response) => {
+  const {name, email} = req.body;
+  const user = await userService.createUser(name, email);
+  res.json(user);
+});
+
+export default userRouter;
+
+//controller + dto + service
+//entity
+//repo
+>>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a

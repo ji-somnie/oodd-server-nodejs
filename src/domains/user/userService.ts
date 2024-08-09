@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { UserRepository } from '../../repositories/userRepository';
 import { UserRequestDto } from './dtos/userRequest.dto';
 import { UserResponseDto } from './dtos/userResponse.dto';
@@ -84,5 +85,29 @@ export class UserService {
       // 실제로는 DB 또는 캐시에서 인증 코드를 조회하고 검증해야 함
       // 여기서는 간단히 true를 반환
       return true;
+=======
+import myDataBase from '../../data-source';
+import {User} from '../../entities/userEntity';
+import {Repository} from 'typeorm';
+
+export class UserService {
+  private userRepository: Repository<User>;
+
+  constructor() {
+    this.userRepository = myDataBase.getRepository(User);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  async createUser(name: string, email: string): Promise<User> {
+    const user = this.userRepository.create({name, email});
+    return this.userRepository.save(user);
+  }
+
+  async getUserByUserId(userId: number): Promise<User | null> {
+    return await this.userRepository.findOne({where: {id: userId}});
+>>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
   }
 }
