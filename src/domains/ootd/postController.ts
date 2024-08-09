@@ -1,12 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { PostService } from './postService';
-import { PostRequestDto } from './dtos/postRequest.dto';
-import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
+import {Router, Request, Response} from 'express';
+import {PostService} from './postService';
+import {PostRequestDto} from './dtos/postRequest.dto';
+import {HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR} from '../../variables/httpCode';
 
 const router = Router();
 const postService = new PostService();
 
-// 토큰 검증 대신 일단 하드코딩    
+// 토큰 검증 대신 일단 하드코딩
 const tempUserId = 1;
 const userId = tempUserId;
 
@@ -20,11 +20,11 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       res.status(201).json(newPostResponse);
     }
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     if (error instanceof Error) {
-      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
@@ -38,13 +38,13 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
 
     if (deletePostResponse.isSuccess) {
       res.status(201).json(deletePostResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
-      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
