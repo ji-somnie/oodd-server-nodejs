@@ -1,10 +1,17 @@
 import dayjs from 'dayjs';
 
-export class FriendRequestResponseDTO {
-  id!: number;
-  requesterId!: number;
-  receiverId!: number;
-  requestStatus!: string; // pending, accepted, rejected
-  createdAt!: dayjs.Dayjs;
-  updatedAt?: dayjs.Dayjs;
+export interface CommentDeleteResponse {
+  id: number;
+  userId: number;
+  postId: number;
+  content: string;
+  status: 'deactivated' | 'activated';
+  createdAt: dayjs.Dayjs;
+  updatedAt: dayjs.Dayjs;
+  deletedAt: dayjs.Dayjs;
+  user: {
+    id: number;
+    nickname: string;
+    profilePictureUrl: string;
+  };
 }

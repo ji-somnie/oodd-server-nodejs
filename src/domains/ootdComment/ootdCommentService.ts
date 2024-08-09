@@ -1,34 +1,16 @@
 import {Repository} from 'typeorm';
-import {commentRepository} from '../../repositories/ootdCommentRepository';
 import {Comment} from '../../entities/ootdCommentEntity';
-import {CommentGetRequest} from './dto/request';
-import {CommentResponse} from './dto/response';
+import {myDataBase} from '../../data-source';
 import dayjs from 'dayjs';
 
 export class CommentService {
-  private commentRepository: Repository<Comment>;
+  private commentRepository: Repository<Comment> = myDataBase.getRepository(Comment);
 
-  constructor() {
-    this.commentRepository = commentRepository;
+  async getCommentById(commentId: number): Promise<Comment | null> {
+    return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}});
   }
 
-  async getComments(request: CommentGetRequest): Promise<CommentResponse[]> {
-    //이름수정 (Fetch 노노)
-    const {postId} = request;
-    const comments = await this.commentRepository.find({
-      where: {postId, status: true}, //id: postId로 명시
-      order: {createdAt: 'DESC'},
-    });
-
-    return comments.map(comment => ({
-      id: comment.id,
-      userId: comment.userId,
-      postId: comment.postId,
-      content: comment.content,
-      status: comment.status,
-      createdAt: dayjs(comment.createdAt),
-      updatedAt: comment.updatedAt ? dayjs(comment.updatedAt) : undefined,
-      deletedAt: comment.deletedAt ? dayjs(comment.deletedAt) : undefined,
-    }));
+  async getCommentsByPostId(postId: number): Promise<Comment[]> {
+    return this.commentRepository.find({where: {postId, status: 'activated'}});
   }
 }

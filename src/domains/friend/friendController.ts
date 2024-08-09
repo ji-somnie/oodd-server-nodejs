@@ -1,15 +1,28 @@
 import {Request, Response, Router} from 'express';
-import {FriendRequestService} from './friendRequestService';
+import {FriendRequestService} from './friendService';
 import {FriendRequestActionRequest} from './dto/request';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK, INTERNAL_SERVER_ERROR, INVALID_FRIEND_REQUEST} from '../../variables/httpCode';
+import {HTTP_OK, INTERNAL_SERVER_ERROR, INVALID_FRIEND_REQUEST, INVALID_USER} from '../../variables/httpCode';
+import {FriendRequestActionResponse} from './dto/response';
+import {UserService} from '../user/userService'; // UserService를 가져옵니다.
 
 const friendRequestService = new FriendRequestService();
+const userService = new UserService(); // UserService 인스턴스 생성
 const router = Router();
 
 router.put('/action', async (req: Request, res: Response) => {
   try {
     const {userId, friendRequestId, action}: FriendRequestActionRequest = req.body;
+
+    // user 유효성 검사
+    const userExists = await userService.getUserByID(userId);
+    if (!userExists) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_USER.code,
+        message: INVALID_USER.message,
+      });
+    }
 
     // friend request 유효성 검사
     const friendRequestExists = await friendRequestService.getFriendRequestById(friendRequestId);
@@ -28,9 +41,9 @@ router.put('/action', async (req: Request, res: Response) => {
       code: HTTP_OK.code,
       message: HTTP_OK.message,
       result: {
-        userId: friendRequest.userId,
-        friendId: friendRequest.friendId,
-        status: action === 'accept' ? 'accepted' : 'rejected',
+        userId: friendRequest.requester.id,
+        friendId: friendRequest.receiver.id,
+        requestStatus: action === 'accept' ? 'accepted' : 'rejected',
         createdAt: friendRequest.createdAt,
         updatedAt: friendRequest.updatedAt,
       },

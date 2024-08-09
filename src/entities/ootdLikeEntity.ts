@@ -3,13 +3,13 @@ import {User} from './userEntity';
 import {Post} from './postEntity';
 import {BaseEntity} from '../base/baseEntity';
 
-@Entity('Comments')
-export class Comment extends BaseEntity {
-  @ManyToOne(() => User, user => user.comments)
+@Entity('Likes')
+export class Like extends BaseEntity {
+  @ManyToOne(() => User, user => user.likes)
   @JoinColumn({name: 'userId'})
   user!: User;
 
-  @ManyToOne(() => Post, post => post.comments)
+  @ManyToOne(() => Post, post => post.likes)
   @JoinColumn({name: 'postId'})
   post!: Post;
 
@@ -18,7 +18,4 @@ export class Comment extends BaseEntity {
 
   @Column()
   postId!: number;
-
-  @Column()
-  content!: string;
 }

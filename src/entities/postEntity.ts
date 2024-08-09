@@ -1,36 +1,27 @@
-// 임시
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import {Entity, Column, ManyToOne, OneToMany, JoinColumn} from 'typeorm';
 import {User} from './userEntity';
 import {Like} from './ootdLikeEntity';
+import {Comment} from './ootdCommentEntity';
+import {BaseEntity} from '../base/baseEntity';
 
 @Entity('Posts')
-export class Post {
-  @PrimaryGeneratedColumn()
-  id!: number;
-  /*
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+export class Post extends BaseEntity {
+  @ManyToOne(() => User, user => user.posts)
+  @JoinColumn({name: 'userId'})
+  user!: User;
 
   @Column()
-  userId: number;
+  userId!: number;
 
   @Column()
-  content: string;
+  content!: string;
 
-  @Column({ default: false })
-  isRepresentative: boolean;
- */
+  @Column({default: false})
+  isRepresentative!: boolean;
 
   @OneToMany(() => Like, like => like.post)
   likes?: Like[];
+
+  @OneToMany(() => Comment, comment => comment.post)
+  comments?: Comment[];
 }

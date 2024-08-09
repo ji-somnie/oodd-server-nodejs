@@ -1,5 +1,7 @@
 import {Entity, Column, OneToMany} from 'typeorm';
 import {Like} from './ootdLikeEntity';
+import {Post} from './postEntity';
+import {Comment} from './ootdCommentEntity';
 import {BaseEntity} from '../base/baseEntity';
 import {UserRelationship} from './userRelationshipEntity';
 
@@ -17,17 +19,23 @@ export class User extends BaseEntity {
   @Column()
   phoneNumber!: string;
 
-  @Column()
+  @Column({nullable: true})
   profilePictureUrl?: string;
 
-  @Column()
+  @Column({nullable: true})
   bio?: string;
 
   @Column()
   joinStatus!: 'deactivated' | 'activated';
 
-  @OneToMany(() => Like, like => like.post)
+  @OneToMany(() => Like, like => like.user)
   likes?: Like[];
+
+  @OneToMany(() => Post, post => post.user)
+  posts?: Post[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments?: Comment[];
 
   @OneToMany(() => UserRelationship, userRelationship => userRelationship.requester)
   sentFriendRequests?: UserRelationship[];
