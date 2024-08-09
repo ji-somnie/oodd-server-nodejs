@@ -1,9 +1,14 @@
-import express from 'express';
+import { Router } from 'express';
 import { NotificationController } from './notificationController';
+import { NotificationService } from './notificationService';
+import { AppDataSource } from '../../data-source';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', NotificationController.getAllNotifications); // 모든 알림 가져오기
-router.post('/', NotificationController.createNotification); // 새로운 알림 생성하기
+const notificationService = new NotificationService();
+const notificationController = new NotificationController(notificationService);
 
-export default router; // default로 내보내기
+// 주석: GET 요청으로 특정 사용자의 알림 목록을 조회하는 엔드포인트 설정
+router.get('/:userId/notifications', (req, res) => notificationController.getNotifications(req, res));
+
+export default router;
