@@ -10,11 +10,11 @@ export class BaseEntity {
   status!: 'activated' | 'deactivated';
 
   @CreateDateColumn({type: 'timestamp'})
-  createdAt!: dayjs.Dayjs;
+  createdAt!: Date;
 
   @UpdateDateColumn({type: 'timestamp'})
-  updatedAt!: dayjs.Dayjs;
+  updatedAt!: Date;
 
   @DeleteDateColumn({type: 'timestamp'})
-  deletedAt!: dayjs.Dayjs;
+  deletedAt!: Date;
 }

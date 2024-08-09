@@ -52,7 +52,6 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
 // 게시물 수정
 router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = tempUserId;
     const postId = parseInt(req.params.postId, 10);
     const postRequestDto: PostRequestDto = req.body;
 
@@ -60,6 +59,22 @@ router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
 
     if (updatePostResponse.isSuccess) {
       res.status(HTTP_OK.status).json(updatePostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 게시물 조회
+router.get('/:postId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+
+    const getPostResponse = await postService.getPostById(userId, postId);
+
+    if (getPostResponse.isSuccess) {
+      res.status(HTTP_OK.status).json(getPostResponse);
     } 
   } catch (error) {
     console.error(error);

@@ -12,6 +12,9 @@ import { PostStyletag } from '../../entities/postStyletagEntity';
 import { Clothing } from '../../entities/clothingEntity';
 import { Styletag } from '../../entities/styletagEntity';
 import { PostClothing } from '../../entities/postClothingEntity';
+import { OotdResponseDto } from './dtos/ootdResponse.dto';
+import { Comment } from '../../entities/commentEntity';
+import { Like } from '../../entities/likeEntity';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
@@ -22,6 +25,8 @@ export class PostService {
   private clothingRepository = myDataBase.getRepository(Clothing);
   private styletagRepository = myDataBase.getRepository(Styletag);
   private postClothingRepository = myDataBase.getRepository(PostClothing);
+  private commentRepository = myDataBase.getRepository(Comment);
+  private likeRepository = myDataBase.getRepository(Like);
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
@@ -286,6 +291,129 @@ export class PostService {
         result: postResponseDto,
       };
       } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
+  }
+
+  // 게시물 조회 by postId
+  async getPostById(userId: number, postId: number): Promise<BaseResponse<OotdResponseDto | null>> {
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      const post = await validatePost(userId, postId);
+      if (!post) {
+        return {
+          isSuccess: false,
+          code: HTTP_NOT_FOUND.code,
+          message: HTTP_NOT_FOUND.message,
+          result: null,
+        };
+      }
+
+      const image = await this.imageRepository.findOne({ where: { post, order: 1 } });
+      const comments = await this.commentRepository.find({ where: { post } });
+      const likes = await this.likeRepository.find({ where: { post } });
+
+      // 스타일 태그 가져오기
+      const postStyletagIds = await this.postStyletagRepository
+      .createQueryBuilder('postStyletag')
+      .select('postStyletag.styletagId')
+      .where('postStyletag.postId = :postId', { postId })
+      .getRawMany();
+    
+      console.log('postStyletagIds:', postStyletagIds);
+    
+      const styletagInfo: string[] = [];
+
+      for (const postStyletag of postStyletagIds) {
+        const styletag = await this.styletagRepository
+          .createQueryBuilder('styletag')
+          .select('styletag.tag')
+          .where('styletag.id = :styletagId', { styletagId: postStyletag.styletagId })
+          .getRawOne();
+
+        console.log('styletag: ', styletag);
+
+        if (styletag) {
+          styletagInfo.push(styletag.styletag_tag);
+        }
+      }
+
+      // 옷 정보 가져오기
+      const postClothingIds = await this.postClothingRepository
+      .createQueryBuilder('postClothing')
+      .select('postClothing.clothingId')
+      .where('postClothing.postId = :postId', { postId })
+      .getRawMany();
+    
+      let clothingInfo;
+      
+      if (postClothingIds.length > 0) {
+        const clothingId = postClothingIds[0].clothingId; // 첫 번째 clothingId만 사용 -> 여러개일 수도 있는지 물어보기 
+        
+        // console.log(clothingId); // 제대로 나옴 -> 12
+
+        clothingInfo = await this.clothingRepository
+          .createQueryBuilder('clothing')
+          .select([
+            'clothing.brandName',
+            'clothing.modelName',
+            'clothing.modelNumber',
+            'clothing.url',
+          ])
+          .where('clothing.id = :clothingId', { clothingId })
+          .getRawOne();
+      }
+
+    // console.log(clothingInfo); // 얘도 제대로 나옴....
+
+      const ootdResponseDto: OotdResponseDto = {
+        postId: post.id,
+        userId: user.id,
+        photoUrl: image ? image.url : '',
+        content: post.content,
+        hashtags: styletagInfo,
+        clothingInfo: clothingInfo ? {
+        brand: clothingInfo.clothing_brandName,
+        model: clothingInfo.clothing_modelName,
+        modelNumber: clothingInfo.clothing_modelNumber,
+        url: clothingInfo.clothing_url,
+      } : {
+        brand: '',
+        model: '',
+        modelNumber: '',
+        url: '',
+      },
+        likes: likes.length > 0 ? likes.length : 0,
+        comments: comments.length > 0 ? comments.map(comment => ({
+          commentId: comment.id,
+          userId: user.id,
+          text: comment.content,
+          timestamp: comment.createdAt.toDateString(),
+        })) : [],
+      };
+
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: ootdResponseDto,
+      };
+    } catch (error) {
       console.error(error);
       return {
         isSuccess: false,
