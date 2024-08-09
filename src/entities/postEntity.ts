@@ -6,6 +6,7 @@ import { PostStyletag } from './postStyletagEntity';
 import { Clothing } from './clothingEntity';
 import { Image } from './imageEntity';
 import { BaseEntity } from '../base/baseEntity';
+import { PostClothing } from './postClothingEntity';
 
 @Entity('Post')
 export class Post extends BaseEntity{
@@ -19,18 +20,21 @@ export class Post extends BaseEntity{
   @Column()
   isRepresentative!: boolean;
 
-  @OneToMany(() => Like, like => like.post)
+  @OneToMany(() => Like, like => like.post, { cascade: true })
   likes!: Like[];
 
-  @OneToMany(() => Comment, comment => comment.post)
+  @OneToMany(() => Comment, comment => comment.post, { cascade: true })
   comments!: Comment[];
 
-  @OneToMany(() => PostStyletag, postStyletag => postStyletag.post)
+  @OneToMany(() => PostStyletag, postStyletag => postStyletag.post, { cascade: true })
   postStyletags!: PostStyletag[];
 
-  @OneToMany(() => Clothing, clothing => clothing.post)
-  clothings!: Clothing[];
+  // @OneToMany(() => Clothing, clothing => clothing.post, { cascade: true })
+  // clothings!: Clothing[];
 
-  @OneToMany(() => Image, image => image.post)
+  @OneToMany(() => PostClothing, postClothing => postClothing.post, { cascade: true })
+  postClothings!: PostClothing[];
+
+  @OneToMany(() => Image, image => image.post, { cascade: true })
   images!: Image[];
 }

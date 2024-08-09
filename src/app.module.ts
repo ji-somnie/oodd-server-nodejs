@@ -1,7 +1,6 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
-import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
@@ -34,7 +33,7 @@ app.use(
 
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
-app.use('/ootds', ootdRouter);
+// app.use('/ootds', ootdRouter);
 app.use('/chat-rooms', chatRoomRouter);
 const httpServer = createServer(app);
 
