@@ -1,12 +1,9 @@
 import { Router } from 'express';
-import { requestMatch, respondMatchRequest } from './matchController';
+import { MatchRequestController } from './matchRequestController';
 
-const router = Router();
+export const matchRequestRoutes = Router();
 
-// 매칭 요청을 보내는 엔드포인트
-router.post('/request', requestMatch);
+const matchRequestController = new MatchRequestController();
 
-// 매칭 요청을 수락/거부하는 엔드포인트
-router.post('/respond', respondMatchRequest);
-
-export default router;
+matchRequestRoutes.post('/', matchRequestController.createMatchRequest);
+matchRequestRoutes.get('/', matchRequestController.getMatchRequests);

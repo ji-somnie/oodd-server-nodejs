@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getUserById } from './userController'; // named export 사용
+import { UserController } from './userController';
 
 const router = Router();
 
-// 사용자 정보를 조회하는 엔드포인트
-router.get('/:id', getUserById); // named export 사용
+router.get('/:id', UserController.getUserById);
+router.post('/', UserController.createUser);
 
 export default router;

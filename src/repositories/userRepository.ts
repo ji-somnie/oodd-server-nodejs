@@ -1,15 +1,9 @@
-import { Repository } from "typeorm";
-import { myDataBase } from "../data-source";
-import { User } from "../entities/userEntity";
+// userRepository.ts
+import { UserEntity } from '../entities/userEntity';
 
-export const userRepository: Repository<User> =
-  myDataBase.getRepository(User);
-
-  declare namespace Express {
-    export interface Request {
-      user?: {
-        id: number;
-      };
-    }
+export class UserRepository {
+  async findUserByName(name: string): Promise<UserEntity | null> {
+    // 사용자 이름으로 유저를 찾는 로직
+    return null; // 실제 로직에 맞게 구현 필요
   }
-  
+}

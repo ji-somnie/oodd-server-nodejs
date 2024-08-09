@@ -2,13 +2,16 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { UserEntity } from './userEntity';
 
 @Entity()
-export class NotificationEntity {
+export class PostEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  message!: string;
+  title!: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.notifications)
+  @Column()
+  content!: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.posts)
   user!: UserEntity;
 }
