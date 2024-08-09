@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { getNotifications, markAsRead } from './notificationController';
+import { NotificationController } from './notificationController';
 
 const router = Router();
+const notificationController = new NotificationController();
 
-// 알림 목록을 조회하는 엔드포인트
-router.get('/:userId', getNotifications);
-
-// 알림을 읽음 처리하는 엔드포인트
-router.put('/:notificationId/read', markAsRead);
+// Notification routes
+router.get('/:userId', (req, res) => notificationController.getNotifications(req, res));
+router.post('/create', (req, res) => notificationController.createNotification(req, res));
 
 export default router;
