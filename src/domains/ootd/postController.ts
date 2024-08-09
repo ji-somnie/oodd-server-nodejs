@@ -82,4 +82,20 @@ router.get('/:postId', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// 스타일태그 검색 결과 조회 
+router.get('/tag/:styletag', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const tag = req.params.styletag;
+
+    const getPostsByTagResponse = await postService.getPostsByTag(userId, tag);
+
+    if (getPostsByTagResponse.isSuccess) {
+      res.status(HTTP_OK.status).json(getPostsByTagResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
 export default router;
