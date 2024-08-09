@@ -24,21 +24,21 @@ const googleOpt = {
 }
 
 
-// 카카오 소셜 로그인 요청 시작
-router.get("/login/kakao", (req: Request, res: Response) => {
-    const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
-    const params = qs.stringify({
-        response_type: 'code',
-        client_id: kakaoOpt.clientId,
-        redirect_uri: kakaoOpt.redirectUri,
-        scope: 'profile_nickname,profile_image,account_email',
-    });
+// // 카카오 소셜 로그인 요청 시작
+// router.get("/login/kakao", (req: Request, res: Response) => {
+//     const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
+//     const params = qs.stringify({
+//         response_type: 'code',
+//         client_id: kakaoOpt.clientId,
+//         redirect_uri: kakaoOpt.redirectUri,
+//         scope: 'profile_nickname,profile_image,account_email',
+//     });
 
-    res.redirect(`${kakaoAuthUrl}?${params}`);
-});
+//     res.redirect(`${kakaoAuthUrl}?${params}`);
+// });
 
 // 카카오 소셜 로그인 콜백
-router.get("/kakao/callback", async (req: Request, res: Response) => {
+router.get("/login/kakao", async (req: Request, res: Response) => {
     const code = req.query.code as string;
 
     if (!code) {
@@ -100,20 +100,20 @@ router.get("/kakao/callback", async (req: Request, res: Response) => {
 });
 
 
-// 구글 소셜 로그인
-router.get("/login/google", (req: Request, res: Response) => {
-    const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
-    const params = qs.stringify({
-        response_type: 'code',
-        client_id: googleOpt.clientId,
-        redirect_uri: googleOpt.redirectUri,
-        scope: 'openid profile email',
-    });
+// // 구글 소셜 로그인
+// router.get("/login/google", (req: Request, res: Response) => {
+//     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
+//     const params = qs.stringify({
+//         response_type: 'code',
+//         client_id: googleOpt.clientId,
+//         redirect_uri: googleOpt.redirectUri,
+//         scope: 'openid profile email',
+//     });
 
-    res.redirect(`${googleAuthUrl}?${params}`);
-});
+//     res.redirect(`${googleAuthUrl}?${params}`);
+// });
 
-router.get("/google/callback", async (req: Request, res: Response) => {
+router.get("/login/google", async (req: Request, res: Response) => {
     const code = req.query.code as string;
 
     if (!code) {
