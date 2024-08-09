@@ -17,14 +17,14 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const newPostResponse = await postService.createPost(userId, postRequestDto);
 
     if (newPostResponse.isSuccess) {
-      res.status(HTTP_OK.status).json(newPostResponse);
+      res.status(201).json(newPostResponse);
     }
   } catch (error) {
     console.error(error); 
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
     }
   }
 });
@@ -37,14 +37,14 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
     const deletePostResponse = await postService.deletePost(userId, postId);
 
     if (deletePostResponse.isSuccess) {
-      res.status(HTTP_OK.status).json(deletePostResponse);
+      res.status(201).json(deletePostResponse);
     } 
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({ message: HTTP_BAD_REQUEST.message });
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
     }
   }
 });

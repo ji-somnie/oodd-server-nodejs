@@ -30,9 +30,6 @@ jobs:
       - name: Check Npm -v
         run: npm -v
 
-      - name: Yarn install
-        run: yarn install
-
       - name: create env file
         working-directory: ./
         run: |
