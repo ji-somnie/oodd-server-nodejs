@@ -2,7 +2,7 @@ import express from 'express';
 import userRouter from './domains/user/userController';
 import ootdLikeRouter from './domains/ootdLike/ootdLikeController';
 import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
-import friendRequestRouter from './domains/friend/friendRequestController';
+import friendRequestRouter from './domains/friend/friendController';
 
 const app = express();
 
