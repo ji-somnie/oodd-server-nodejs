@@ -1,12 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { PostService } from './postService';
-import { PostRequestDto } from './dtos/postRequest.dto';
-import { HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
+import {Router, Request, Response} from 'express';
+import {PostService} from './postService';
+import {PostRequestDto} from './dtos/postRequest.dto';
+import {HTTP_OK, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR} from '../../variables/httpCode';
 
 const router = Router();
 const postService = new PostService();
 
-// 토큰 검증 대신 일단 하드코딩    
+// 토큰 검증 대신 일단 하드코딩
 const tempUserId = 1;
 const userId = tempUserId;
 
@@ -17,14 +17,14 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const newPostResponse = await postService.createPost(userId, postRequestDto);
 
     if (newPostResponse.isSuccess) {
-      res.status(HTTP_OK.status).json(newPostResponse);
+      res.status(201).json(newPostResponse);
     }
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
@@ -37,14 +37,14 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
     const deletePostResponse = await postService.deletePost(userId, postId);
 
     if (deletePostResponse.isSuccess) {
-      res.status(HTTP_OK.status).json(deletePostResponse);
-    } 
+      res.status(201).json(deletePostResponse);
+    }
   } catch (error) {
     console.error(error);
     if (error instanceof Error) {
-      res.status(HTTP_BAD_REQUEST.status).json({ message: HTTP_BAD_REQUEST.message });
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
     } else {
-      res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
     }
   }
 });
@@ -59,11 +59,11 @@ router.patch('/:postId', async (req: Request, res: Response): Promise<void> => {
     const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
 
     if (updatePostResponse.isSuccess) {
-      res.status(HTTP_OK.status).json(updatePostResponse);
+      res.status(201).json(updatePostResponse);
     } 
   } catch (error) {
     console.error(error);
-    res.status(HTTP_INTERNAL_SERVER_ERROR.status).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
 });
 

@@ -6,15 +6,16 @@ export class BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({default: 'deactivated'})
+  @Column({default: 'activated'})
   status!: 'activated' | 'deactivated';
 
   @CreateDateColumn({type: 'timestamp'})
-  createdAt!: dayjs.Dayjs;
+  createdAt!: Date;
 
   @UpdateDateColumn({type: 'timestamp'})
-  updatedAt!: dayjs.Dayjs;
+  updatedAt!: Date;
 
   @DeleteDateColumn({type: 'timestamp'})
-  deletedAt!: dayjs.Dayjs;
+  @Column({nullable: true})
+  deletedAt?: Date;
 }
