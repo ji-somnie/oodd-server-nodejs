@@ -1,14 +1,18 @@
-import { Entity, Column } from "typeorm";
-import { BaseEntity } from "../base/baseEntity";
+// src/entities/userEntity.ts
+
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { ReportEntity } from './reportEntity';
 
 @Entity()
-export class UserEntity extends BaseEntity {
-    @Column()
-    name: string;
+export class UserEntity {
+    @PrimaryGeneratedColumn()
+    id!: number;
 
     @Column()
-    email: string;
+    name!: string;
 
-    @Column({ default: "active" })
-    status: string;
+    
+
+    @OneToMany(() => ReportEntity, report => report.user)
+    reports!: ReportEntity[]; 
 }
