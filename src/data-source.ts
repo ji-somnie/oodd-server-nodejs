@@ -1,13 +1,5 @@
 import {DataSource} from 'typeorm';
 import * as dotenv from 'dotenv';
-import { User } from './entities/userEntity';
-import { Post } from './entities/postEntity';
-import { Comment } from './entities/commentEntity';
-import { Clothing } from './entities/clothingEntity';
-import { Image } from './entities/imageEntity';
-import { Like } from './entities/likeEntity';
-import { PostStyletag } from './entities/postStyletagEntity';
-import { Styletag } from './entities/styletagEntity';
 
 dotenv.config();
 
