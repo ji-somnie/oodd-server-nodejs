@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",
-<<<<<<< HEAD
     "axios": "^1.7.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -23,15 +22,10 @@
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "qs": "^6.13.0",
-=======
     "cors": "^2.8.5",
     "dayjs": "^1.11.12",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "mysql": "^2.18.1",
     "pm2": "^5.4.2",
     "prettier": "^3.3.3",
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.7.5",
     "sqlite3": "^5.1.7",

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './userEntity';
-=======
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './userEntity';
 import { Like } from './likeEntity';
@@ -10,7 +6,6 @@ import { PostStyletag } from './postStyletagEntity';
 import { Clothing } from './clothingEntity';
 import { Image } from './imageEntity';
 import { BaseEntity } from '../base/baseEntity';
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
 
 @Entity('Post')
 export class Post extends BaseEntity{

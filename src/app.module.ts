@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-import express from "express";
-import userRouter from "./domains/user/userController";
-import authRouter from "./domains/auth/authController";
-//import postRouter from "./domains/ootd/postController";
-=======
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
 import ootdRouter from './domains/ootd/ootdController';
+import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -20,16 +15,14 @@ import {initializeDatabase} from './data-source';
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
 
 const app = express();
+
 app.use(express.json());
-<<<<<<< HEAD
 app.use("/users", userRouter);
 app.use("/auth", authRouter); //소셜 로그인 처리
 //app.use("/posts", postRouter);
 
-=======
 app.use(
   cors({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
@@ -38,7 +31,6 @@ app.use(
     exposedHeaders: ['set-cookie'],
   }),
 );
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
 
 app.use('/users', userRouter);
 app.use('/posts', postRouter);

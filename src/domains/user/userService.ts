@@ -1,8 +1,10 @@
-<<<<<<< HEAD
 import { UserRepository } from '../../repositories/userRepository';
 import { UserRequestDto } from './dtos/userRequest.dto';
 import { UserResponseDto } from './dtos/userResponse.dto';
 import { User } from '../../entities/userEntity';
+
+import myDataBase from '../../data-source';
+import {Repository} from 'typeorm';
 
 export class UserService {
   private userRepository: UserRepository;
@@ -44,29 +46,17 @@ export class UserService {
 
     // UserResponseDto를 반환
     return userResponseDto;
-=======
-import myDataBase from '../../data-source';
-import {User} from '../../entities/userEntity';
-import {Repository} from 'typeorm';
 
-export class UserService {
-  private userRepository: Repository<User>;
-
-  constructor() {
-    this.userRepository = myDataBase.getRepository(User);
   }
 
   async getAllUsers(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  async createUser(name: string, email: string): Promise<User> {
-    const user = this.userRepository.create({name, email});
-    return this.userRepository.save(user);
-  }
-
+  
   async getUserByUserId(userId: number): Promise<User | null> {
     return await this.userRepository.findOne({where: {id: userId}});
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
   }
+
 }
+

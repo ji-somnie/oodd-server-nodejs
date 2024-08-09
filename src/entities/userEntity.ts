@@ -1,5 +1,9 @@
-<<<<<<< HEAD
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, OneToMany, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {BaseEntity} from '../base/baseEntity';
+import {Post} from './postEntity';
+import {Comment} from './commentEntity';
+import {ChatRoom} from './chatRoomEntity';
+
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User {
@@ -25,35 +29,11 @@ export class User {
   phoneNumber!: string;
 
   @Column({ length: 255 })
-=======
-import {Entity, Column, OneToMany} from 'typeorm';
-import {BaseEntity} from '../base/baseEntity';
-import {Post} from './postEntity';
-import {Comment} from './commentEntity';
-import {ChatRoom} from './chatRoomEntity';
-
-@Entity('User')
-export class User extends BaseEntity {
-  @Column()
-  name!: string;
-
-  @Column()
-  email!: string;
-
-  @Column()
-  nickname!: string;
-
-  @Column()
-  phoneNumber!: string;
-
-  @Column()
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
   profilePictureUrl!: string;
 
   @Column('text')
   bio!: string;
 
-<<<<<<< HEAD
   @Column({ length: 50 })
   status!: string;
 
@@ -68,9 +48,6 @@ export class User extends BaseEntity {
 
   @DeleteDateColumn({ type: 'datetime' })
   deletedAt!: Date // deletedAt는 datetime 타입
-=======
-  @Column('timestamp')
-  joinedAt!: Date;
 
   @OneToMany(() => Post, post => post.user)
   posts!: Post[];
@@ -83,5 +60,4 @@ export class User extends BaseEntity {
 
   @OneToMany(() => ChatRoom, chatRoom => chatRoom.fromUser)
   sentChatRooms?: ChatRoom[];
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
 }

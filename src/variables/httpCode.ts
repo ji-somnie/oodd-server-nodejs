@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { StatusCodes } from "http-status-codes";
 
 export const status = {
@@ -25,7 +24,6 @@ export const status = {
     ARTICLE_NOT_FOUND: {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ARTICLE4001", "message": "게시글이 없습니다.", err_code: 'ARTICLE_NOT_FOUND'}
 }
 
-=======
 export const HTTP_OK = {code: 2000, message: 'OK'};
 export const HTTP_BAD_REQUEST = {code: 4000, message: 'Bad Request'};
 export const HTTP_INTERNAL_SERVER_ERROR = {code: 5000, message: 'Internal Server Error'};
@@ -36,7 +34,7 @@ export const NOT_FOUND_CHAT_ROOM = {
   message: '존재하지 않는 채팅방입니다.',
   err_code: 'NOT_FOUND_CHAT_ROOM',
 };
+
 export const NO_PARAMETER = {code: 3001, message: '필수 파라미터가 누락되었습니다.', err_code: 'NO_PARAMETER'};
 export const NOT_MEMBER_IN_ROOM = {code: 3002, message: '채팅방에 없는 유저입니다.', err_code: 'NOT_MEMBER_IN_ROOM'};
 export const ALREADY_LEAVED_ROOM = {code: 3003, message: '이미 나간 채팅방입니다.', err_code: 'ALREADY_LEAVED_ROOM'};
->>>>>>> aeec05f55a7fbe3c0f5019b2dd68ad73b090d6d2
