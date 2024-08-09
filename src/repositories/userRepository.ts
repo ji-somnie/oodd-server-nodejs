@@ -1,15 +1,7 @@
-import { Repository } from "typeorm";
-import { myDataBase } from "../data-source";
-import { User } from "../entities/userEntity";
+// src/repositories/userRepository.ts
 
-export const userRepository: Repository<User> =
-  myDataBase.getRepository(User);
+import { Repository } from 'typeorm';
+import { myDataBase } from '../data-source';
+import { UserEntity } from '../entities/userEntity';
 
-  declare namespace Express {
-    export interface Request {
-      user?: {
-        id: number;
-      };
-    }
-  }
-  
+export const userRepository: Repository<UserEntity> = myDataBase.getRepository(UserEntity);
