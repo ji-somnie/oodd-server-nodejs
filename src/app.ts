@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import express from 'express';
 import reportRoutes from './domain/report/reportRoutes'; // reportRoutes를 default로 가져옵니다.
 import userRoutes from './domain/user/userRoutes'; // userRoutes를 default로 가져옵니다.
@@ -20,3 +21,13 @@ app.listen(PORT, () => {
 });
 
 export default app;
+=======
+// import 'reflect-metadata';
+import {httpServer} from './app.module';
+
+const PORT = process.env.PORT || 8080;
+
+httpServer.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+>>>>>>> d68dec8cb7c57e3b78123b4acd1a29bf1277797a
