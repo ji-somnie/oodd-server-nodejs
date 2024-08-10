@@ -3,6 +3,9 @@ import { UserRequestDto } from './dtos/userRequest.dto';
 import { UserResponseDto } from './dtos/userResponse.dto';
 import { User } from '../../entities/userEntity';
 
+import myDataBase from '../../data-source';
+import {Repository} from 'typeorm';
+
 export class UserService {
   private userRepository: UserRepository;
 
@@ -43,5 +46,15 @@ export class UserService {
 
     // UserResponseDto를 반환
     return userResponseDto;
+
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  
+  async getUserByUserId(userId: number): Promise<User | null> {
+    return await this.userRepository.findOne({where: {id: userId}});
   }
 }

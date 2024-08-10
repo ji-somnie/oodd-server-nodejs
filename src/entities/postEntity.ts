@@ -1,34 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './userEntity';
+import { Like } from './likeEntity';
+import { Comment } from './commentEntity';
+import { PostStyletag } from './postStyletagEntity';
+import { Clothing } from './clothingEntity';
+import { Image } from './imageEntity';
+import { BaseEntity } from '../base/baseEntity';
+import { PostClothing } from './postClothingEntity';
 
-@Entity()
-export class Post {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
-  @ManyToOne(() => User)
+@Entity('Post')
+export class Post extends BaseEntity{
+  
+  @ManyToOne(() => User, user => user.posts)
   user!: User;
 
-  @Column()
-  photoUrl!: string;
+  @Column('text')
+  content!: string;
 
   @Column()
-  caption!: string;
+  isRepresentative!: boolean;
 
-  @Column('simple-array')
-  hashtags!: string[];
+  @OneToMany(() => Like, like => like.post, { cascade: true })
+  likes!: Like[];
 
-  @Column('json')
-  clothingInfo!: {
-    brand: string;
-    model: string;
-    modelNumber: string;
-    url: string;
-  };
+  @OneToMany(() => Comment, comment => comment.post, { cascade: true })
+  comments!: Comment[];
 
-  @Column({ default: 0 })
-  likes!: number;
+  @OneToMany(() => PostStyletag, postStyletag => postStyletag.post, { cascade: true })
+  postStyletags!: PostStyletag[];
 
-  @Column('json', { default: '[]' })
-  comments!: any[];
+  // @OneToMany(() => Clothing, clothing => clothing.post, { cascade: true })
+  // clothings!: Clothing[];
+
+  @OneToMany(() => PostClothing, postClothing => postClothing.post, { cascade: true })
+  postClothings!: PostClothing[];
+
+  @OneToMany(() => Image, image => image.post, { cascade: true })
+  images!: Image[];
 }

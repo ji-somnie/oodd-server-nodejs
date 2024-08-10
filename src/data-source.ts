@@ -1,11 +1,11 @@
-import { DataSource } from "typeorm";
+import {DataSource} from 'typeorm';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-export const myDataBase = new DataSource({
-  type: "mysql",
-  host: process.env.DB_HOST,
+const myDataBase = new DataSource({
+  type: 'mysql',
+  host: process.env.DEV_DB_HOST ? process.env.DEV_DB_HOST : process.env.DB_HOST,
   port: 3306,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -15,3 +15,16 @@ export const myDataBase = new DataSource({
   synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
 })
 
+export const initializeDatabase = async (): Promise<DataSource | null> => {
+  try {
+    if (!myDataBase.isInitialized) {
+      await myDataBase.initialize();
+      console.log('Data Source has been initialized!');
+    }
+    return myDataBase;
+  } catch (err) {
+    console.error('Error during Data Source initialization:', err);
+    return null;
+  }
+};
+export default myDataBase;
