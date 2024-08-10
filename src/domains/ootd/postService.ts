@@ -1,7 +1,6 @@
 import myDataBase from '../../data-source';
 import { Post } from '../../entities/postEntity';
 import { PostRequestDto } from './dtos/postRequest.dto';
-import { PostResponseDto } from './dtos/postResponse.dto';
 import { BaseResponse } from '../../base/baseResponse';
 import { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
 import { User } from '../../entities/userEntity';
@@ -12,6 +11,8 @@ import { PostStyletag } from '../../entities/postStyletagEntity';
 import { Clothing } from '../../entities/clothingEntity';
 import { Styletag } from '../../entities/styletagEntity';
 import { PostClothing } from '../../entities/postClothingEntity';
+
+import { PostResponseDto } from './dtos/postResponse.dto';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
@@ -25,9 +26,6 @@ export class PostService {
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
-    // const queryRunner = myDataBase.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
 
     try {
       const user = await validatedUser(userId);

@@ -1,23 +1,14 @@
-import {Entity, Column, OneToMany} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, OneToMany, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 import {BaseEntity} from '../base/baseEntity';
 import {Post} from './postEntity';
 import {Comment} from './commentEntity';
 import {ChatRoom} from './chatRoomEntity';
 
+
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User {
   @PrimaryGeneratedColumn()
   id!: number; // id는 int 타입, 자동 증가(primary key)
-@Entity('User')
-export class User extends BaseEntity {
-  @Column()
-  name!: string;
-
-  @Column()
-  email!: string;
-
-  @Column()
-  nickname!: string;
 
   @Column({ unique: true, length: 255 })
   kakaoId!: string; // 카카오 고유 ID를 저장하는 필드
@@ -27,17 +18,36 @@ export class User extends BaseEntity {
 
   @Column({ length: 100 })
   name!: string;
-  @Column()
+
+  @Column({ length: 100 })
+  email!: string;
+
+  @Column({ length: 100 })
+  nickname!: string;
+
+  @Column({ length: 15 })
   phoneNumber!: string;
 
-  @Column()
+  @Column({ length: 255 })
   profilePictureUrl!: string;
 
   @Column('text')
   bio!: string;
 
-  @Column('timestamp')
-  joinedAt!: Date;
+  @Column({ length: 50 })
+  status!: string;
+
+  @Column('datetime')
+  joinedAt!: Date; // joinedAt는 datetime 타입
+  
+  @CreateDateColumn({ type: 'datetime' })
+  createdAt!: Date; // createdAt는 datetime 타입
+  
+  @UpdateDateColumn({ type: 'datetime' })
+  updatedAt!: Date; // updatedAt는 datetime 타입
+
+  @DeleteDateColumn({ type: 'datetime' })
+  deletedAt!: Date // deletedAt는 datetime 타입
 
   @OneToMany(() => Post, post => post.user)
   posts!: Post[];
