@@ -16,6 +16,7 @@ const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 const app = express();
+
 app.use(express.json());
 app.use("/users", userRouter);
 app.use("/auth", authRouter); //소셜 로그인 처리

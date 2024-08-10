@@ -34,6 +34,7 @@ export const NOT_FOUND_CHAT_ROOM = {
   message: '존재하지 않는 채팅방입니다.',
   err_code: 'NOT_FOUND_CHAT_ROOM',
 };
+
 export const NO_PARAMETER = {code: 3001, message: '필수 파라미터가 누락되었습니다.', err_code: 'NO_PARAMETER'};
 export const NOT_MEMBER_IN_ROOM = {code: 3002, message: '채팅방에 없는 유저입니다.', err_code: 'NOT_MEMBER_IN_ROOM'};
 export const ALREADY_LEAVED_ROOM = {code: 3003, message: '이미 나간 채팅방입니다.', err_code: 'ALREADY_LEAVED_ROOM'};

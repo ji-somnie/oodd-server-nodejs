@@ -60,4 +60,8 @@ export class User {
 
   @OneToMany(() => ChatRoom, chatRoom => chatRoom.fromUser)
   sentChatRooms?: ChatRoom[];
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5c2174347355e87eab018b969e44cd925a77a734

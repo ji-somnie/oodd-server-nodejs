@@ -6,4 +6,8 @@ export class UserRepository extends Repository<User> {
   constructor() {
     super(User, myDataBase.manager);
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5c2174347355e87eab018b969e44cd925a77a734

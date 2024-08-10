@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import {DataSource} from 'typeorm';
+=======
+import { DataSource } from "typeorm";
+>>>>>>> 5c2174347355e87eab018b969e44cd925a77a734
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,7 +17,11 @@ const myDataBase = new DataSource({
   entities: ["dist/entities/*.js"], // 모델의 경로  <<왜 js로 해야 되지????????
   logging: true, // 정확히 어떤 sql 쿼리가 실행됐는지 로그 출력
   synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
+<<<<<<< HEAD
 })
+=======
+});
+>>>>>>> 5c2174347355e87eab018b969e44cd925a77a734
 
 export const initializeDatabase = async (): Promise<DataSource | null> => {
   try {
