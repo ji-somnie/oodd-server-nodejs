@@ -1,22 +1,22 @@
-import {Router, Request, Response} from 'express';
-import {UserService} from './userService';
+import { Router, Request, Response } from "express";
+import { UserService } from "./userService";
+import { UserRequestDto } from "./dtos/userRequest.dto";
 
 const userRouter = Router();
 const userService = new UserService();
 
-userRouter.get('/', async (req: Request, res: Response) => {
-  const users = await userService.getAllUsers();
-  res.json(users);
-});
 
-userRouter.post('/', async (req: Request, res: Response) => {
-  const {name, email} = req.body;
-  const user = await userService.createUser(name, email);
-  res.json(user);
-});
+// //일반 회원가입 (추후 삭제 필요)
+// router.post("/", async (req: Request, res: Response) => {
+//   try {
+//     const userRequestDto = req.body as UserRequestDto; // 요청 본문을 UserRequestDto로 변환
+//     const newUser = await userService.createUser(userRequestDto);
+//     res.status(201).json(newUser); // 201 Created 상태 코드와 함께 응답
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal Server Error" }); // 에러 발생 시 500 상태 코드와 함께 응답
+//   }
+// });
 
-export default userRouter;
 
-//controller + dto + service
-//entity
-//repo
+
+export default Router;

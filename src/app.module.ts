@@ -1,7 +1,7 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
-// import ootdRouter from './domains/ootd/ootdController';
+import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -16,7 +16,12 @@ const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 const app = express();
+
 app.use(express.json());
+app.use("/users", userRouter);
+app.use("/auth", authRouter); //소셜 로그인 처리
+//app.use("/posts", postRouter);
+
 app.use(
   cors({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
