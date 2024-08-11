@@ -12,6 +12,7 @@ import {UserService} from '../user/userService';
 import {BaseResponse} from '../../base/baseResponse';
 import {User} from '../../entities/userEntity';
 import {ChatMessageService} from '../chatMessage/chatMessageService';
+import { authenticateJWT } from '../../middlewares/authMiddleware';
 
 const chatRoomRouter = Router();
 const chatRoomService = new ChatRoomService();
@@ -19,7 +20,7 @@ const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 // 채팅방 조회
-chatRoomRouter.get('/:userId', async (req: Request, res: Response): Promise<void> => {
+chatRoomRouter.get('/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   // 임시 유저 아이디 받기
   const userId = Number.parseInt(req.params.userId);
   // 유저 조회
@@ -35,7 +36,7 @@ chatRoomRouter.get('/:userId', async (req: Request, res: Response): Promise<void
 });
 
 // 채팅방 읽음 처리
-chatRoomRouter.patch('/:chatRoomId/read/:userId', async (req: Request, res: Response): Promise<void> => {
+chatRoomRouter.patch('/:chatRoomId/read/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   // 채팅 방 아이디 확인
   const chatRoomId = Number.parseInt(req.params.chatRoomId);
   if (!chatRoomId) {
@@ -74,7 +75,7 @@ chatRoomRouter.patch('/:chatRoomId/read/:userId', async (req: Request, res: Resp
 });
 
 // 채팅방 나가기
-chatRoomRouter.patch('/:chatRoomId/leave/:userId', async (req: Request, res: Response): Promise<void> => {
+chatRoomRouter.patch('/:chatRoomId/leave/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   // 채팅 방 아이디 확인
   const chatRoomId = Number.parseInt(req.params.chatRoomId);
   if (!chatRoomId) {
