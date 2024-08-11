@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../base/baseEntity';
-import { Post } from './postEntity';
+import {Entity, Column, ManyToOne} from 'typeorm';
+import {BaseEntity} from '../base/baseEntity';
+import {Post} from './postEntity';
 
 @Entity('Image')
 export class Image { // status 값 없어서 baseEntity 안 쓰고 정의함

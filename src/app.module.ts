@@ -1,7 +1,7 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
-// import ootdRouter from './domains/ootd/ootdController';
+import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -10,13 +10,22 @@ import {ChatRoomService} from './domains/chatRoom/chatRoomService';
 import {ChatMessageService} from './domains/chatMessage/chatMessageService';
 import {UserService} from './domains/user/userService';
 import {initializeDatabase} from './data-source';
+import { authenticateJWT } from './middlewares/authMiddleware';
+import cookieParser from 'cookie-parser';
+
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 const app = express();
+app.use(cookieParser());
+
 app.use(express.json());
+
+app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
+app.use("/users", userRouter);
+
 app.use(
   cors({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
@@ -26,10 +35,10 @@ app.use(
   }),
 );
 
-app.use('/users', userRouter);
-app.use('/posts', postRouter);
-// app.use('/ootds', ootdRouter);
-app.use('/chat-rooms', chatRoomRouter);
+// JWT 인증이 필요한 라우트 (개별적으로 하나씩)
+app.use("/posts", authenticateJWT, postRouter);
+app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
