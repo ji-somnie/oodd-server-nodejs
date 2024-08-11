@@ -4,7 +4,7 @@ export interface OotdLikeResponse {
   postId: number;
   status: 'deactivated' | 'activated';
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt: Date;
   deletedAt?: Date;
   /*
   user: {

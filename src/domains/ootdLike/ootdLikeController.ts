@@ -117,7 +117,6 @@ router.get('/:postId/like', async (req: Request, res: Response) => {
         status: like.status,
         createdAt: like.createdAt,
         updatedAt: like.updatedAt,
-        deletedAt: like.deletedAt,
       })),
     };
 
