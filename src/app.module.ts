@@ -1,6 +1,6 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
-import postRouter from './domains/ootd/postController';
+import postRouter from './domains/post/postController';
 import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
