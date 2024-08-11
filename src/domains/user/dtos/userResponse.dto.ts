@@ -1,6 +1,7 @@
-export class UserResponseDto { //수정 필요
+export class UserResponseDto {
+  //수정 필요
 
-  id!: number; 
+  id!: number;
   name!: string;
   email!: string;
   nickname!: string;
@@ -11,6 +12,5 @@ export class UserResponseDto { //수정 필요
   joinedAt!: Date;
   createdAt!: Date;
   updatedAt!: Date;
-  deletedAt!: Date;
-  
-  }
+  deletedAt?: Date | null;
+}

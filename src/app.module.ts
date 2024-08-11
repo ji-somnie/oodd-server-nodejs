@@ -18,9 +18,7 @@ const userService = new UserService();
 const app = express();
 
 app.use(express.json());
-app.use("/users", userRouter);
-app.use("/auth", authRouter); //소셜 로그인 처리
-//app.use("/posts", postRouter);
+app.use('/auth', authRouter); //소셜 로그인 처리
 
 app.use(
   cors({
@@ -33,7 +31,6 @@ app.use(
 
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
-// app.use('/ootds', ootdRouter);
 app.use('/chat-rooms', chatRoomRouter);
 const httpServer = createServer(app);
 
