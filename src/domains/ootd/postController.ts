@@ -49,4 +49,29 @@ router.delete('/:postId', async (req: Request, res: Response): Promise<void> => 
   }
 });
 
+// 대표 OOTD 지정
+router.patch('/:postId/isRepresentative/:userId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+
+    if (!chatRoomId) {
+      res.status(400).json(new BaseResponse(false, NO_PARAMETER.code, NO_PARAMETER.message));
+      return;
+    }
+
+    const updatePostResponse = await postService.updatePostIsRepresentative(userId, postId);
+
+    if (updatePostResponse.isSuccess) {
+      res.status(201).json(updatePostResponse);
+    }
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error) {
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
+    } else {
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
+    }
+  }
+});
+
 export default router;
