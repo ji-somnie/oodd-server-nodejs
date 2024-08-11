@@ -42,15 +42,30 @@ export class PostService {
       newPost.user = user;
       newPost.content = postRequestDto.caption;
       newPost.isRepresentative = false;
-      // newPost.status = 'activated';
+      newPost.status = 'activated';
 
       const savedPost = await this.postRepository.save(newPost);
-      
+
+      // image 순서 지정: 해당 userId로 최근에 작성된 Post 조회
+      const lastPost = await this.postRepository.createQueryBuilder('post')
+        .leftJoinAndSelect('post.images', 'image')
+        .where('post.userId = :userId', { userId })
+        .orderBy('post.createdAt', 'DESC')
+        .getOne();
+
+      let newOrder = 1;  
+
+      if (lastPost && lastPost.images && lastPost.images.length > 0) {
+        // 가장 최근 Post의 마지막 이미지의 order를 가져옴
+        const lastImage = lastPost.images.reduce((prev, current) => (prev.order > current.order) ? prev : current);
+        newOrder = lastImage.order + 1;
+      }
+
       // 이미지 저장
       const newImage = new Image();
       newImage.url = postRequestDto.photoUrl;
-      newImage.order = 1; // 일단 첫번째로 설정함
-      newImage.post = savedPost;
+      newImage.order = newOrder;
+      newImage.postId = savedPost.id;
       await this.imageRepository.save(newImage);
 
       // 스타일 태그 저장
