@@ -30,7 +30,6 @@ export class PostService {
     try {
       const user = await validatedUser(userId);
       if (!user) {
-        // await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: HTTP_NOT_FOUND.code,
@@ -41,40 +40,32 @@ export class PostService {
 
       const newPost = new Post();
       newPost.user = user;
-      newPost.content = postRequestDto.caption;
+      newPost.content = postRequestDto.content ?? ''; 
       newPost.isRepresentative = false;
       newPost.status = 'activated';
 
       const savedPost = await this.postRepository.save(newPost);
 
-      // image 순서 지정: 해당 userId로 최근에 작성된 Post 조회
-      const lastPost = await this.postRepository.createQueryBuilder('post')
-        .leftJoinAndSelect('post.images', 'image')
-        .where('post.userId = :userId', { userId })
-        .orderBy('post.createdAt', 'DESC')
-        .getOne();
+      // image 저장     
+      const photoUrls = postRequestDto.photoUrls ?? []; 
 
-      let newOrder = 1;  
-
-      if (lastPost && lastPost.images && lastPost.images.length > 0) {
-        // 가장 최근 Post의 마지막 이미지의 order를 가져옴
-        const lastImage = lastPost.images.reduce((prev, current) => (prev.order > current.order) ? prev : current);
-        newOrder = lastImage.order + 1;
+      // 사진 순서대로 저장 (최대 10개)
+      const savedImages = [];
+      for (let i = 0; i < photoUrls.length && i < 10; i++) {
+        const newImage = new Image();
+        newImage.url = photoUrls[i] ?? ''; 
+        newImage.order = i + 1;  // 1부터 시작하는 순서
+        newImage.postId = savedPost.id;
+        const savedImage = await this.imageRepository.save(newImage);
+        savedImages.push(savedImage);
       }
-
-      // 이미지 저장
-      const newImage = new Image();
-      newImage.url = postRequestDto.photoUrl;
-      newImage.order = newOrder;
-      newImage.postId = savedPost.id;
-      await this.imageRepository.save(newImage);
 
       // 스타일 태그 저장
       const savedStyletags: string[] = [];
-      for (const tag of postRequestDto.hashtags) {
-        let styletag = await this.styletagRepository.findOne({where: {tag}});
-        if (!styletag) {
-          // db에 해당 스타일 태그 없을 때만 새로 생성
+      const hashtags = postRequestDto.styletags ?? []; // 빈 배열을 기본값으로 설정
+      for (const tag of hashtags) {
+        let styletag = await this.styletagRepository.findOne({ where: { tag } });
+        if (!styletag) { // db에 해당 스타일 태그 없을 때만 새로 생성
           styletag = new Styletag();
           styletag.tag = tag;
           styletag = await this.styletagRepository.save(styletag);
@@ -85,48 +76,61 @@ export class PostService {
         await this.postStyletagRepository.save(postStyletag);
         savedStyletags.push(tag);
       }
+     
+      // 옷 저장
+      const clothingInfo = postRequestDto.clothingInfo ?? []; // 빈 배열을 기본값으로 설정
+      const savedClothingInfo = [];
+      console.log('clothingInfo is ', clothingInfo);
 
-      // 옷 정보 저장
-      let clothing = await this.clothingRepository.findOne({
-        where: {
-          brandName: postRequestDto.clothingInfo.brand,
-          modelName: postRequestDto.clothingInfo.model,
-          modelNumber: postRequestDto.clothingInfo.modelNumber,
-          url: postRequestDto.clothingInfo.url,
-        },
-      });
+      if (clothingInfo.length > 0) {
+        for (const clothingItem of clothingInfo) {
+          let clothing = await this.clothingRepository.findOne({
+            where: {
+              brandName: clothingItem.brand ?? '',
+              modelName: clothingItem.model ?? '',
+              modelNumber: clothingItem.modelNumber ?? '',
+              url: clothingItem.url ?? '',
+            }
+          });
 
-      if (!clothing) {
-        // 옷 정보를 못 찾았으면 DB에 새롭게 저장
-        clothing = new Clothing();
-        clothing.brandName = postRequestDto.clothingInfo.brand;
-        clothing.modelName = postRequestDto.clothingInfo.model;
-        clothing.modelNumber = postRequestDto.clothingInfo.modelNumber;
-        clothing.url = postRequestDto.clothingInfo.url;
-        await this.clothingRepository.save(clothing);
+          if (!clothing) {
+            clothing = new Clothing();
+            clothing.brandName = clothingItem.brand ?? '';
+            clothing.modelName = clothingItem.model ?? '';
+            clothing.modelNumber = clothingItem.modelNumber ?? '';
+            clothing.url = clothingItem.url ?? '';
+            clothing = await this.clothingRepository.save(clothing);
+            console.log('Saved clothing:', clothing); // 저장된 옷 정보 확인
+          }
+
+          // postClothing 저장
+          const postClothing = new PostClothing();
+          postClothing.post = savedPost;
+          postClothing.clothing = clothing;
+          await this.postClothingRepository.save(postClothing);
+          console.log('Saved postClothing:', postClothing); // 저장된 게시물-옷 정보 확인
+
+          savedClothingInfo.push({
+            brand: clothing.brandName,
+            model: clothing.modelName,
+            modelNumber: clothing.modelNumber,
+            url: clothing.url,
+          });
+        }
       }
 
-      // 게시물과 옷 정보도 저장
-      const postClothing = new PostClothing();
-      postClothing.post = savedPost;
-      postClothing.clothing = clothing;
-      await this.postClothingRepository.save(postClothing);
 
-      const postResponseDto: PostResponseDto = {
-        postId: savedPost.id,
-        userId: user.id,
-        photoUrl: newImage.url,
-        content: savedPost.content,
-        hashtags: savedStyletags,
-        clothingInfo: {
-          brand: clothing.brandName,
-          model: clothing.modelName,
-          modelNumber: clothing.modelNumber,
-          url: clothing.url,
-        },
-        likes: savedPost.likes?.length || 0,
-        comments: savedPost.comments || [],
-      };
+
+    const postResponseDto: PostResponseDto = {
+      postId: savedPost.id,
+      userId: user.id,
+      photoUrls: savedImages.map(image => image.url), 
+      content: savedPost.content,
+      styletags: savedStyletags,
+      clothingInfo: savedClothingInfo, 
+      likes: 0, 
+      comments: [],
+    };
 
       return {
         isSuccess: true,

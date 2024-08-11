@@ -1,15 +1,14 @@
-export class PostResponseDto {
-    postId!: number;
-    userId!: number;
-    photoUrl!: string;
-    content!: string;
-    hashtags!: string[];
-    clothingInfo!: {
-      brand: string;
-      model: string;
-      modelNumber: string;
-      url: string;
-    };
-    likes!: number;
-    comments!: any[];
-  }
+import { BasePostDto } from "./basePost.dto";
+
+export class PostResponseDto extends BasePostDto{
+  postId!: number;
+  userId!: number;
+  
+  likes!: number | null;
+  comments!: {
+      commentId: number | null;
+      userId: number | null;
+      text: string | null;
+      timestamp: string | null;
+  }[] | null;
+}

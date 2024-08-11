@@ -13,20 +13,17 @@ import {
 import {BaseResponse} from '../../base/baseResponse';
 import {User} from '../../entities/userEntity';
 import {UserService} from '../user/userService';
-import { authenticateJWT } from '../../middlewares/authMiddleware';
 
 const router = Router();
 const postService = new PostService();
 const userService = new UserService();
 
 // 토큰 검증 대신 일단 하드코딩
-const tempUserId = 1;
+const tempUserId = 6;
 const userId = tempUserId;
 
-//app.use("/posts", authenticateJWT, postRouter);
-
 // 게시물 업로드
-router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const postRequestDto: PostRequestDto = req.body;
     const newPostResponse = await postService.createPost(userId, postRequestDto);
@@ -45,7 +42,7 @@ router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<v
 });
 
 // 게시물 삭제
-router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+router.delete('/:postId', async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = parseInt(req.params.postId, 10);
 
@@ -65,7 +62,7 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
 });
 
 // 대표 OOTD 지정
-router.patch('/:postId/isRepresentative/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+router.patch('/:postId/isRepresentative/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = parseInt(req.params.postId, 10);
     const userId = parseInt(req.params.userId, 10);
