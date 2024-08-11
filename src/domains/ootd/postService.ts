@@ -1,17 +1,18 @@
 import myDataBase from '../../data-source';
-import { Post } from '../../entities/postEntity';
-import { PostRequestDto } from './dtos/postRequest.dto';
-import { PostResponseDto } from './dtos/postResponse.dto';
-import { BaseResponse } from '../../base/baseResponse';
-import { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR } from '../../variables/httpCode';
-import { User } from '../../entities/userEntity';
-import { validatedUser } from '../../validationTest/validateUser';
-import { validatePost } from '../../validationTest/validatePost';
-import { Image } from '../../entities/imageEntity';
-import { PostStyletag } from '../../entities/postStyletagEntity';
-import { Clothing } from '../../entities/clothingEntity';
-import { Styletag } from '../../entities/styletagEntity';
-import { PostClothing } from '../../entities/postClothingEntity';
+import {Post} from '../../entities/postEntity';
+import {PostRequestDto} from './dtos/postRequest.dto';
+import {BaseResponse} from '../../base/baseResponse';
+import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR} from '../../variables/httpCode';
+import {User} from '../../entities/userEntity';
+import {validatedUser} from '../../validationTest/validateUser';
+import {validatePost} from '../../validationTest/validatePost';
+import {Image} from '../../entities/imageEntity';
+import {PostStyletag} from '../../entities/postStyletagEntity';
+import {Clothing} from '../../entities/clothingEntity';
+import {Styletag} from '../../entities/styletagEntity';
+import {PostClothing} from '../../entities/postClothingEntity';
+
+import {PostResponseDto} from './dtos/postResponse.dto';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
@@ -70,9 +71,10 @@ export class PostService {
 
       // 스타일 태그 저장
       const savedStyletags: string[] = [];
-      for (const tag of postRequestDto.hashtags) {        
-        let styletag = await this.styletagRepository.findOne({ where: { tag } });
-        if (!styletag) { // db에 해당 스타일 태그 없을 때만 새로 생성
+      for (const tag of postRequestDto.hashtags) {
+        let styletag = await this.styletagRepository.findOne({where: {tag}});
+        if (!styletag) {
+          // db에 해당 스타일 태그 없을 때만 새로 생성
           styletag = new Styletag();
           styletag.tag = tag;
           styletag = await this.styletagRepository.save(styletag);
@@ -84,17 +86,18 @@ export class PostService {
         savedStyletags.push(tag);
       }
 
-      // 옷 정보 저장    
+      // 옷 정보 저장
       let clothing = await this.clothingRepository.findOne({
         where: {
           brandName: postRequestDto.clothingInfo.brand,
           modelName: postRequestDto.clothingInfo.model,
           modelNumber: postRequestDto.clothingInfo.modelNumber,
           url: postRequestDto.clothingInfo.url,
-        }
+        },
       });
 
-      if (!clothing) { // 옷 정보를 못 찾았으면 DB에 새롭게 저장
+      if (!clothing) {
+        // 옷 정보를 못 찾았으면 DB에 새롭게 저장
         clothing = new Clothing();
         clothing.brandName = postRequestDto.clothingInfo.brand;
         clothing.modelName = postRequestDto.clothingInfo.model;
@@ -171,9 +174,9 @@ export class PostService {
         };
       }
       // cascade 작동이 안 돼서 직접 연관된 엔티티 삭제
-      await queryRunner.manager.delete(PostStyletag, { post: { id: postId } });
-      await queryRunner.manager.delete(PostClothing, { post: { id: postId } });
-      await queryRunner.manager.delete(Image, { post: { id: postId } });
+      await queryRunner.manager.delete(PostStyletag, {post: {id: postId}});
+      await queryRunner.manager.delete(PostClothing, {post: {id: postId}});
+      await queryRunner.manager.delete(Image, {post: {id: postId}});
 
       await queryRunner.manager.remove(post);
       await queryRunner.commitTransaction();
@@ -198,5 +201,15 @@ export class PostService {
     }
   }
 
- 
+  async getPostById(postId: number): Promise<Post | null> {
+    return this.postRepository.findOne({
+      where: {id: postId, status: 'activated'},
+      relations: ['user', 'images', 'postStyletags', 'postClothings'],
+    });
+  }
+
+  async updatePostIsRepresentative(post: Post): Promise<void> {
+    post.isRepresentative = true;
+    await this.postRepository.save(post);
+  }
 }

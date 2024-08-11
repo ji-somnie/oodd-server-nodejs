@@ -1,31 +1,40 @@
-import {Entity, Column, OneToMany} from 'typeorm';
+import {Entity, OneToMany, Column} from 'typeorm';
 import {BaseEntity} from '../base/baseEntity';
 import {Post} from './postEntity';
 import {Comment} from './commentEntity';
 import {ChatRoom} from './chatRoomEntity';
 
-@Entity('User')
+@Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
-  @Column()
+  @Column({unique: true, length: 255})
+  kakaoId!: string; // 카카오 고유 ID를 저장하는 필드
+
+  @Column({unique: true, length: 255})
+  googleId!: string; // 구글 고유 ID를 저장하는 필드
+
+  @Column({unique: true, length: 255})
+  naverId!: string; // 구글 고유 ID를 저장하는 필드
+
+  @Column({length: 100})
   name!: string;
 
-  @Column()
+  @Column({length: 100})
   email!: string;
 
-  @Column()
+  @Column({length: 100})
   nickname!: string;
 
-  @Column()
+  @Column({length: 15})
   phoneNumber!: string;
 
-  @Column()
+  @Column({length: 255})
   profilePictureUrl!: string;
 
   @Column('text')
   bio!: string;
 
-  @Column('timestamp')
-  joinedAt!: Date;
+  @Column('datetime')
+  joinedAt!: Date; // joinedAt는 datetime 타입
 
   @OneToMany(() => Post, post => post.user)
   posts!: Post[];
