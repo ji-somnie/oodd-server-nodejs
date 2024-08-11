@@ -22,7 +22,6 @@ export class PostService {
   private clothingRepository = myDataBase.getRepository(Clothing);
   private styletagRepository = myDataBase.getRepository(Styletag);
   private postClothingRepository = myDataBase.getRepository(PostClothing);
-  private postClothingRepository = myDataBase.getRepository(PostClothing);
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
@@ -95,30 +94,6 @@ export class PostService {
       postClothing.clothing = clothing;
       await this.postClothingRepository.save(postClothing);
 
-      let clothing = await this.clothingRepository.findOne({
-        where: {
-          brandName: postRequestDto.clothingInfo.brand,
-          modelName: postRequestDto.clothingInfo.model,
-          modelNumber: postRequestDto.clothingInfo.modelNumber,
-          url: postRequestDto.clothingInfo.url,
-        }
-      });
-
-      if (!clothing) { // 옷 정보를 못 찾았으면 DB에 새롭게 저장
-        clothing = new Clothing();
-        clothing.brandName = postRequestDto.clothingInfo.brand;
-        clothing.modelName = postRequestDto.clothingInfo.model;
-        clothing.modelNumber = postRequestDto.clothingInfo.modelNumber;
-        clothing.url = postRequestDto.clothingInfo.url;
-        await this.clothingRepository.save(clothing);
-      }
-
-      // 게시물과 옷 정보도 저장
-      const postClothing = new PostClothing();
-      postClothing.post = savedPost;
-      postClothing.clothing = clothing;
-      await this.postClothingRepository.save(postClothing);
-
       const postResponseDto: PostResponseDto = {
         postId: savedPost.id,
         userId: user.id,
@@ -158,9 +133,6 @@ export class PostService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const queryRunner = myDataBase.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     try {
       const user = await validatedUser(userId);
@@ -185,16 +157,9 @@ export class PostService {
         };
       }
       // cascade 작동이 안 돼서 직접 연관된 엔티티 삭제
-      await queryRunner.manager.delete(PostStyletag, { post: { id: postId } });
       await queryRunner.manager.delete(PostClothing, { post: { id: postId } });
       await queryRunner.manager.delete(Image, { post: { id: postId } });
-      // cascade 작동이 안 돼서 직접 연관된 엔티티 삭제
-      await queryRunner.manager.delete(PostStyletag, { post: { id: postId } });
-      await queryRunner.manager.delete(PostClothing, { post: { id: postId } });
-      await queryRunner.manager.delete(Image, { post: { id: postId } });
-
-      await queryRunner.manager.remove(post);
-      await queryRunner.commitTransaction();
+      
       await queryRunner.manager.remove(post);
       await queryRunner.commitTransaction();
 
