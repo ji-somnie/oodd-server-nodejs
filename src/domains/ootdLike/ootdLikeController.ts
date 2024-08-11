@@ -112,8 +112,8 @@ router.get('/:postId/like', async (req: Request, res: Response) => {
       message: HTTP_OK.message,
       result: likes.map(like => ({
         id: like.id,
-        userId: like.user.id,
-        postId: like.post.id,
+        userId: like.user?.id,
+        postId: like.post?.id,
         status: like.status,
         createdAt: like.createdAt,
         updatedAt: like.updatedAt,
