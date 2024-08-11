@@ -6,7 +6,7 @@ export class BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({default: 'deactivated'})
+  @Column({default: 'activated'})
   status!: 'activated' | 'deactivated';
 
   @CreateDateColumn({type: 'timestamp'})
@@ -16,5 +16,6 @@ export class BaseEntity {
   updatedAt!: Date;
 
   @DeleteDateColumn({type: 'timestamp'})
-  deletedAt!: Date;
+  @Column({nullable: true})
+  deletedAt?: Date;
 }

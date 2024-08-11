@@ -5,9 +5,9 @@ name: dev-deploy
 
 on:
   push:
-    branches: [dev]
+    branches: ['dev']
   pull_request:
-    branches: [dev]
+    branches: ['dev']
 
 jobs:
   build:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Check Npm -v
         run: npm -v
-
-      - name: Yarn install
-        run: yarn install
 
       - name: create env file
         working-directory: ./
