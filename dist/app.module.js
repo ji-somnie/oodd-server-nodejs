@@ -20,7 +20,6 @@ const socket_io_1 = require("socket.io");
 const data_source_1 = require("./data-source");
 const userController_1 = __importDefault(require("./domains/user/userController"));
 const postController_1 = __importDefault(require("./domains/ootd/postController"));
-const ootdController_1 = __importDefault(require("./domains/ootd/ootdController"));
 const chatRoomController_1 = __importDefault(require("./domains/chatRoom/chatRoomController"));
 const chatRoomService_1 = require("./domains/chatRoom/chatRoomService");
 const chatMessageService_1 = require("./domains/chatMessage/chatMessageService");
@@ -42,7 +41,7 @@ app.use((0, cors_1.default)({
 // 라우터 설정
 app.use('/users', userController_1.default);
 app.use('/posts', postController_1.default);
-app.use('/ootds', ootdController_1.default);
+// app.use('/ootds', ootdRouter);
 app.use('/chat-rooms', chatRoomController_1.default);
 // HTTP 서버 생성
 const httpServer = (0, http_1.createServer)(app);
