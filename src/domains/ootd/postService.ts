@@ -51,7 +51,7 @@ export class PostService {
       newPost.user = user;
       newPost.content = postRequestDto.caption;
       newPost.isRepresentative = false;
-      // newPost.status = 'activated';
+      newPost.status = 'activated';
 
       const savedPost = await this.postRepository.save(newPost);
       
@@ -192,6 +192,7 @@ export class PostService {
     }
   }
 
+  // 게시물 수정
   async updatePost(userId: number, postId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
     try {
       const user = await validatedUser(userId);
