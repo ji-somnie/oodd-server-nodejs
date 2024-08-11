@@ -18,23 +18,10 @@ const kakaoOpt = {
 };
 
 const googleOpt = {
-  clientId: process.env.GOOGLE_CLIENT_ID || '',
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/google/callback',
-};
-
-// // 카카오 소셜 로그인 요청 시작
-// router.get("/login/kakao", (req: Request, res: Response) => {
-//     const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
-//     const params = qs.stringify({
-//         response_type: 'code',
-//         client_id: kakaoOpt.clientId,
-//         redirect_uri: kakaoOpt.redirectUri,
-//         scope: 'profile_nickname,profile_image,account_email',
-//     });
-
-//     res.redirect(`${kakaoAuthUrl}?${params}`);
-// });
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    redirectUri: 'http://localhost:3000/auth/google/callback',
+}
 
 // 카카오 소셜 로그인 콜백
 router.get('/login/kakao', async (req: Request, res: Response) => {
@@ -105,18 +92,6 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
   }
 });
 
-// // 구글 소셜 로그인
-// router.get("/login/google", (req: Request, res: Response) => {
-//     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
-//     const params = qs.stringify({
-//         response_type: 'code',
-//         client_id: googleOpt.clientId,
-//         redirect_uri: googleOpt.redirectUri,
-//         scope: 'openid profile email',
-//     });
-
-//     res.redirect(`${googleAuthUrl}?${params}`);
-// });
 
 router.get('/login/google', async (req: Request, res: Response) => {
   const code = req.query.code as string;
