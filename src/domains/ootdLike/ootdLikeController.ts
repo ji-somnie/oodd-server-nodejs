@@ -96,7 +96,7 @@ router.get('/:postId/like', async (req: Request, res: Response) => {
     // Post 유효성 검사
     const postExists = await validatePostById(numericPostId);
     if (!postExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         isSuccess: false,
         code: INVALID_POST_ID.code,
         message: INVALID_POST_ID.message,
