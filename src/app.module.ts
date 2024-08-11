@@ -10,17 +10,19 @@ import {ChatRoomService} from './domains/chatRoom/chatRoomService';
 import {ChatMessageService} from './domains/chatMessage/chatMessageService';
 import {UserService} from './domains/user/userService';
 import {initializeDatabase} from './data-source';
+import { authenticateJWT } from './middlewares/authMiddleware';
+import cookieParser from 'cookie-parser';
+
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 const app = express();
+app.use(cookieParser());
 
 app.use(express.json());
-app.use("/users", userRouter);
-app.use("/auth", authRouter); //소셜 로그인 처리
-//app.use("/posts", postRouter);
+
 
 app.use(
   cors({
@@ -31,10 +33,15 @@ app.use(
   }),
 );
 
-app.use('/users', userRouter);
-app.use('/posts', postRouter);
-// app.use('/ootds', ootdRouter);
+// 공개 라우트 (예외 처리)
+app.use("/auth", authRouter); // 로그인, 회원가입 등
+app.use("/users", userRouter);
+
+// JWT 인증이 필요한 라우트
+app.use(authenticateJWT); // 모든 라우트에 대해 JWT 인증 적용
+app.use("/posts", postRouter);
 app.use('/chat-rooms', chatRoomRouter);
+
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {

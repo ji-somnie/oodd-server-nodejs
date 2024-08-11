@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { AuthService } from './authService';
-import { AuthRequestDto } from './dtos/authRequest.dto';
 import { status } from '../../variables/httpCode';
 
 import axios from 'axios';
@@ -23,26 +22,8 @@ const googleOpt = {
     redirectUri: 'http://localhost:3000/auth/google/callback',
 }
 
-
-// // 카카오 소셜 로그인 요청 시작
-// router.get("/login/kakao", (req: Request, res: Response) => {
-//     const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
-//     const params = qs.stringify({
-//         response_type: 'code',
-//         client_id: kakaoOpt.clientId,
-//         redirect_uri: kakaoOpt.redirectUri,
-//         scope: 'profile_nickname,profile_image,account_email',
-//     });
-
-//     res.redirect(`${kakaoAuthUrl}?${params}`);
-// });
-
 // 카카오 소셜 로그인 콜백
-<<<<<<< HEAD
-router.get("/kakao/callback", async (req: Request, res: Response) => {
-=======
 router.get("/login/kakao", async (req: Request, res: Response) => {
->>>>>>> 5c2174347355e87eab018b969e44cd925a77a734
     const code = req.query.code as string;
 
     if (!code) {
@@ -83,18 +64,17 @@ router.get("/login/kakao", async (req: Request, res: Response) => {
             return res.status(status.KAKAO_USER_NOT_FOUND.status).json({ message: status.KAKAO_USER_NOT_FOUND.message, err_code: status.KAKAO_USER_NOT_FOUND.err_code });
         }
 
-        // JWT 토큰 생성: 사용자 정보를 바탕으로 JWT 토큰을 생성하여 클라이언트에 응답.
-        const payload = { username, kakaoId, img, email };
-
         // 유저 확인하고 없으면 회원가입 처리
-        const user = await authService.handleKakaoUser(payload);
+        const user = await authService.handleKakaoUser({ username, kakaoId, img, email });
 
         // JWT 토큰 생성
-        const accessToken = authService.makeToken(payload);
+        const accessToken = authService.makeToken({ id: user.id, name: user.name });
 
-        // 쿠키 옵션 설정
+        // 쿠키 옵션 설정 및 쿠키에 토큰 저장
         const cookieOpt = { maxAge: 1000 * 60 * 60 * 24 }; // 1일 동안 유효
         res.cookie('accessToken', accessToken, cookieOpt);
+
+        // 응답으로 토큰 전달
         res.status(200).json({ message: `${username}님 로그인 되었습니다`, accessToken });
 
     } catch (err) {
@@ -103,19 +83,6 @@ router.get("/login/kakao", async (req: Request, res: Response) => {
     }
 });
 
-
-// // 구글 소셜 로그인
-// router.get("/login/google", (req: Request, res: Response) => {
-//     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/auth';
-//     const params = qs.stringify({
-//         response_type: 'code',
-//         client_id: googleOpt.clientId,
-//         redirect_uri: googleOpt.redirectUri,
-//         scope: 'openid profile email',
-//     });
-
-//     res.redirect(`${googleAuthUrl}?${params}`);
-// });
 
 router.get("/login/google", async (req: Request, res: Response) => {
     const code = req.query.code as string;
@@ -157,19 +124,18 @@ router.get("/login/google", async (req: Request, res: Response) => {
         if (!username || !googleId || !img || !email) {
             return res.status(status.GOOGLE_USER_NOT_FOUND.status).json({ message: status.GOOGLE_USER_NOT_FOUND.message, err_code: status.GOOGLE_USER_NOT_FOUND.err_code });
         }
-
-        // JWT 토큰 생성
-        const payload = { username, googleId, img, email };
-
+        
         // 유저 확인하고 없으면 회원가입 처리
-        const user = await authService.handleGoogleUser(payload);
+        const user = await authService.handleGoogleUser({ username, googleId, img, email });
 
         // JWT 토큰 생성
-        const accessToken = authService.makeToken(payload);
+        const accessToken = authService.makeToken({ id: user.id, name: user.name });
 
-        // 쿠키 옵션 설정
+        // 쿠키 옵션 설정 및 쿠키에 토큰 저장
         const cookieOpt = { maxAge: 1000 * 60 * 60 * 24 }; // 1일 동안 유효
         res.cookie('accessToken', accessToken, cookieOpt);
+
+        // 응답으로 토큰 전달
         res.status(200).json({ message: `${username}님 로그인 되었습니다`, accessToken });
 
     } catch (err) {

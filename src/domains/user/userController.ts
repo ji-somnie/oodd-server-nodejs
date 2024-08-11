@@ -6,9 +6,6 @@ const userRouter = Router();
 const userService = new UserService();
 
 
-<<<<<<< HEAD
-
-=======
 // //일반 회원가입 (추후 삭제 필요)
 // router.post("/", async (req: Request, res: Response) => {
 //   try {
@@ -22,5 +19,4 @@ const userService = new UserService();
 
 
 
->>>>>>> 5c2174347355e87eab018b969e44cd925a77a734
 export default Router;
