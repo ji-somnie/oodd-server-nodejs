@@ -2,7 +2,7 @@ import myDataBase from '../../data-source';
 import {Post} from '../../entities/postEntity';
 import {PostRequestDto} from './dtos/postRequest.dto';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR} from '../../variables/httpCode';
+import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER} from '../../variables/httpCode';
 import {User} from '../../entities/userEntity';
 import {validatedUser} from '../../validationTest/validateUser';
 import {validatePost} from '../../validationTest/validatePost';
@@ -28,11 +28,11 @@ export class PostService {
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
 
     try {
-      const user = await validatedUser(userId);
+      const user = await validatedUser(userId); // 나중에 빼자 
       if (!user) {
         return {
           isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
+          code: NOT_FOUND_USER.code,
           message: HTTP_NOT_FOUND.message,
           result: null,
         };
