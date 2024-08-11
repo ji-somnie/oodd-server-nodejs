@@ -1,18 +1,33 @@
-import { UserRepository } from '../../repositories/userRepository';
-import { UserRequestDto } from './dtos/userRequest.dto';
-import { UserResponseDto } from './dtos/userResponse.dto';
-import { User } from '../../entities/userEntity';
-
+import {UserRequestDto} from './dtos/userRequest.dto';
+import {UserResponseDto} from './dtos/userResponse.dto';
+import {User} from '../../entities/userEntity';
 import myDataBase from '../../data-source';
-import {Repository} from 'typeorm';
+import dayjs from 'dayjs';
 
 export class UserService {
-  private userRepository: UserRepository;
+  private userRepository = myDataBase.getRepository(User);
 
-  constructor() {
-    this.userRepository = new UserRepository();
+  async findUserByKakaoId(kakaoId: string): Promise<User | null> {
+    return await this.userRepository.findOne({where: {kakaoId: kakaoId}});
   }
 
+  async findUserByGoogleId(googleId: string): Promise<User | null> {
+    return await this.userRepository.findOne({where: {googleId: googleId}});
+  }
+
+  async createUserByPayload(payload: any): Promise<User> {
+    let user = myDataBase.getRepository(User).create();
+    user.googleId = payload.googleId ? payload.googleId : null;
+    user.kakaoId = payload.kakaoId ? payload.kakaoId : null;
+    user.email = payload.email;
+    user.name = payload.username;
+    user.profilePictureUrl = payload.img;
+    user.status = 'activated';
+    user.joinedAt = dayjs().toDate();
+    user.createdAt = dayjs().toDate();
+    user.updatedAt = dayjs().toDate();
+    return await this.userRepository.save(user);
+  }
   // 메서드 정의
   async createUser(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
     // newUser 객체를 클라이언트로부터 받은 데이터로 초기화
@@ -46,17 +61,13 @@ export class UserService {
 
     // UserResponseDto를 반환
     return userResponseDto;
-
   }
 
   async getAllUsers(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  
   async getUserByUserId(userId: number): Promise<User | null> {
-    return await this.userRepository.findOne({where: {id: userId}});
+    return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
   }
-
 }
-
