@@ -1,6 +1,6 @@
 import {UserRequestDto} from './dtos/userRequest.dto';
 import {UserResponseDto} from './dtos/userResponse.dto';
-import {User} from '../../entities/userEntity';
+import {User} from '../../entities/UserEntity';
 import myDataBase from '../../data-source';
 import dayjs from 'dayjs';
 
