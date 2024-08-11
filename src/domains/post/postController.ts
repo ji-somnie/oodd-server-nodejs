@@ -49,25 +49,31 @@ router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<v
   }
 });
 
-// // 게시물 삭제
-// router.delete('/:postId', async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const postId = parseInt(req.params.postId, 10);
+// 게시물 삭제
+router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const userId = req.user?.id;
 
-//     const deletePostResponse = await postService.deletePost(userId, postId);
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
 
-//     if (deletePostResponse.isSuccess) {
-//       res.status(201).json(deletePostResponse);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     if (error instanceof Error) {
-//       res.status(400).json({message: HTTP_BAD_REQUEST.message});
-//     } else {
-//       res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
-//     }
-//   }
-// });
+    const deletePostResponse = await postService.deletePost(userId, postId);
+
+    if (deletePostResponse.isSuccess) {
+      res.status(201).json(deletePostResponse);
+    }
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error) {
+      res.status(400).json({message: HTTP_BAD_REQUEST.message});
+    } else {
+      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
+    }
+  }
+});
 
 // 대표 OOTD 지정
 router.patch('/:postId/isRepresentative/:userId', async (req: Request, res: Response): Promise<void> => {
