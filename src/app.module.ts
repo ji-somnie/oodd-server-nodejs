@@ -1,6 +1,7 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/post/postController';
+import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
 import {createServer} from 'http';
 import cors from 'cors';
@@ -37,6 +38,7 @@ app.use(
 
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 app.use("/posts", authenticateJWT, postRouter);
+app.use("/ootd", authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 
 const httpServer = createServer(app);
