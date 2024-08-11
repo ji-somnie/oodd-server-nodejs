@@ -87,7 +87,7 @@ router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Pro
       res.status(401).json({ message: NOT_FOUND_USER.message});
       return;
     }
-    
+
     const getPostDetailResponse = await postService.getPostDetail(userId, postId);
 
     if (getPostDetailResponse.isSuccess) {
@@ -102,6 +102,34 @@ router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Pro
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 게시물 리스트 조회: 여러 게시물 반환
+router.get('/', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const queryUserId = parseInt(req.query.userId as string, 10);
+
+    if (isNaN(queryUserId)) {
+      res.status(400).json(new BaseResponse(false, 400, 'Invalid userId'));
+      return;
+    }
+
+    const userId = req.user?.id; 
+
+    if (!userId) {
+      res.status(401).json(new BaseResponse(false, 401, 'Unauthorized'));
+      return;
+    }
+
+    const postListResponse = await postService.getPostList(queryUserId, userId);
+
+    if (postListResponse.isSuccess) {
+      res.status(200).json(postListResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(new BaseResponse(false, HTTP_INTERNAL_SERVER_ERROR.code, HTTP_INTERNAL_SERVER_ERROR.message));
   }
 });
 
