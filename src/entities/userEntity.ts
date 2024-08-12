@@ -12,17 +12,10 @@ export class User extends BaseEntity {
   @Column({unique: true, length: 255})
   googleId!: string; // 구글 고유 ID를 저장하는 필드
 
-<<<<<<< HEAD
   @Column({ unique: true, length: 255 })
   naverId!: string; // 네이버 고유 ID를 저장하는 필드
 
   @Column({ length: 100 })
-=======
-  @Column({unique: true, length: 255})
-  naverId!: string; // 구글 고유 ID를 저장하는 필드
-
-  @Column({length: 100})
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
   name!: string;
 
   @Column({length: 100})

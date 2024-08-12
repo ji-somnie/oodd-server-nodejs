@@ -1,61 +1,48 @@
-import { BlockRepository } from '../../repositories/blockRepository';
-import { UserRepository } from '../../repositories/userRepository';
-// import { UserRequestDto } from './dtos/userRequest.dto';
-// import { UserResponseDto } from './dtos/userResponse.dto';
 import { User } from '../../entities/userEntity';
-import { UserRelationship } from '../../entities/blockEntity';
-
+import { Block } from '../../entities/blockEntity';
+import myDataBase from '../../data-source';
 
 export class BlockService {
-  private blockRepository: BlockRepository;
-  private userRepository: UserRepository;
+  // Repositories를 데이터베이스에서 직접 가져옴
+  private blockRepository = myDataBase.getRepository(Block);
+  private userRepository = myDataBase.getRepository(User);
 
-
-  constructor() {
-    this.blockRepository = new BlockRepository();
-    this.userRepository = new UserRepository();
-  }
-
+  // 차단/차단 해제 메서드
   async toggleBlock(userId: number, friendId: number): Promise<string | undefined> {
+    const requester = await this.userRepository.findOne({ where: { id: userId } });
+    const target = await this.userRepository.findOne({ where: { id: friendId } });
 
-    const requesterId = await this.userRepository.findOne({ where: { id: userId } });
-    const targetId = await this.userRepository.findOne({ where: { id: friendId } });
-
-    if (!requesterId || !targetId) {
+    if (!requester || !target) {
       throw new Error('User not found');
     }
 
-    let relationship = await this.blockRepository.findOne({
-      where: { requesterId, targetId }
+    let block = await this.blockRepository.findOne({
+      where: { requester, target }
     });
 
-    if (!relationship) {
-      // 관계가 없을 경우 새로 생성
-      relationship = new UserRelationship();
-
-      relationship.requesterId = requesterId;
-      relationship.targetId = targetId;
-      relationship.status = 'blocked';
-      relationship.createdAt = new Date();
-      relationship.updatedAt = new Date();
-      await this.blockRepository.save(relationship);
+    if (!block) {
+      // Block 관계가 없을 경우 새로 생성
+      block = new Block();
+      block.requester = requester;
+      block.target = target;
+      block.status = 'blocked';
+      block.updatedAt = new Date();
+      await this.blockRepository.save(block);
       return 'User blocked successfully.';
     }
 
-    if (relationship && relationship.status === 'blocked') {
-      //친구 차단 해제
-      relationship.status = 'unblocked';
-      relationship.updatedAt = new Date();
-      await this.blockRepository.save(relationship);
+    if (block.status === 'blocked') {
+      // 차단 해제
+      block.status = 'unblocked';
+      block.updatedAt = new Date();
+      await this.blockRepository.save(block);
       return 'User unblocked successfully.';
-    } else if (relationship) {
-      //친구 차단
-      relationship.status = 'blocked';
-      relationship.updatedAt = new Date();
-      await this.blockRepository.save(relationship);
+    } else {
+      // 차단
+      block.status = 'blocked';
+      block.updatedAt = new Date();
+      await this.blockRepository.save(block);
       return 'User blocked successfully.';
     }
-
   }
-
 }

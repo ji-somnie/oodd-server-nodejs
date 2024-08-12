@@ -9,18 +9,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export class UserService {
-<<<<<<< HEAD
-  private userRepository: UserRepository;
-  private messageService: CoolsmsMessageService;
-
-  constructor() {
-    this.userRepository = new UserRepository();
-    this.messageService = new CoolsmsMessageService(process.env.COOLSMS_API_KEY || '', process.env.COOLSMS_API_SECRET || '');
-    //this.messageService = new coolsms.default(process.env.COOLSMS_API_KEY, process.env.COOLSMS_API_SECRET);
-  }
-
-=======
   private userRepository = myDataBase.getRepository(User);
+  private messageService = new CoolsmsMessageService(
+    process.env.COOLSMS_API_KEY || '',
+    process.env.COOLSMS_API_SECRET || ''
+  );
 
   async findUserByKakaoId(kakaoId: string): Promise<User | null> {
     return await this.userRepository.findOne({where: {kakaoId: kakaoId}});
@@ -28,6 +21,10 @@ export class UserService {
 
   async findUserByGoogleId(googleId: string): Promise<User | null> {
     return await this.userRepository.findOne({where: {googleId: googleId}});
+  }
+
+  async findUserByNaverId(naverId: string): Promise<User | null> {
+    return await this.userRepository.findOne({where: {naverId: naverId}});
   }
 
   async createUserByPayload(payload: any): Promise<User> {
@@ -44,7 +41,6 @@ export class UserService {
     return await this.userRepository.save(user);
   }
   // 메서드 정의
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
   async createUser(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
     // newUser 객체를 클라이언트로부터 받은 데이터로 초기화
     const newUser = new User();
@@ -79,7 +75,6 @@ export class UserService {
     return userResponseDto;
   }
 
-<<<<<<< HEAD
   // 인증 코드 생성 함수
   private generateToken(length: number): string {
     const characters = '0123456789';
@@ -113,13 +108,14 @@ export class UserService {
       // 실제로는 DB 또는 캐시에서 인증 코드를 조회하고 검증해야 함
       // 여기서는 간단히 true를 반환
       return true;
-=======
+
+  }
+
   async getAllUsers(): Promise<User[]> {
     return this.userRepository.find();
   }
 
   async getUserByUserId(userId: number): Promise<User | null> {
     return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
   }
 }

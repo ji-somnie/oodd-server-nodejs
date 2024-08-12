@@ -17,13 +17,10 @@
   "dependencies": {
     "@prisma/client": "^5.16.2",
     "axios": "^1.7.3",
-<<<<<<< HEAD
-    "coolsms-node-sdk": "^2.1.0",
-=======
     "cookie-parser": "^1.4.6",
+    "coolsms-node-sdk": "^2.1.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.12",
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "http-status-codes": "^2.3.0",

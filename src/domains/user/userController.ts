@@ -3,16 +3,11 @@ import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
 import { status } from '../../variables/httpCode';
 
-import coolsms from 'coolsms-node-sdk';
+// import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 dotenv.config();
 
-<<<<<<< HEAD
-const router = Router();
-
-=======
 const userRouter = Router();
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 const userService = new UserService();
 
 
@@ -27,26 +22,17 @@ const userService = new UserService();
 //   }
 // });
 
-<<<<<<< HEAD
-/*
-//카카오 로그인
-router.post("/login/kakao", async (req: Request, res: Response) => {
- 
-});
-=======
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 
 
-<<<<<<< HEAD
 //구글 로그인
-router.post("/login/google", async (req: Request, res: Response) => {
+userRouter.post("/login/google", async (req: Request, res: Response) => {
   
 }); 
-*/
+
 
 
 // 휴대폰번호 본인인증 코드 전송
-router.post("/phone/verification", async (req: Request, res: Response) => {
+userRouter.post("/phone/verification", async (req: Request, res: Response) => {
   const { phone } = req.body;
 
   if (!phone) {
@@ -62,7 +48,7 @@ router.post("/phone/verification", async (req: Request, res: Response) => {
 });
 
 //휴대폰번호 본인인증 코드 확인
-router.post("/phone/verification/check", async (req: Request, res: Response) => {
+userRouter.post("/phone/verification/check", async (req: Request, res: Response) => {
   const { phone, token } = req.body;
 
   if (!phone || !token) {
@@ -81,7 +67,4 @@ router.post("/phone/verification/check", async (req: Request, res: Response) => 
   }
 });
 
-export default router;
-=======
-export default Router;
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
+export default userRouter;

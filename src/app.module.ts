@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-import express from "express";
-import userRouter from "./domains/user/userController";
-import authRouter from "./domains/auth/authController";
-import blockRouter from "./domains/block/blockController";
-//import postRouter from "./domains/ootd/postController";
-=======
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/ootd/postController';
 import authRouter from './domains/auth/authController';
+import blockRouter from './domains/block/blockController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -24,7 +18,6 @@ import cookieParser from 'cookie-parser';
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 
 const app = express();
 app.use(cookieParser());
@@ -33,12 +26,7 @@ app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use("/users", userRouter);
-<<<<<<< HEAD
-app.use("/auth", authRouter); //소셜 로그인 처리
-app.use("/block", blockRouter);
-//app.use("/posts", postRouter);
-=======
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
+app.use("/block", blockRouter); //테스트용
 
 app.use(
   cors({
@@ -52,6 +40,7 @@ app.use(
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 app.use("/posts", authenticateJWT, postRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+//app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
 

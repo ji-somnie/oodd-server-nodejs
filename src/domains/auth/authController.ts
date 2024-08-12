@@ -23,7 +23,6 @@ const googleOpt = {
     redirectUri: 'http://localhost:3000/auth/google/callback',
 }
 
-<<<<<<< HEAD
 const naverOpt = {
     clientId: process.env.NAVER_CLIENT_ID || '',
     clientSecret: process.env.NAVER_CLIENT_SECRET || '',
@@ -31,27 +30,26 @@ const naverOpt = {
 };
 
 
-// 카카오 소셜 로그인 요청 시작
-router.get("/login/kakao", (req: Request, res: Response) => {
-    const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
-    const params = qs.stringify({
-        response_type: 'code',
-        client_id: kakaoOpt.clientId,
-        redirect_uri: kakaoOpt.redirectUri,
-        scope: 'profile_nickname,profile_image,account_email',
-    });
+// // 카카오 소셜 로그인 요청 시작
+// router.get("/login/kakao", (req: Request, res: Response) => {
+//     const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
+//     const params = qs.stringify({
+//         response_type: 'code',
+//         client_id: kakaoOpt.clientId,
+//         redirect_uri: kakaoOpt.redirectUri,
+//         scope: 'profile_nickname,profile_image,account_email',
+//     });
 
-    res.redirect(`${kakaoAuthUrl}?${params}`);
-});
+//     res.redirect(`${kakaoAuthUrl}?${params}`);
+// });
 
-// 카카오 소셜 로그인 콜백
-router.get("/kakao/callback", async (req: Request, res: Response) => {
-    const code = req.query.code as string;
-=======
+// // 카카오 소셜 로그인 콜백
+// router.get("/kakao/callback", async (req: Request, res: Response) => {
+//     const code = req.query.code as string;
+
 // 카카오 소셜 로그인 콜백
 router.get('/login/kakao', async (req: Request, res: Response) => {
   const code = req.query.code as string;
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 
   if (!code) {
     return res
@@ -118,12 +116,6 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
   }
 });
 
-<<<<<<< HEAD
-// 구글 소셜 로그인 콜백
-router.get("/google/callback", async (req: Request, res: Response) => {
-    const code = req.query.code as string;
-=======
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 
 router.get('/login/google', async (req: Request, res: Response) => {
   const code = req.query.code as string;
@@ -193,7 +185,6 @@ router.get('/login/google', async (req: Request, res: Response) => {
   }
 });
 
-<<<<<<< HEAD
 // 네이버 소셜 로그인 요청 시작
 router.get("/login/naver", (req: Request, res: Response) => {
     const naverAuthUrl = 'https://nid.naver.com/oauth2.0/authorize';
@@ -273,6 +264,3 @@ router.get("/naver/callback", async (req: Request, res: Response) => {
 });
 
 export default router;
-=======
-export default router;
->>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
