@@ -11,7 +11,6 @@ import {
   NOT_FOUND_USER,
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
-  INVALID_POST_ID,
 } from '../../variables/httpCode';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 
@@ -24,20 +23,9 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   console.log('Request body:', req.body);
   try {
     const postId: number = parseInt(req.params.postId);
-    if (isNaN(postId)) {
-      return res.status(400).json({
-        isSuccess: false,
-        code: INVALID_POST_ID.code,
-        message: INVALID_POST_ID.message,
-      });
-    }
+    const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
 
-    const tokenUser = req.user as any;
-
-    // kakaoId로 사용자 찾기
-    const user = await userService.findUserByKakaoId(tokenUser.kakaoId);
-
-    if (!user) {
+    if (!userId) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
@@ -46,7 +34,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     }
 
     // User 유효성 검사
-    const userExists = await userService.getUserByUserId(user.id);
+    const userExists = await userService.getUserByUserId(userId);
     if (!userExists) {
       return res.status(404).json({
         isSuccess: false,
@@ -65,7 +53,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
-    const like = await likeService.toggleLike({userId: user.id, postId});
+    const like = await likeService.toggleLike({userId, postId});
 
     const response: BaseResponse<OotdLikeResponse | null> = {
       isSuccess: true,
