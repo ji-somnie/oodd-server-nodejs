@@ -18,10 +18,10 @@ const kakaoOpt = {
 };
 
 const googleOpt = {
-    clientId: process.env.GOOGLE_CLIENT_ID || '',
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    redirectUri: 'http://localhost:3000/auth/google/callback',
-}
+  clientId: process.env.GOOGLE_CLIENT_ID || '',
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+  redirectUri: 'http://localhost:3000/auth/google/callback',
+};
 
 // 카카오 소셜 로그인 콜백
 router.get('/login/kakao', async (req: Request, res: Response) => {
@@ -75,10 +75,10 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
     const payload = {username, kakaoId, img, email};
 
     // 유저 확인하고 없으면 회원가입 처리
-    await authService.handleKakaoUser(payload);
+    const user = await authService.handleKakaoUser(payload);
 
     // JWT 토큰 생성
-    const accessToken = authService.makeToken(payload);
+    const accessToken = authService.makeToken({id: user.id, ...payload});
 
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효
@@ -91,7 +91,6 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
       .json({message: status.KAKAO_USER_NOT_FOUND.message, err_code: status.KAKAO_USER_NOT_FOUND.err_code});
   }
 });
-
 
 router.get('/login/google', async (req: Request, res: Response) => {
   const code = req.query.code as string;
@@ -144,10 +143,10 @@ router.get('/login/google', async (req: Request, res: Response) => {
     const payload = {username, googleId, img, email};
 
     // 유저 확인하고 없으면 회원가입 처리
-    await authService.handleGoogleUser(payload);
+    const user = await authService.handleGoogleUser(payload);
 
     // JWT 토큰 생성
-    const accessToken = authService.makeToken(payload);
+    const accessToken = authService.makeToken({id: user.id, ...payload});
 
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효

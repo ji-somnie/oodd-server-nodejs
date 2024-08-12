@@ -8,11 +8,11 @@ export class UserService {
   private userRepository = myDataBase.getRepository(User);
 
   async findUserByKakaoId(kakaoId: string): Promise<User | null> {
-    return await this.userRepository.findOne({where: {kakaoId: kakaoId}});
+    return await this.userRepository.findOne({where: {kakaoId: kakaoId, status: 'activated'}});
   }
 
   async findUserByGoogleId(googleId: string): Promise<User | null> {
-    return await this.userRepository.findOne({where: {googleId: googleId}});
+    return await this.userRepository.findOne({where: {googleId: googleId, status: 'activated'}});
   }
 
   async createUserByPayload(payload: any): Promise<User> {

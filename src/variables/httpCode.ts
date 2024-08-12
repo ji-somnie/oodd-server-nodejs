@@ -106,7 +106,20 @@ export const NOT_FOUND_POST = {
 };
 
 export const NO_PARAMETER = {code: 3001, message: '필수 파라미터가 누락되었습니다.', err_code: 'NO_PARAMETER'};
+export const NO_BODY_DATA = {code: 3001, message: '데이터가 없습니다.', err_code: 'NO_BODY_DATA'};
 export const NOT_MEMBER_IN_ROOM = {code: 3002, message: '채팅방에 없는 유저입니다.', err_code: 'NOT_MEMBER_IN_ROOM'};
 export const ALREADY_LEAVED_ROOM = {code: 3003, message: '이미 나간 채팅방입니다.', err_code: 'ALREADY_LEAVED_ROOM'};
+export const CANNOT_REQUEST_MYSELF = {
+  code: 3004,
+  message: '자신에게 요청할 수 없습니다.',
+  err_code: 'CANNOT_REQUEST_MYSELF',
+};
+export const NOT_FOUND_USER_RELATIONSHIP = {
+  code: 3005,
+  message: '존재하지 않는 유저 관계입니다.',
+  err_code: 'NOT_FOUND_USER_RELATIONSHIP',
+};
+export const NOT_PENDING_REQUEST = {code: 3006, message: '대기중인 요청이 아닙니다.', err_code: 'NOT_PENDING_REQUEST'};
+export const ALREADY_REQUESTED = {code: 3007, message: '이미 요청한 관계입니다.', err_code: 'ALREADY_REQUESTED'};
 
 export const NO_AUTHORIZATION = {code: 1000, message: '권한이 없습니다.', err_code: 'NO_AUTHORIZATION'};
