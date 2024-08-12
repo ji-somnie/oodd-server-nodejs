@@ -17,24 +17,39 @@ export class AuthService {
   }
 
   // Kakao 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
-  async handleKakaoUser(payload: any): Promise<void> {
+  async handleKakaoUser(payload: any): Promise<User> {
     // 카카오 ID로 사용자 조회
-    let user = this.userService.findUserByKakaoId(payload.kakaoId);
+    let user = await this.userService.findUserByKakaoId(payload.kakaoId);
 
     // 사용자가 없으면 새로 가입 처리
     if (!user) {
-      await this.userService.createUserByPayload(payload);
+      return await this.userService.createUserByPayload(payload);
     }
+
+    return user;
   }
 
   // Google 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
-  async handleGoogleUser(payload: any): Promise<void> {
+  async handleGoogleUser(payload: any): Promise<User> {
     // 구글 ID로 사용자 조회
     let user = await this.userService.findUserByGoogleId(payload.googleId);
 
     // 사용자가 없으면 새로 가입 처리
     if (!user) {
-      await this.userService.createUserByPayload(payload);
+      return await this.userService.createUserByPayload(payload);
     }
+
+    return user;
   }
+
+    // Naver 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
+    async handleNaverUser(payload: any): Promise<void> {
+      // Naver ID로 사용자 조회
+      let user = await this.userService.findUserByNaverId(payload.NaverId);
+  
+      // 사용자가 없으면 새로 가입 처리
+      if (!user) {
+        await this.userService.createUserByPayload(payload);
+      }
+    }
 }

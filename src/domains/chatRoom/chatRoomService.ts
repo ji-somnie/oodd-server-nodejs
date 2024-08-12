@@ -5,6 +5,7 @@ import {ChatRoom} from '../../entities/chatRoomEntity';
 import dayjs from 'dayjs';
 import {ChatMessage} from '../../entities/chatMessageEntity';
 import {ChatRoomsDto, ChatRoomsQueryDto} from './dto/dto';
+import {UserRelationship} from '../../entities/userRelationshipEntity';
 
 export class ChatRoomService {
   private chatRoomRepository: Repository<ChatRoom>;
@@ -115,8 +116,21 @@ export class ChatRoomService {
     });
   }
 
+  async getChatRoomByUserRelationship(userRelationship: UserRelationship): Promise<ChatRoom | null> {
+    return this.chatRoomRepository.findOne({
+      where: [{fromUser: userRelationship.requester, toUser: userRelationship.target, status: 'activated'}],
+      relations: ['fromUser', 'toUser'],
+    });
+  }
+
   async createChatRoom(fromUser: User, toUser: User): Promise<ChatRoom> {
-    const chatRoom = this.chatRoomRepository.create({fromUser, toUser});
+    const chatRoom = this.chatRoomRepository.create({
+      fromUser,
+      toUser,
+      status: 'activated',
+      createdAt: dayjs().toDate(),
+      updatedAt: dayjs().toDate(),
+    });
     return this.chatRoomRepository.save(chatRoom);
   }
 
@@ -131,5 +145,16 @@ export class ChatRoomService {
 
     await this.chatRoomRepository.save(chatRoom);
     return true;
+  }
+
+  async deleteChatRoomByUserRelationshipRejected(userRelationship: UserRelationship): Promise<void> {
+    const chatRoom = await this.getChatRoomByUserRelationship(userRelationship);
+
+    if (!chatRoom) return;
+
+    chatRoom.status = 'deactivated';
+    chatRoom.deletedAt = dayjs().toDate();
+
+    await this.chatRoomRepository.save(chatRoom);
   }
 }

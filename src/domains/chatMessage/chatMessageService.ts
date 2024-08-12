@@ -26,6 +26,9 @@ export class ChatMessageService {
     newMessage.fromUser = fromUser;
     newMessage.toUser = toUser;
     newMessage.content = message;
+    newMessage.status = 'activated';
+    newMessage.createdAt = dayjs().toDate();
+    newMessage.updatedAt = dayjs().toDate();
 
     return this.chatMessageRepository.save(newMessage);
   }

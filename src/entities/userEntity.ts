@@ -3,6 +3,7 @@ import {BaseEntity} from '../base/baseEntity';
 import {Post} from './postEntity';
 import {Comment} from './commentEntity';
 import {ChatRoom} from './chatRoomEntity';
+import {UserRelationship} from './userRelationshipEntity';
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
@@ -12,10 +13,10 @@ export class User extends BaseEntity {
   @Column({unique: true, length: 255})
   googleId!: string; // 구글 고유 ID를 저장하는 필드
 
-  @Column({unique: true, length: 255})
-  naverId!: string; // 구글 고유 ID를 저장하는 필드
+  @Column({ unique: true, length: 255 })
+  naverId!: string; // 네이버 고유 ID를 저장하는 필드
 
-  @Column({length: 100})
+  @Column({ length: 100 })
   name!: string;
 
   @Column({length: 100})
@@ -47,4 +48,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => ChatRoom, chatRoom => chatRoom.fromUser)
   sentChatRooms?: ChatRoom[];
+
+  @OneToMany(() => UserRelationship, userRelationship => userRelationship.requester)
+  requestedUserRelationships?: UserRelationship[];
+
+  @OneToMany(() => UserRelationship, userRelationship => userRelationship.target)
+  targetedUserRelationships?: UserRelationship[];
 }

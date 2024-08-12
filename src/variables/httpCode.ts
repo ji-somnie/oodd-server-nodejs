@@ -79,6 +79,72 @@ export const status = {
     err_code: 'GOOGLE_USER_NOT_FOUND',
   },
 
+  NAVER_AUTH_FAIL: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4006',
+    message: 'NAVER 사용자 인정 과정에서 오류가 발생했습니다',
+    err_code: 'NAVER_AUTH_FAIL',
+  },
+  NAVER_TOKEN_FAIL: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4007',
+    message: 'Error getting NAVER token',
+    err_code: 'NAVER_TOKEN_FAIL',
+  },
+  NAVER_USER_NOT_FOUND: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4008',
+    message: 'NAVER 계정의 정보를 불러오지 못했습니다.',
+    err_code: 'NAVER_USER_NOT_FOUND',
+  },
+
+  // phone verification err
+  PHONE_NUMBER_REQUIRED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4011',
+    message: 'Phone number is required',
+    err_code: 'PHONE_NUMBER_REQUIRED',
+  },
+  VERIFICATION_SEND_SUCCESS: {
+    status: StatusCodes.OK,
+    isSuccess: true,
+    code: 'USER4012',
+    message: 'Verification code sent successfully',
+    err_code: 'VERIFICATION_SEND_SUCCESS',
+  },
+  VERIFICATION_SEND_FAILED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4013',
+    message: 'Failed to send verification code',
+    err_code: 'VERIFICATION_SEND_FAILED',
+  },
+  VERIFICATION_CODE_NEEDED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4014',
+    message: 'Phone number and token are required',
+    err_code: 'VERIFICATION_CODE_NEEDED',
+  },
+  VERIFY_SUCCESS: {
+    status: StatusCodes.OK,
+    isSuccess: true,
+    code: 'USER4015',
+    message: 'Verification successful',
+    err_code: 'VERIFY_SUCCESS',
+  },
+  VERIFY_FAILED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4016',
+    message: 'Failed to verify code',
+    err_code: 'VERIFY_FAILED',
+  },
+
   // post err
   ARTICLE_NOT_FOUND: {
     status: StatusCodes.NOT_FOUND,
@@ -106,7 +172,20 @@ export const NOT_FOUND_POST = {
 };
 
 export const NO_PARAMETER = {code: 3001, message: '필수 파라미터가 누락되었습니다.', err_code: 'NO_PARAMETER'};
+export const NO_BODY_DATA = {code: 3001, message: '데이터가 없습니다.', err_code: 'NO_BODY_DATA'};
 export const NOT_MEMBER_IN_ROOM = {code: 3002, message: '채팅방에 없는 유저입니다.', err_code: 'NOT_MEMBER_IN_ROOM'};
 export const ALREADY_LEAVED_ROOM = {code: 3003, message: '이미 나간 채팅방입니다.', err_code: 'ALREADY_LEAVED_ROOM'};
+export const CANNOT_REQUEST_MYSELF = {
+  code: 3004,
+  message: '자신에게 요청할 수 없습니다.',
+  err_code: 'CANNOT_REQUEST_MYSELF',
+};
+export const NOT_FOUND_USER_RELATIONSHIP = {
+  code: 3005,
+  message: '존재하지 않는 유저 관계입니다.',
+  err_code: 'NOT_FOUND_USER_RELATIONSHIP',
+};
+export const NOT_PENDING_REQUEST = {code: 3006, message: '대기중인 요청이 아닙니다.', err_code: 'NOT_PENDING_REQUEST'};
+export const ALREADY_REQUESTED = {code: 3007, message: '이미 요청한 관계입니다.', err_code: 'ALREADY_REQUESTED'};
 
 export const NO_AUTHORIZATION = {code: 1000, message: '권한이 없습니다.', err_code: 'NO_AUTHORIZATION'};

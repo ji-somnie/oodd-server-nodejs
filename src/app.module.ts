@@ -1,7 +1,9 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
 import postRouter from './domains/post/postController';
+import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
+import blockRouter from './domains/block/blockController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -10,9 +12,9 @@ import {ChatRoomService} from './domains/chatRoom/chatRoomService';
 import {ChatMessageService} from './domains/chatMessage/chatMessageService';
 import {UserService} from './domains/user/userService';
 import {initializeDatabase} from './data-source';
-import { authenticateJWT } from './middlewares/authMiddleware';
+import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
-
+import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -24,7 +26,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
-app.use("/users", userRouter);
+app.use('/users', userRouter);
+app.use('/block', blockRouter); //테스트용
 
 app.use(
   cors({
@@ -36,8 +39,11 @@ app.use(
 );
 
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
-app.use("/posts", authenticateJWT, postRouter);
+app.use('/posts', authenticateJWT, postRouter);
+app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
+//app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
 
