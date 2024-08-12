@@ -16,7 +16,7 @@ export class UserService {
   }
 
   async createUserByPayload(payload: any): Promise<User> {
-    let user = myDataBase.getRepository(User).create();
+    let user = this.userRepository.create();
     user.googleId = payload.googleId ? payload.googleId : null;
     user.kakaoId = payload.kakaoId ? payload.kakaoId : null;
     user.email = payload.email;
@@ -31,7 +31,7 @@ export class UserService {
   // 메서드 정의
   async createUser(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
     // newUser 객체를 클라이언트로부터 받은 데이터로 초기화
-    const newUser = new User();
+    const newUser = this.userRepository.create();
     newUser.id = userRequestDto.id;
     newUser.name = userRequestDto.name;
     newUser.email = userRequestDto.email;
