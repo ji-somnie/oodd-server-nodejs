@@ -23,23 +23,24 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   console.log('Request body:', req.body);
   try {
     const postId: number = parseInt(req.params.postId);
-    const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
-
-    if (!userId || userId !== req.body.userId) {
-      return res.status(401).json({
-        isSuccess: false,
-        code: NO_AUTHORIZATION.code,
-        message: NO_AUTHORIZATION.message,
-      });
-    }
+    const {username, kakaoId, email} = req.user as any;
+    const {userId} = req.body;
 
     // User 유효성 검사
-    const userExists = await userService.getUserByUserId(userId);
-    if (!userExists) {
+    const user = await userService.getUserByUserId(userId);
+    if (!user) {
       return res.status(404).json({
         isSuccess: false,
         code: NOT_FOUND_USER.code,
         message: NOT_FOUND_USER.message,
+      });
+    }
+
+    if (user?.name !== username || user?.kakaoId !== kakaoId || user?.email !== email) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
       });
     }
 
