@@ -36,6 +36,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
+    /*
     if (user?.name !== username || user?.kakaoId !== kakaoId || user?.email !== email) {
       return res.status(401).json({
         isSuccess: false,
@@ -43,6 +44,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         message: NO_AUTHORIZATION.message,
       });
     }
+    */
 
     // Post 유효성 검사
     const postExists = await validatePostById(postId);
