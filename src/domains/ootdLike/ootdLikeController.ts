@@ -5,19 +5,33 @@ import {OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {UserService} from '../user/userService';
 import {validatePostById} from '../../validationTest/validatePost';
-import {HTTP_OK, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_POST} from '../../variables/httpCode';
+import {
+  HTTP_OK,
+  HTTP_INTERNAL_SERVER_ERROR,
+  NOT_FOUND_USER,
+  NOT_FOUND_POST,
+  NO_AUTHORIZATION,
+} from '../../variables/httpCode';
+import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const likeService = new OotdLikeService();
 const userService = new UserService();
 const router = Router();
 
-router.put('/:postId/like', async (req: Request, res: Response) => {
-  // 출력값 추가
+router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   console.log(`Received PUT request for /posts/${req.params.postId}/like`);
   console.log('Request body:', req.body);
   try {
     const postId: number = parseInt(req.params.postId);
-    const {userId}: OotdLikeRequest = req.body;
+    const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
+
+    if (!userId) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
+      });
+    }
 
     // User 유효성 검사
     const userExists = await userService.getUserByUserId(userId);
