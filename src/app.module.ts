@@ -3,6 +3,7 @@ import userRouter from './domains/user/userController';
 import postRouter from './domains/post/postController';
 import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
+import blockRouter from './domains/block/blockController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use("/users", userRouter);
+app.use("/block", blockRouter); //테스트용
 
 app.use(
   cors({
@@ -40,6 +42,7 @@ app.use(
 app.use("/posts", authenticateJWT, postRouter);
 app.use("/ootd", authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+//app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
 
