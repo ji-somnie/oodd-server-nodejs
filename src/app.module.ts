@@ -6,21 +6,35 @@ import { initializeDatabase } from './data-source';
 
 
 import userRouter from './domains/user/userController';
-import postRouter from './domains/ootd/postController';
+import postRouter from './domains/post/postController';
+import ootdRouter from './domains/ootd/ootdController';
+import authRouter from './domains/auth/authController';
+import blockRouter from './domains/block/blockController';
+import {createServer} from 'http';
+import cors from 'cors';
+import {Server} from 'socket.io';
 import chatRoomRouter from './domains/chatRoom/chatRoomController';
-import { ChatRoomService } from './domains/chatRoom/chatRoomService';
-import { ChatMessageService } from './domains/chatMessage/chatMessageService';
-import { UserService } from './domains/user/userService';
+import {ChatRoomService} from './domains/chatRoom/chatRoomService';
+import {ChatMessageService} from './domains/chatMessage/chatMessageService';
+import {UserService} from './domains/user/userService';
+import {initializeDatabase} from './data-source';
+import {authenticateJWT} from './middlewares/authMiddleware';
+import cookieParser from 'cookie-parser';
+import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
 
-// 서비스 인스턴스 생성
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
 const userService = new UserService();
 
 const app = express();
+app.use(cookieParser());
+
 app.use(express.json());
 
-// CORS 설정
+app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
+app.use('/users', userRouter);
+app.use('/block', blockRouter); //테스트용
+
 app.use(
   cors({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
@@ -30,13 +44,13 @@ app.use(
   }),
 );
 
-// 라우터 설정
-app.use('/users', userRouter);
-app.use('/posts', postRouter);
-// app.use('/ootds', ootdRouter);
-app.use('/chat-rooms', chatRoomRouter);
+// JWT 인증이 필요한 라우트 (개별적으로 하나씩)
+app.use('/posts', authenticateJWT, postRouter);
+app.use('/ootd', authenticateJWT, ootdRouter);
+app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
+//app.use("/block", authenticateJWT, blockRouter);
 
-// HTTP 서버 생성
 const httpServer = createServer(app);
 
 // Socket.io 설정
