@@ -11,6 +11,8 @@ import {
   NOT_FOUND_USER,
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
+  INVALID_POST_ID,
+  DATABASE_ERROR,
 } from '../../variables/httpCode';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 
@@ -21,17 +23,19 @@ const router = Router();
 router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   console.log(`Received PUT request for /posts/${req.params.postId}/like`);
   console.log('Request body:', req.body);
+
+  const postId: number = parseInt(req.params.postId);
+  const tokenUser = req.user as any;
+
   try {
-    const postId: number = parseInt(req.params.postId);
     if (isNaN(postId)) {
       return res.status(400).json({
         isSuccess: false,
-        code: 'INVALID_POST_ID',
-        message: '유효하지 않은 게시물 ID입니다.',
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
+        result: {postId: null, userId: null},
       });
     }
-
-    const tokenUser = req.user as any;
 
     // kakaoId로 사용자 찾기
     const user = await userService.findUserByKakaoId(tokenUser.kakaoId);
@@ -41,6 +45,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
         message: NO_AUTHORIZATION.message,
+        result: {postId, userId: null},
       });
     }
 
@@ -51,44 +56,37 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         isSuccess: false,
         code: NOT_FOUND_POST.code,
         message: NOT_FOUND_POST.message,
+        result: {postId, userId: user.id},
       });
     }
 
     const like = await likeService.toggleLike({userId: user.id, postId});
 
-    const response: BaseResponse<OotdLikeResponse | null> = {
+    const response: BaseResponse<OotdLikeResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
-      result: like
-        ? {
-            id: like.id,
-            userId: like.user?.id,
-            postId: like.post?.id,
-            createdAt: like.createdAt,
-            status: like.status,
-            updatedAt: like.updatedAt,
-            deletedAt: like.deletedAt,
-          }
-        : null,
+      result: {
+        id: like.id,
+        userId: user.id,
+        postId: postId,
+        createdAt: like.createdAt,
+        status: like.status,
+        updatedAt: like.updatedAt,
+        deletedAt: like.deletedAt,
+      },
     };
 
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error: any) {
     console.error('Like Error:', error);
-    if (error.name === 'QueryFailedError') {
-      res.status(500).json({
-        isSuccess: false,
-        code: 'DATABASE_ERROR',
-        message: '데이터베이스 오류가 발생했습니다.',
-      });
-    } else {
-      res.status(500).json({
-        isSuccess: false,
-        code: HTTP_INTERNAL_SERVER_ERROR.code,
-        message: HTTP_INTERNAL_SERVER_ERROR.message,
-      });
-    }
+    const errorResponse = {
+      isSuccess: false,
+      code: error.name === 'QueryFailedError' ? DATABASE_ERROR.code : HTTP_INTERNAL_SERVER_ERROR.code,
+      message: error.name === 'QueryFailedError' ? DATABASE_ERROR.message : HTTP_INTERNAL_SERVER_ERROR.message,
+      result: {postId, userId: tokenUser ? tokenUser.id : null},
+    };
+    return res.status(500).json(errorResponse);
   }
 });
 

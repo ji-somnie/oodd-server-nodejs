@@ -2,6 +2,7 @@ import {Router, Request, Response} from 'express';
 import {AuthService} from './authService';
 import {AuthRequestDto} from './dtos/authRequest.dto';
 import {
+  status,
   KAKAO_AUTH_FAIL,
   KAKAO_TOKEN_FAIL,
   KAKAO_USER_NOT_FOUND,
