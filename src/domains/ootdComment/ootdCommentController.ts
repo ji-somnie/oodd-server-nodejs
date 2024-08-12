@@ -21,12 +21,35 @@ const router = Router();
 
 router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
-    const postId = parseInt(req.params.postId);
-    const tokenUserId = (req.user as any).id;
+    const postId: number = parseInt(req.params.postId);
+    const {username, kakaoId, googleId, email} = req.user as any;
     const {userId, content}: CommentRequest = req.body;
 
-    console.log('Token user ID:', tokenUserId);
-    console.log('Request user ID:', userId);
+    console.log('User info:', {username, kakaoId, googleId, email});
+
+    let finalUserId: number | undefined = userId;
+
+    if (kakaoId) {
+      const user = await userService.findUserByKakaoId(kakaoId);
+      finalUserId = user?.id;
+    } /*else if (googleId) {
+      const user = await userService.findUserByGoogleId(googleId);
+      finalUserId = user?.id; */
+    } catch (error) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
+      });
+    }
+
+    if (!finalUserId) {
+      return res.status(404).json({
+        isSuccess: false,
+        code: NOT_FOUND_USER.code,
+        message: NOT_FOUND_USER.message,
+      });
+    }
 
     // userId가 주어지지 않았거나, 주어진 userId가 토큰의 사용자 ID와 다를 경우
     if (userId !== undefined && userId !== tokenUserId) {
@@ -36,9 +59,6 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
         message: NO_AUTHORIZATION.message,
       });
     }
-
-    // userId가 주어지지 않았을 경우 tokenUserId를 사용
-    const finalUserId = userId !== undefined ? userId : tokenUserId;
 
     // user 유효성 검사
     const userExists = await userService.getUserByUserId(finalUserId);
