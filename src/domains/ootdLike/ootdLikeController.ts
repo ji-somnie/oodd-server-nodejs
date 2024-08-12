@@ -23,23 +23,24 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   console.log('Request body:', req.body);
   try {
     const postId: number = parseInt(req.params.postId);
-    const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
+    if (isNaN(postId)) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: 'INVALID_POST_ID',
+        message: '유효하지 않은 게시물 ID입니다.',
+      });
+    }
 
-    if (!userId) {
+    const tokenUser = req.user as any;
+
+    // kakaoId로 사용자 찾기
+    const user = await userService.findUserByKakaoId(tokenUser.kakaoId);
+
+    if (!user) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
         message: NO_AUTHORIZATION.message,
-      });
-    }
-
-    // User 유효성 검사
-    const userExists = await userService.getUserByUserId(userId);
-    if (!userExists) {
-      return res.status(404).json({
-        isSuccess: false,
-        code: NOT_FOUND_USER.code,
-        message: NOT_FOUND_USER.message,
       });
     }
 
@@ -53,7 +54,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
-    const like = await likeService.toggleLike({userId, postId});
+    const like = await likeService.toggleLike({userId: user.id, postId});
 
     const response: BaseResponse<OotdLikeResponse | null> = {
       isSuccess: true,
@@ -75,11 +76,19 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     res.status(200).json(response);
   } catch (error: any) {
     console.error('Like Error:', error);
-    res.status(500).json({
-      isSuccess: false,
-      code: HTTP_INTERNAL_SERVER_ERROR.code,
-      message: HTTP_INTERNAL_SERVER_ERROR.message,
-    });
+    if (error.name === 'QueryFailedError') {
+      res.status(500).json({
+        isSuccess: false,
+        code: 'DATABASE_ERROR',
+        message: '데이터베이스 오류가 발생했습니다.',
+      });
+    } else {
+      res.status(500).json({
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+      });
+    }
   }
 });
 
