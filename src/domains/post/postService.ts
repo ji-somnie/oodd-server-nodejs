@@ -151,14 +151,10 @@ export class PostService {
 
   // 게시물 삭제
   async deletePost(userId: number, postId: number): Promise<BaseResponse<null>> {
-    const queryRunner = myDataBase.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+    
     try {
-      const user = await validatedUser(userId);
+      const user = await validatedUser(userId); // 토큰 제대로 확인되면 나중에 빼자
       if (!user) {
-        await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: HTTP_NOT_FOUND.code,
@@ -167,9 +163,8 @@ export class PostService {
         };
       }
 
-      const post = await validatePost(userId, postId);
+      const post = await validatePost(userId, postId);    
       if (!post) {
-        await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: HTTP_NOT_FOUND.code,
@@ -177,14 +172,14 @@ export class PostService {
           result: null,
         };
       }
-      // cascade 작동이 안 돼서 직접 연관된 엔티티 삭제
-      await queryRunner.manager.delete(PostStyletag, {post: {id: postId}});
-      await queryRunner.manager.delete(PostClothing, {post: {id: postId}});
-      await queryRunner.manager.delete(Image, {post: {id: postId}});
-
-      await queryRunner.manager.remove(post);
-      await queryRunner.commitTransaction();
-
+  
+      // 연관된 엔티티 직접 삭제
+      await this.postStyletagRepository.delete({ post: { id: postId } });
+      await this.postClothingRepository.delete({ post: { id: postId } });
+      await this.imageRepository.delete({ post: { id: postId } });
+  
+      await this.postRepository.remove(post);
+  
       return {
         isSuccess: true,
         code: HTTP_OK.code,
@@ -192,7 +187,6 @@ export class PostService {
         result: null,
       };
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       console.error(error);
       return {
         isSuccess: false,
@@ -200,8 +194,6 @@ export class PostService {
         message: HTTP_INTERNAL_SERVER_ERROR.message,
         result: null,
       };
-    } finally {
-      await queryRunner.release();
     }
   }
 
