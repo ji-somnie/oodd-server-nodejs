@@ -1,14 +1,8 @@
-import express from "express";
-import userRoutes from "./domain/user/userRoutes";
-import { myDataBase } from "./utils/data-source";
+// import 'reflect-metadata';
+import {httpServer} from './app.module';
 
-const app = express();
+const PORT = process.env.PORT || 8080;
 
-app.use(express.json());
-app.use("/user", userRoutes);
-
-myDataBase.initialize().then(() => {
-    app.listen(3000, () => {
-        console.log("Server is running on port 3000");
-    });
+httpServer.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
