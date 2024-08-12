@@ -22,10 +22,14 @@ const router = Router();
 router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
-    const userId = (req.user as any).id;
-    const {content}: CommentRequest = req.body;
+    const tokenUserId = (req.user as any).id;
+    const {userId, content}: CommentRequest = req.body;
 
-    if (!userId) {
+    console.log('Token user ID:', tokenUserId);
+    console.log('Request user ID:', userId);
+
+    // userId가 주어지지 않았거나, 주어진 userId가 토큰의 사용자 ID와 다를 경우
+    if (userId !== undefined && userId !== tokenUserId) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
@@ -33,8 +37,11 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
       });
     }
 
-    //user 유효성
-    const userExists = await userService.getUserByUserId(userId);
+    // userId가 주어지지 않았을 경우 tokenUserId를 사용
+    const finalUserId = userId !== undefined ? userId : tokenUserId;
+
+    // user 유효성 검사
+    const userExists = await userService.getUserByUserId(finalUserId);
     if (!userExists) {
       return res.status(404).json({
         isSuccess: false,
@@ -43,7 +50,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
       });
     }
 
-    //post 유효성
+    // post 유효성 검사
     const postExists = await validatePostById(postId);
     if (!postExists) {
       return res.status(404).json({
@@ -53,7 +60,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
       });
     }
 
-    //content 유효성
+    // content 유효성 검사
     if (!content || content.trim() === '' || content.length > 500) {
       return res.status(400).json({
         isSuccess: false,
@@ -62,8 +69,10 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
       });
     }
 
-    const comment = await commentService.createComment({userId, postId, content});
+    // 댓글 생성
+    const comment = await commentService.createComment({userId: finalUserId, postId, content});
 
+    // 응답 생성
     const response: BaseResponse<CommentResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
@@ -73,8 +82,8 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
         userId: comment.user.id,
         postId: comment.post.id,
         content: comment.content,
-        createdAt: comment.createdAt,
-        updatedAt: comment.updatedAt,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     };
 
