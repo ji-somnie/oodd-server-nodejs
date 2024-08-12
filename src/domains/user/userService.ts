@@ -12,7 +12,7 @@ export class UserService {
   private userRepository = myDataBase.getRepository(User);
   private messageService = new CoolsmsMessageService(
     process.env.COOLSMS_API_KEY || '',
-    process.env.COOLSMS_API_SECRET || ''
+    process.env.COOLSMS_API_SECRET || '',
   );
 
   async findUserByKakaoId(kakaoId: string): Promise<User | null> {
@@ -80,35 +80,34 @@ export class UserService {
     const characters = '0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
-}
+  }
 
-    // SMS 전송 함수
-    public async sendVerificationCode(phone: string): Promise<void> {
-      const token = this.generateToken(6);
-      try {
-          const result = await this.messageService.sendOne({
-              to: phone,
-              from: process.env.COOLSMS_SENDER_PHONE as string,
-              text: `안녕하세요 요청하신 인증번호는 [${token}]입니다.`,
-              autoTypeDetect: true
-          });
-          console.log(result);
-          // 인증 코드를 DB 또는 캐시에 저장하는 로직 추가 필요
-      } catch (error) {
-          console.error('Error sending SMS:', error);
-          throw error;
-      }
+  // SMS 전송 함수
+  public async sendVerificationCode(phone: string): Promise<void> {
+    const token = this.generateToken(6);
+    try {
+      const result = await this.messageService.sendOne({
+        to: phone,
+        from: process.env.COOLSMS_SENDER_PHONE as string,
+        text: `안녕하세요 요청하신 인증번호는 [${token}]입니다.`,
+        autoTypeDetect: true,
+      });
+      console.log(result);
+      // 인증 코드를 DB 또는 캐시에 저장하는 로직 추가 필요
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+      throw error;
+    }
   }
 
   // 인증 코드 확인 함수
   public async verifyCode(phone: string, token: string): Promise<boolean> {
-      // 실제로는 DB 또는 캐시에서 인증 코드를 조회하고 검증해야 함
-      // 여기서는 간단히 true를 반환
-      return true;
-
+    // 실제로는 DB 또는 캐시에서 인증 코드를 조회하고 검증해야 함
+    // 여기서는 간단히 true를 반환
+    return true;
   }
 
   async getAllUsers(): Promise<User[]> {
