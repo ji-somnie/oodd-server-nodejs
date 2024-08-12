@@ -75,6 +75,36 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
   }
 });
 
+// 게시물 상세 조회
+// 홈 - 게시물 조회 화면
+// 게시물 1개만 반환
+router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const userId = req.user?.id; 
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
+    
+    const getPostDetailResponse = await postService.getPostDetail(userId, postId);
+
+    if (getPostDetailResponse.isSuccess) {
+      res.status(200).json(getPostDetailResponse);
+    } else {
+      res.status(404).json({
+        isSuccess: false,
+        code: getPostDetailResponse.code,
+        message: getPostDetailResponse.message,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
 // 대표 OOTD 지정
 router.patch('/:postId/isRepresentative/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
