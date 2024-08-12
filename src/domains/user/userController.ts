@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
-import { status } from '../../variables/httpCode';
+import  status  from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
