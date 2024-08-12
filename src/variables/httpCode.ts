@@ -189,3 +189,4 @@ export const NOT_PENDING_REQUEST = {code: 3006, message: '대기중인 요청이
 export const ALREADY_REQUESTED = {code: 3007, message: '이미 요청한 관계입니다.', err_code: 'ALREADY_REQUESTED'};
 
 export const NO_AUTHORIZATION = {code: 1000, message: '권한이 없습니다.', err_code: 'NO_AUTHORIZATION'};
+export const INVALID_POST_ID = {code: 1001, message: '유효하지 않은 게시물 ID입니다.', err_code: 'INVALID_POST_ID'};
