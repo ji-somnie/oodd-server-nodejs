@@ -23,9 +23,9 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   console.log('Request body:', req.body);
   try {
     const postId: number = parseInt(req.params.postId);
-    const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
+    const tokenUserId = (req.user as any).id; // JWT에서 추출한 사용자 ID
 
-    if (!userId) {
+    if (!tokenUserId) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
@@ -34,7 +34,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     }
 
     // User 유효성 검사
-    const userExists = await userService.getUserByUserId(userId);
+    const userExists = await userService.getUserByUserId(tokenUserId);
     if (!userExists) {
       return res.status(404).json({
         isSuccess: false,
@@ -53,7 +53,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
-    const like = await likeService.toggleLike({userId, postId});
+    const like = await likeService.toggleLike({userId: tokenUserId, postId});
 
     const response: BaseResponse<OotdLikeResponse | null> = {
       isSuccess: true,
