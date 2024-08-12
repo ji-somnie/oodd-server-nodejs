@@ -79,6 +79,72 @@ export const status = {
     err_code: 'GOOGLE_USER_NOT_FOUND',
   },
 
+  NAVER_AUTH_FAIL: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4006',
+    message: 'NAVER 사용자 인정 과정에서 오류가 발생했습니다',
+    err_code: 'NAVER_AUTH_FAIL',
+  },
+  NAVER_TOKEN_FAIL: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4007',
+    message: 'Error getting NAVER token',
+    err_code: 'NAVER_TOKEN_FAIL',
+  },
+  NAVER_USER_NOT_FOUND: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4008',
+    message: 'NAVER 계정의 정보를 불러오지 못했습니다.',
+    err_code: 'NAVER_USER_NOT_FOUND',
+  },
+
+  // phone verification err
+  PHONE_NUMBER_REQUIRED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4011',
+    message: 'Phone number is required',
+    err_code: 'PHONE_NUMBER_REQUIRED',
+  },
+  VERIFICATION_SEND_SUCCESS: {
+    status: StatusCodes.OK,
+    isSuccess: true,
+    code: 'USER4012',
+    message: 'Verification code sent successfully',
+    err_code: 'VERIFICATION_SEND_SUCCESS',
+  },
+  VERIFICATION_SEND_FAILED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4013',
+    message: 'Failed to send verification code',
+    err_code: 'VERIFICATION_SEND_FAILED',
+  },
+  VERIFICATION_CODE_NEEDED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4014',
+    message: 'Phone number and token are required',
+    err_code: 'VERIFICATION_CODE_NEEDED',
+  },
+  VERIFY_SUCCESS: {
+    status: StatusCodes.OK,
+    isSuccess: true,
+    code: 'USER4015',
+    message: 'Verification successful',
+    err_code: 'VERIFY_SUCCESS',
+  },
+  VERIFY_FAILED: {
+    status: StatusCodes.BAD_REQUEST,
+    isSuccess: false,
+    code: 'USER4016',
+    message: 'Failed to verify code',
+    err_code: 'VERIFY_FAILED',
+  },
+
   // post err
   ARTICLE_NOT_FOUND: {
     status: StatusCodes.NOT_FOUND,
