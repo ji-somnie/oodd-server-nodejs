@@ -25,7 +25,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     const postId: number = parseInt(req.params.postId);
     const userId = (req.user as any).id; // JWT에서 추출한 사용자 ID 사용
 
-    if (!userId) {
+    if (!userId || userId !== req.body.userId) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
