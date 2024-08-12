@@ -25,7 +25,6 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
-app.use("/users", userRouter);
 app.use("/block", blockRouter); //테스트용
 
 app.use(
@@ -40,6 +39,7 @@ app.use(
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 app.use("/posts", authenticateJWT, postRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
+app.use("/users", authenticateJWT, userRouter);
 //app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
