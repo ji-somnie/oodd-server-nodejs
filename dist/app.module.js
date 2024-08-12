@@ -15,7 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.io = exports.httpServer = exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const userController_1 = __importDefault(require("./domains/user/userController"));
+const ootdController_1 = __importDefault(require("./domains/ootd/ootdController"));
 const authController_1 = __importDefault(require("./domains/auth/authController"));
+const blockController_1 = __importDefault(require("./domains/block/blockController"));
+const ootdLikeController_1 = __importDefault(require("./domains/ootdLike/ootdLikeController"));
 const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
@@ -26,7 +29,7 @@ const userService_1 = require("./domains/user/userService");
 const data_source_1 = require("./data-source");
 const authMiddleware_1 = require("./middlewares/authMiddleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const ootdLikeController_1 = __importDefault(require("./domains/ootdLike/ootdLikeController"));
+const userRelationshipController_1 = __importDefault(require("./domains/userRelationship/userRelationshipController"));
 const chatRoomService = new chatRoomService_1.ChatRoomService();
 const chatMessageService = new chatMessageService_1.ChatMessageService();
 const userService = new userService_1.UserService();
@@ -36,6 +39,7 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use('/auth', authController_1.default); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userController_1.default);
+app.use('/block', blockController_1.default); //테스트용
 app.use('/posts', ootdLikeController_1.default);
 app.use((0, cors_1.default)({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
@@ -44,8 +48,11 @@ app.use((0, cors_1.default)({
     exposedHeaders: ['set-cookie'],
 }));
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
-//app.use("/posts", authenticateJWT, postRouter);
+//app.use('/posts', authenticateJWT, postRouter);
+app.use('/ootd', authMiddleware_1.authenticateJWT, ootdController_1.default);
 app.use('/chat-rooms', authMiddleware_1.authenticateJWT, chatRoomController_1.default);
+app.use('/user-relationships', authMiddleware_1.authenticateJWT, userRelationshipController_1.default);
+//app.use("/block", authenticateJWT, blockRouter);
 const httpServer = (0, http_1.createServer)(app);
 exports.httpServer = httpServer;
 const io = new socket_io_1.Server(httpServer, {
