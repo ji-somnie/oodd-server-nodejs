@@ -7,33 +7,37 @@ import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 dotenv.config();
 
+<<<<<<< HEAD
 const router = Router();
 
+=======
+const userRouter = Router();
+>>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 const userService = new UserService();
 
 
-//일반 회원가입 (추후 삭제 필요)
-router.post("/", async (req: Request, res: Response) => {
-  try {
-    const userRequestDto = req.body as UserRequestDto; // 요청 본문을 UserRequestDto로 변환
-    const newUser = await userService.createUser(userRequestDto);
-    res.status(201).json(newUser); // 201 Created 상태 코드와 함께 응답
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" }); // 에러 발생 시 500 상태 코드와 함께 응답
-  }
-});
+// //일반 회원가입 (추후 삭제 필요)
+// router.post("/", async (req: Request, res: Response) => {
+//   try {
+//     const userRequestDto = req.body as UserRequestDto; // 요청 본문을 UserRequestDto로 변환
+//     const newUser = await userService.createUser(userRequestDto);
+//     res.status(201).json(newUser); // 201 Created 상태 코드와 함께 응답
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal Server Error" }); // 에러 발생 시 500 상태 코드와 함께 응답
+//   }
+// });
 
+<<<<<<< HEAD
 /*
 //카카오 로그인
 router.post("/login/kakao", async (req: Request, res: Response) => {
  
 });
+=======
+>>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
 
-//네이버 로그인
-router.post("/login/naver", async (req: Request, res: Response) => {
-  
-});
 
+<<<<<<< HEAD
 //구글 로그인
 router.post("/login/google", async (req: Request, res: Response) => {
   
@@ -78,3 +82,6 @@ router.post("/phone/verification/check", async (req: Request, res: Response) => 
 });
 
 export default router;
+=======
+export default Router;
+>>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab

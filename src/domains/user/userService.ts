@@ -1,13 +1,15 @@
-import { UserRepository } from '../../repositories/userRepository';
-import { UserRequestDto } from './dtos/userRequest.dto';
-import { UserResponseDto } from './dtos/userResponse.dto';
-import { User } from '../../entities/userEntity';
+import {UserRequestDto} from './dtos/userRequest.dto';
+import {UserResponseDto} from './dtos/userResponse.dto';
+import {User} from '../../entities/userEntity';
+import myDataBase from '../../data-source';
+import dayjs from 'dayjs';
 
 import CoolsmsMessageService from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 dotenv.config();
 
 export class UserService {
+<<<<<<< HEAD
   private userRepository: UserRepository;
   private messageService: CoolsmsMessageService;
 
@@ -17,6 +19,32 @@ export class UserService {
     //this.messageService = new coolsms.default(process.env.COOLSMS_API_KEY, process.env.COOLSMS_API_SECRET);
   }
 
+=======
+  private userRepository = myDataBase.getRepository(User);
+
+  async findUserByKakaoId(kakaoId: string): Promise<User | null> {
+    return await this.userRepository.findOne({where: {kakaoId: kakaoId}});
+  }
+
+  async findUserByGoogleId(googleId: string): Promise<User | null> {
+    return await this.userRepository.findOne({where: {googleId: googleId}});
+  }
+
+  async createUserByPayload(payload: any): Promise<User> {
+    let user = myDataBase.getRepository(User).create();
+    user.googleId = payload.googleId ? payload.googleId : null;
+    user.kakaoId = payload.kakaoId ? payload.kakaoId : null;
+    user.email = payload.email;
+    user.name = payload.username;
+    user.profilePictureUrl = payload.img;
+    user.status = 'activated';
+    user.joinedAt = dayjs().toDate();
+    user.createdAt = dayjs().toDate();
+    user.updatedAt = dayjs().toDate();
+    return await this.userRepository.save(user);
+  }
+  // 메서드 정의
+>>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
   async createUser(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
     // newUser 객체를 클라이언트로부터 받은 데이터로 초기화
     const newUser = new User();
@@ -51,6 +79,7 @@ export class UserService {
     return userResponseDto;
   }
 
+<<<<<<< HEAD
   // 인증 코드 생성 함수
   private generateToken(length: number): string {
     const characters = '0123456789';
@@ -84,5 +113,13 @@ export class UserService {
       // 실제로는 DB 또는 캐시에서 인증 코드를 조회하고 검증해야 함
       // 여기서는 간단히 true를 반환
       return true;
+=======
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  async getUserByUserId(userId: number): Promise<User | null> {
+    return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
+>>>>>>> 3feac2956c1deb7aa8a1512c2a776c6e53f8a5ab
   }
 }
