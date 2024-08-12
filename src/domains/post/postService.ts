@@ -12,7 +12,7 @@ import {Clothing} from '../../entities/clothingEntity';
 import {Styletag} from '../../entities/styletagEntity';
 import {PostClothing} from '../../entities/postClothingEntity';
 
-import {PostResponseDto} from './dtos/postResponse.dto';
+import {BasePostListResponseDto, PostListResponseDto, PostResponseDto} from './dtos/postResponse.dto';
 import { Like } from '../../entities/likeEntity';
 import { Comment } from '../../entities/commentEntity';
 
@@ -277,6 +277,83 @@ async getPostDetail(userId: number, postId: number): Promise<BaseResponse<PostRe
       message: HTTP_INTERNAL_SERVER_ERROR.message,
       result: null,
     };
+  }
+}
+
+// 게시물 리스트 조회
+async getPostList(queryUserId: number, currentUserId: number): Promise<BaseResponse<PostListResponseDto>> {
+  try {
+
+    // 특정 사용자의 모든 게시물 
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user') 
+      .leftJoinAndSelect('post.images', 'image')
+      .where('post.userId = :queryUserId', { queryUserId })
+      .andWhere('post.status = :status', { status: 'activated' })
+      .orderBy('post.createdAt', 'DESC')
+      .getMany();
+
+    // 총 좋아요 수
+    const totalLikes = await this.likeRepository
+      .createQueryBuilder('like')
+      .leftJoin('like.post', 'post')
+      .where('post.userId = :queryUserId', { queryUserId })
+      .andWhere('post.status = :status', { status: 'activated' }) 
+      .getCount();
+
+    // 각각의 게시물에 대한 정보
+    const postDtos: BasePostListResponseDto[] = [];
+
+
+    for (const post of posts) {
+      // console.log("postId is: ", post.id);
+
+      // 해당 게시물의 좋아요 수
+      const likes = await this.likeRepository
+        .createQueryBuilder('like')
+        .where('like.postId = :postId', { postId: post.id })
+        .getCount();
+        // console.log("postId is: ", post.id);
+
+      
+      // 해당 게시물의 댓글 수 - 내 게시물일 때만 
+      let commentsCount: number | undefined;
+      if (queryUserId === currentUserId) {
+        commentsCount = await this.commentRepository
+          .createQueryBuilder('comment')
+          .where('comment.postId = :postId', { postId: post.id })
+          .getCount();
+          // console.log("postId is: ", post.id);
+
+      }
+
+      // 게시물 리스트에 보여질 첫번째 사진
+      const firstPhoto = post.images.find(image => image.order === 1)?.url || '';
+      // console.log('firstPhoto: ', firstPhoto);
+
+      const postDto: BasePostListResponseDto = {
+        postId: post.id,
+        userId: post.user.id,
+        likes: likes > 0 ? likes : 0,
+        firstPhoto: firstPhoto,
+        isRepresentative: post.isRepresentative,
+        ...(queryUserId === currentUserId && commentsCount !== undefined ? { commentsCount } : {}),
+      };
+
+      postDtos.push(postDto);
+    }
+
+    const postListResponseDto: PostListResponseDto = {
+      totalPosts: posts.length,
+      totalLikes: totalLikes,
+      posts: postDtos,
+    };
+
+    return new BaseResponse<PostListResponseDto>(true, HTTP_OK.code, HTTP_OK.message, postListResponseDto);
+  } catch (error) {
+    console.error(error);
+    return new BaseResponse<PostListResponseDto>(false, HTTP_INTERNAL_SERVER_ERROR.code, HTTP_INTERNAL_SERVER_ERROR.message);
   }
 }
 

@@ -12,3 +12,18 @@ export class PostResponseDto extends BasePostDto{
       timestamp: string | null;
   }[] | null;
 }
+
+export class PostListResponseDto {
+  totalPosts!: number;
+  totalLikes!: number;
+  posts!: BasePostListResponseDto[];
+}
+
+export class BasePostListResponseDto {
+  postId!: number;
+  userId!: number;
+  likes!: number;
+  firstPhoto!: string;
+  isRepresentative!: boolean;
+  commentsCount?: number; // 내 게시물일 때만
+}
