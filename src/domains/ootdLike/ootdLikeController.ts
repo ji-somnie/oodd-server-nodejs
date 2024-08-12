@@ -22,7 +22,7 @@ router.put('/:postId/like', async (req: Request, res: Response) => {
     // User 유효성 검사
     const userExists = await userService.getUserByUserId(userId);
     if (!userExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         isSuccess: false,
         code: NOT_FOUND_USER.code,
         message: NOT_FOUND_USER.message,
@@ -32,7 +32,7 @@ router.put('/:postId/like', async (req: Request, res: Response) => {
     // Post 유효성 검사
     const postExists = await validatePostById(postId);
     if (!postExists) {
-      return res.status(400).json({
+      return res.status(404).json({
         isSuccess: false,
         code: NOT_FOUND_POST.code,
         message: NOT_FOUND_POST.message,
@@ -48,8 +48,8 @@ router.put('/:postId/like', async (req: Request, res: Response) => {
       result: like
         ? {
             id: like.id,
-            userId: like.user.id,
-            postId: like.post.id,
+            userId: like.user?.id,
+            postId: like.post?.id,
             createdAt: like.createdAt,
             status: like.status,
             updatedAt: like.updatedAt,

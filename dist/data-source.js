@@ -32,11 +32,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeDatabase = void 0;
+exports.initializeDatabase = exports.myDataBase = void 0;
 const typeorm_1 = require("typeorm");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const myDataBase = new typeorm_1.DataSource({
+exports.myDataBase = new typeorm_1.DataSource({
     type: 'mysql',
     host: process.env.DEV_DB_HOST ? process.env.DEV_DB_HOST : process.env.DB_HOST,
     port: 3306,
@@ -49,11 +49,11 @@ const myDataBase = new typeorm_1.DataSource({
 });
 const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (!myDataBase.isInitialized) {
-            yield myDataBase.initialize();
+        if (!exports.myDataBase.isInitialized) {
+            yield exports.myDataBase.initialize();
             console.log('Data Source has been initialized!');
         }
-        return myDataBase;
+        return exports.myDataBase;
     }
     catch (err) {
         console.error('Error during Data Source initialization:', err);
@@ -61,4 +61,4 @@ const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.initializeDatabase = initializeDatabase;
-exports.default = myDataBase;
+exports.default = exports.myDataBase;
