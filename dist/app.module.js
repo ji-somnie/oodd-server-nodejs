@@ -42,10 +42,8 @@ app.use('/users', userController_1.default);
 app.use('/block', blockController_1.default); //테스트용
 app.use('/posts', ootdLikeController_1.default);
 app.use((0, cors_1.default)({
-    origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
+    origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-    exposedHeaders: ['set-cookie'],
 }));
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 //app.use('/posts', authenticateJWT, postRouter);
