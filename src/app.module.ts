@@ -31,7 +31,13 @@ app.use('/block', blockRouter); //테스트용
 
 app.use(
   cors({
-    origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
+    origin: [
+      'https://oodd.today',
+      'https://dev.oodd.today',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      process.env.CALLBACK_URL || '',
+    ],
     credentials: true,
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
     exposedHeaders: ['set-cookie'],
