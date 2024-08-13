@@ -44,8 +44,12 @@ app.use('/ootd', authenticateJWT, ootdRouter);
 //app.use('/posts', authenticateJWT, postRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
+<<<<<<< HEAD
 //app.use("/block", authenticateJWT, blockRouter);
 app.use('/users', userRouter);
+=======
+app.use('/block', authenticateJWT, blockRouter);
+>>>>>>> 949326c (Merge: with dev)
 
 const httpServer = createServer(app);
 
