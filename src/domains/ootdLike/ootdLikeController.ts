@@ -18,6 +18,7 @@ const likeService = new OotdLikeService();
 const userService = new UserService();
 const router = Router();
 
+//좋아요 누르기/취소
 router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   console.log(`Received PUT request for /posts/${req.params.postId}/like`);
   console.log('Request body:', req.body);
@@ -72,6 +73,11 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         status: like.status,
         updatedAt: like.updatedAt,
         deletedAt: like.deletedAt,
+        user: {
+          id: user.id,
+          nickname: user.nickname,
+          profilePictureUrl: user.profilePictureUrl,
+        },
       },
     };
 
@@ -88,6 +94,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   }
 });
 
+//좋아요 조회
 router.get('/:postId/like', async (req: Request, res: Response) => {
   const {postId} = req.params;
   const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
