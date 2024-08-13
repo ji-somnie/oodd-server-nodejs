@@ -79,7 +79,18 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
 
 router.patch('/:postId/comments/:commentId', async (req: Request, res: Response) => {
   try {
+    const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
+
+    // post 유효성 검사
+    const postExists = await validatePostById(postId);
+    if (!postExists) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_POST.code,
+        message: INVALID_POST.message,
+      });
+    }
 
     // comment 유효성 검사
     const commentExists = await commentService.getCommentById(commentId);

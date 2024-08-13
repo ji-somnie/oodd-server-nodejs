@@ -33,6 +33,10 @@ export class CommentService {
       throw new Error('Comment not found');
     }
 
+    if (comment.status === 'deactivated') {
+      throw new Error('Comment already deleted');
+    }
+
     comment.status = 'deactivated';
     comment.deletedAt = dayjs().toDate();
 
