@@ -12,7 +12,7 @@ export class OotdLikeService {
         post: {id: postId},
         status: 'activated',
       },
-      relations: ['user', 'post'], // 'user' 관계를 로드합니다. 필요하지 않다면 이 줄을 제거하세요.
+      relations: ['user', 'post'], // 'user' 관계 로드
     });
   }
 

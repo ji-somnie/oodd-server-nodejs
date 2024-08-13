@@ -95,7 +95,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
 });
 
 //좋아요 조회
-router.get('/:postId/like', async (req: Request, res: Response) => {
+router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   const {postId} = req.params;
   const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
 
