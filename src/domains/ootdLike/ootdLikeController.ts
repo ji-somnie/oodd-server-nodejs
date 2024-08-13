@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
-import {OotdLikeResponse} from './dtos/response';
+import {GetOotdLikeResponse, OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {UserService} from '../user/userService';
 import {validatePostById} from '../../validationTest/validatePost';
@@ -18,10 +18,8 @@ const likeService = new OotdLikeService();
 const userService = new UserService();
 const router = Router();
 
-router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
-  console.log(`Received PUT request for /posts/${req.params.postId}/like`);
-  console.log('Request body:', req.body);
-
+//좋아요 누르기/취소
+router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   const postId: number = parseInt(req.params.postId);
   const tokenUser = req.user as any;
 
@@ -35,8 +33,8 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
-    // kakaoId로 사용자 찾기
-    const user = await userService.findUserByKakaoId(tokenUser.kakaoId);
+    // 사용자 찾기
+    const user = await userService.getUserByUserId(tokenUser.id);
 
     if (!user) {
       return res.status(401).json({
@@ -71,7 +69,6 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         createdAt: like.createdAt,
         status: like.status,
         updatedAt: like.updatedAt,
-        deletedAt: like.deletedAt,
       },
     };
 
@@ -85,6 +82,58 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       result: {postId, userId: tokenUser ? tokenUser.id : null},
     };
     return res.status(500).json(errorResponse);
+  }
+});
+
+//좋아요 조회
+router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
+  const {postId} = req.params;
+  const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
+
+  try {
+    // Post 유효성 검사
+    const postExists = await validatePostById(numericPostId);
+    if (!postExists) {
+      return res.status(404).json({
+        isSuccess: false,
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
+      });
+    }
+
+    // post ID로 likes 가져오기
+    const likes = await likeService.getLikesByPostId(numericPostId);
+
+    const response: BaseResponse<{totalLikes: number; likes: GetOotdLikeResponse[]}> = {
+      isSuccess: true,
+      code: HTTP_OK.code,
+      message: HTTP_OK.message,
+      result: {
+        totalLikes: likes.length,
+        likes: likes.map(like => ({
+          id: like.id,
+          userId: like.user?.id,
+          postId: like.post?.id,
+          status: like.status,
+          createdAt: like.createdAt,
+          updatedAt: like.updatedAt,
+          user: {
+            id: like.user?.id,
+            nickname: like.user?.nickname,
+            profilePictureUrl: like.user?.profilePictureUrl,
+          },
+        })),
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    console.error('Like Fetch Error:', error);
+    res.status(500).json({
+      isSuccess: false,
+      code: HTTP_INTERNAL_SERVER_ERROR.code,
+      message: HTTP_INTERNAL_SERVER_ERROR.message,
+    });
   }
 });
 
