@@ -15,7 +15,6 @@ export class BaseEntity {
   @UpdateDateColumn({type: 'datetime'})
   updatedAt!: Date;
 
-  @DeleteDateColumn({type: 'datetime'})
-  @Column({nullable: true})
+  @Column({type: 'datetime', nullable: true})
   deletedAt?: Date | null;
 }
