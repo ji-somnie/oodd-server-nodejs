@@ -184,7 +184,7 @@ router.get('/:postId/comments', authenticateJWT, async (req: Request, res: Respo
       result: {
         comments: comments.map(comment => ({
           id: comment.id,
-          postId: comment.post.id,
+          postId: postId,
           content: comment.content,
           status: comment.status,
           createdAt: comment.createdAt,

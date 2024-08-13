@@ -28,7 +28,10 @@ export class CommentService {
   }
 
   async getCommentsByPostId(postId: number): Promise<Comment[]> {
-    return this.commentRepository.find({where: {post: {id: postId}, status: 'activated'}});
+    return this.commentRepository.find({
+      where: { post: { id: postId }, status: 'activated' },
+      relations: ['user']
+    });
   }
 
   //댓글 삭제
