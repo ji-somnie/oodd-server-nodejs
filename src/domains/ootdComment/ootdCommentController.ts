@@ -1,5 +1,4 @@
 import {Request, Response, Router} from 'express';
-import {UserService} from '../user/userService';
 import {CommentService} from './ootdCommentService';
 import {CommentRequest} from './dtos/request';
 import {CommentResponse} from './dtos/response';
@@ -7,7 +6,6 @@ import {BaseResponse} from '../../base/baseResponse';
 import {
   HTTP_OK,
   HTTP_INTERNAL_SERVER_ERROR,
-  NOT_FOUND_USER,
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
   INVALID_CONTENT,
@@ -16,34 +14,19 @@ import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
-const userService = new UserService();
 const router = Router();
 
 router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId: number = parseInt(req.params.postId);
-    const {id: tokenUserId, username, kakaoId, googleId, email} = req.user as any;
+    const user = req.user as any;
     const {content}: CommentRequest = req.body;
 
-    console.log('User info:', {username, kakaoId, googleId, email});
-
-    let finalUserId: number | undefined = tokenUserId;
-
-    if (!finalUserId) {
-      return res.status(404).json({
+    if (!user || !user.id) {
+      return res.status(401).json({
         isSuccess: false,
-        code: NOT_FOUND_USER.code,
-        message: NOT_FOUND_USER.message,
-      });
-    }
-
-    // user 유효성 검사
-    const userExists = await userService.getUserByUserId(finalUserId);
-    if (!userExists) {
-      return res.status(404).json({
-        isSuccess: false,
-        code: NOT_FOUND_USER.code,
-        message: NOT_FOUND_USER.message,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
       });
     }
 
@@ -67,7 +50,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
     }
 
     // 댓글 생성
-    const comment = await commentService.createComment({userId: finalUserId, postId, content});
+    const comment = await commentService.createComment({userId: user.id, postId, content});
 
     // 응답 생성
     const response: BaseResponse<CommentResponse> = {
