@@ -18,6 +18,7 @@ import {validatePostById} from '../../validationTest/validatePost';
 const commentService = new CommentService();
 const router = Router();
 
+//댓글 생성
 router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId: number = parseInt(req.params.postId);
@@ -81,20 +82,12 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
   }
 });
 
+//댓글 삭제
 router.patch('/:postId/comment/:commentId', async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
-
-    // post 유효성 검사
-    const postExists = await validatePostById(postId);
-    if (!postExists) {
-      return res.status(400).json({
-        isSuccess: false,
-        code: INVALID_POST_ID.code,
-        message: INVALID_POST_ID.message,
-      });
-    }
+    const user = req.user as any;
 
     // comment 유효성 검사
     const commentExists = await commentService.getCommentById(commentId);
@@ -103,6 +96,25 @@ router.patch('/:postId/comment/:commentId', async (req: Request, res: Response) 
         isSuccess: false,
         code: INVALID_COMMENT.code,
         message: INVALID_COMMENT.message,
+      });
+    }
+
+    // post 유효성 검사
+    const postExists = await validatePostById(postId);
+    if (!postExists || commentExists.post?.id !== postId) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
+      });
+    }
+
+    // 사용자 유효성 검사
+    if (!user || !user.id || commentExists.user?.id !== user.id) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
       });
     }
 
