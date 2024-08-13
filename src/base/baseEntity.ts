@@ -1,4 +1,3 @@
-//src/base/baseEntity.ts
 import {PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Column} from 'typeorm';
 import dayjs from 'dayjs';
 
