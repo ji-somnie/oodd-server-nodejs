@@ -1,3 +1,4 @@
+//src/base/baseResponse.ts
 export class BaseResponse<T = any> {
   isSuccess!: boolean;
   code!: number; //성공코드
