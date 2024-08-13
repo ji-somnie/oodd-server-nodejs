@@ -1,10 +1,14 @@
 import {Repository} from 'typeorm';
-import {myDataBase} from '../../data-source';
+import myDataBase from '../../data-source';
 import {Like} from '../../entities/likeEntity';
 import {OotdLikeRequest} from './dtos/request';
 
 export class OotdLikeService {
   private ootdLikeRepository: Repository<Like> = myDataBase.getRepository(Like);
+
+  async getLikesByPostId(postId: number): Promise<Like[]> {
+    return this.ootdLikeRepository.find({where: {post: {id: postId}, status: 'activated'}});
+  }
 
   async toggleLike(requestDTO: OotdLikeRequest): Promise<Like> {
     const {userId, postId} = requestDTO;

@@ -36,4 +36,7 @@ export class Post extends BaseEntity {
 
   @OneToMany(() => Image, image => image.post, {cascade: true})
   images!: Image[];
+
+  @OneToMany(() => Like, like => like.post)
+  likes?: Like[];
 }

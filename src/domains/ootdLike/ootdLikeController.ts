@@ -88,4 +88,48 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
   }
 });
 
+router.get('/:postId/like', async (req: Request, res: Response) => {
+  const {postId} = req.params;
+  const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
+
+  try {
+    // Post 유효성 검사
+    const postExists = await validatePostById(numericPostId);
+    if (!postExists) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
+      });
+    }
+
+    // post ID로 likes 가져오기
+    const likes = await likeService.getLikesByPostId(numericPostId);
+
+    const response: BaseResponse<OotdLikeResponse[]> = {
+      isSuccess: true,
+      code: HTTP_OK.code,
+      message: HTTP_OK.message,
+      result: likes.map(like => ({
+        id: like.id,
+        userId: like.user.id,
+        postId: like.post.id,
+        status: like.status,
+        createdAt: like.createdAt,
+        updatedAt: like.updatedAt,
+        deletedAt: like.deletedAt,
+      })),
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    console.error('Like Fetch Error:', error);
+    res.status(500).json({
+      isSuccess: false,
+      code: HTTP_INTERNAL_SERVER_ERROR.code,
+      message: HTTP_INTERNAL_SERVER_ERROR.message,
+    });
+  }
+});
+
 export default router;
