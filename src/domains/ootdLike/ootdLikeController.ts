@@ -19,10 +19,7 @@ const userService = new UserService();
 const router = Router();
 
 //좋아요 누르기/취소
-router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
-  console.log(`Received PUT request for /posts/${req.params.postId}/like`);
-  console.log('Request body:', req.body);
-
+router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   const postId: number = parseInt(req.params.postId);
   const tokenUser = req.user as any;
 
