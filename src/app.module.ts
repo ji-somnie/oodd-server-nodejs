@@ -41,6 +41,7 @@ app.use(
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 //app.use('/posts', authenticateJWT, postRouter);
 app.use('/ootd', authenticateJWT, ootdRouter);
+//app.use('/posts', authenticateJWT, postRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 //app.use("/block", authenticateJWT, blockRouter);
