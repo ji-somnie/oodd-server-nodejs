@@ -257,3 +257,5 @@ export const NAVER_USER_NOT_FOUND = {
   message: 'NAVER 계정의 정보를 불러오지 못했습니다.',
   err_code: 'NAVER_USER_NOT_FOUND',
 };
+
+export const INVALID_CONTENT = {code: 1003, message: 'Invalid Content', err_code: 'INVALID_CONTENT'};

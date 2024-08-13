@@ -5,6 +5,7 @@ import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
 import blockRouter from './domains/block/blockController';
 import ootdLikeRouter from './domains/ootdLike/ootdLikeController';
+import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -29,7 +30,7 @@ app.use(express.json());
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userRouter);
 app.use('/block', blockRouter); //테스트용
-app.use('/posts', ootdLikeRouter, postRouter);
+app.use('/posts', ootdLikeRouter, ootdCommentRouter, postRouter);
 
 app.use(
   cors({
