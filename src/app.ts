@@ -9,8 +9,6 @@ httpServer.listen(PORT, async () => {
 });
 =======
 import app from './app.module';
-import * as express from 'express';
-//import { Request, Response } from "express"
 import {myDataBase} from './data-source';
 
 myDataBase
