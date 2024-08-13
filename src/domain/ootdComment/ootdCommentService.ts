@@ -1,18 +1,27 @@
 import {Repository} from 'typeorm';
+import {commentRepository} from '../../repositories/ootdCommentRepository';
 import {Comment} from '../../entities/ootdCommentEntity';
-import {CommentRequest} from './dto/request';
-import {myDataBase} from '../../data-source';
+import {CommentDeleteRequest} from './dto/request';
+import dayjs from 'dayjs';
 
 export class CommentService {
   private commentRepository: Repository<Comment>;
 
   constructor() {
-    this.commentRepository = myDataBase.getRepository(Comment);
+    this.commentRepository = commentRepository;
   }
 
-  async createComment(request: CommentRequest): Promise<Comment> {
-    const {userId, postId, content} = request;
-    const newComment = this.commentRepository.create({userId, postId, content});
-    return await this.commentRepository.save(newComment);
+  async deleteComment(request: CommentDeleteRequest): Promise<Comment | null> {
+    const {commentId} = request;
+    const comment = await this.commentRepository.findOne({where: {id: commentId}});
+
+    if (!comment) {
+      return null;
+    }
+
+    comment.status = false;
+    comment.deletedAt = dayjs();
+
+    return await this.commentRepository.save(comment);
   }
 }
