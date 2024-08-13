@@ -4,6 +4,6 @@ export interface CommentResponse {
   postId: number;
   content: string;
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt: Date;
   deletedAt?: Date;
 }
