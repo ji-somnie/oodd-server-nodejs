@@ -6,17 +6,10 @@ import {ChatRoom} from './chatRoomEntity';
 import {UserRelationship} from './userRelationshipEntity';
 import {Like} from './likeEntity';
 
-<<<<<<< HEAD
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
   @Column({unique: true, length: 255})
   kakaoId!: string; // 카카오 고유 ID를 저장하는 필드
-=======
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
->>>>>>> f584d60 (temp)
 
   @Column({unique: true, length: 255})
   googleId!: string; // 구글 고유 ID를 저장하는 필드

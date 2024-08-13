@@ -27,9 +27,13 @@ export class CommentService {
     return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}, relations: ['user', 'post']});
   }
 
-  async getCommentsByPostId(postId: number): Promise<Comment[]> {
+  async getCommentsByPostIdAndUserId(postId: number, userId: number): Promise<Comment[]> {
     return this.commentRepository.find({
-      where: { post: { id: postId }, status: 'activated' },
+      where: { 
+        post: { id: postId }, 
+        user: { id: userId },
+        status: 'activated' 
+      },
       relations: ['user']
     });
   }

@@ -164,14 +164,14 @@ router.get('/:postId/comments', authenticateJWT, async (req: Request, res: Respo
     }
 
     // 댓글 조회
-    const comments = await commentService.getCommentsByPostId(postId);
+    const comments = await commentService.getCommentsByPostIdAndUserId(postId, user.id);
 
     // 댓글이 없을 경우
     if (comments.length === 0) {
       const response: BaseResponse<null> = {
         isSuccess: false,
         code: INVALID_COMMENT.code,
-        message: 'No comments found',
+        message: '해당 게시물에 작성한 댓글이 없습니다.',
       };
       return res.status(400).json(response);
     }
