@@ -2,23 +2,44 @@
 import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
 import {OotdLikeRequest} from './dto/request';
+import {OotdLikeResponse} from './dto/response';
+import {BaseResponse} from '../../base/baseResponse';
+import {HTTP_OK} from '../../variables/httpCode';
 
-const likeService = new OotdLikeService();
+const likeReadService = new OotdLikeService();
 const router = Router();
 
-router.get('/check', async (req: Request, res: Response) => {
+router.get('/likes/:postId', async (req: Request, res: Response) => {
   try {
-    const {postId, userId}: {postId: number; userId: number} = req.query as any;
+    const postId: number = parseInt(req.params.postId);
+    const likes = await likeReadService.getLikesByPostId(postId);
 
-    if (typeof postId !== 'number' || typeof userId !== 'number') {
-      return res.status(400).json({message: 'Invalid request parameters'});
-    }
+    const response = likes.map(like => {
+      const likeResponse = new OotdLikeResponse();
+      likeResponse.id = like.id;
+      likeResponse.userId = like.userId;
+      likeResponse.postId = like.postId;
+      likeResponse.status = like.status;
+      likeResponse.createdAt = dayjs(like.createdAt);
+      likeResponse.updatedAt = like.updatedAt ? dayjs(like.updatedAt) : undefined;
+      likeResponse.deletedAt = like.deletedAt ? dayjs(like.deletedAt) : undefined;
+      return likeResponse;
+    });
 
-    const likeExists = await likeService.checkLike({postId, userId});
+    const baseResponse = new BaseResponse<OotdLikeResponse[]>();
+    baseResponse.isSuccess = true;
+    baseResponse.code = 200;
+    baseResponse.message = 'Success';
+    baseResponse.result = response;
 
-    res.status(200).json({exists: likeExists});
+    return res.status(200).json(baseResponse);
   } catch (error: any) {
-    res.status(500).json({message: error.message});
+    const baseResponse = new BaseResponse<null>();
+    baseResponse.isSuccess = false;
+    baseResponse.code = 500;
+    baseResponse.message = error.message;
+
+    return res.status(500).json(baseResponse);
   }
 });
 

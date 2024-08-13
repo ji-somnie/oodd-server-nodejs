@@ -11,13 +11,7 @@ export class OotdLikeService {
     this.ootdLikeRepository = myDataBase.getRepository(Like);
   }
 
-  async checkLike(requestDTO: OotdLikeRequest): Promise<boolean> {
-    const {userId, postId} = requestDTO;
-
-    const existingLike = await this.ootdLikeRepository.findOne({
-      where: {userId, postId},
-    });
-
-    return !!existingLike; // 좋아요가 존재하면 true, 아니면 false
+  async getLikesByPostId(postId: number): Promise<Like[]> {
+    return this.ootdLikeRepository.find({where: {postId, status: true}});
   }
 }
