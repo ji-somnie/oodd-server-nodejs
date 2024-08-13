@@ -3,3 +3,7 @@ export interface CommentRequest {
   postId: number;
   content: string;
 }
+
+export interface CommentDeleteRequest {
+  commentId: number;
+}

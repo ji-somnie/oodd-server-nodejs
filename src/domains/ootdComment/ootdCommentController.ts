@@ -78,4 +78,48 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
   }
 });
 
+router.patch('/comments/delete', async (req: Request, res: Response) => {
+  try {
+    const {commentId}: CommentDeleteRequest = req.body;
+
+    // comment 유효성 검사
+    const commentExists = await commentService.getCommentById(commentId);
+    if (!commentExists) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_COMMENT.code,
+        message: INVALID_COMMENT.message,
+      });
+    }
+
+    const comment = await commentService.deleteComment({commentId});
+
+    const response: BaseResponse<CommentDeleteResponse> = {
+      isSuccess: true,
+      code: HTTP_OK.code,
+      message: HTTP_OK.message,
+      result: {
+        id: comment.id,
+        userId: comment.user.id,
+        postId: comment.post.id,
+        content: comment.content,
+        status: comment.status,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        deletedAt: new Date(),
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    console.error('Comment Deletion Error:', error);
+    const response: BaseResponse<null> = {
+      isSuccess: false,
+      code: HTTP_INTERNAL_SERVER_ERROR.code,
+      message: error.message,
+    };
+    res.status(500).json(response);
+  }
+});
+
 export default router;

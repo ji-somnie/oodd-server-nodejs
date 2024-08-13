@@ -259,3 +259,4 @@ export const NAVER_USER_NOT_FOUND = {
 };
 
 export const INVALID_CONTENT = {code: 1003, message: 'Invalid Content', err_code: 'INVALID_CONTENT'};
+export const INVALID_COMMENT = {code: 1001, message: 'Invalid comment', err_code: 'INVALID_COMMENT'};
