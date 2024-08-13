@@ -99,12 +99,12 @@ router.patch('/:postId/comments/:commentId', async (req: Request, res: Response)
       message: HTTP_OK.message,
       result: {
         id: comment.id,
-        userId: comment.user.id,
-        postId: comment.post.id,
+        userId: comment.user?.id,
+        postId: comment.post?.id,
         content: comment.content,
         status: comment.status,
         updatedAt: comment.updatedAt,
-        deletedAt: new Date(),
+        deletedAt: comment.deletedAt,
       },
     };
 

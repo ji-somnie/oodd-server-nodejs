@@ -22,7 +22,7 @@ export class CommentService {
   }
 
   async getCommentById(commentId: number): Promise<Comment | null> {
-    return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}});
+    return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}, relations: ['user', 'post']});
   }
 
   async deleteComment(request: DeleteCommentRequest): Promise<Comment> {
