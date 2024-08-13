@@ -2,6 +2,7 @@ import {Repository} from 'typeorm';
 import {Comment} from '../../entities/commentEntity';
 import {DeleteCommentRequest} from './dtos/request';
 import myDataBase from '../../data-source';
+import dayjs from 'dayjs';
 
 export class CommentService {
   private commentRepository: Repository<Comment> = myDataBase.getRepository(Comment);
@@ -33,7 +34,7 @@ export class CommentService {
     }
 
     comment.status = 'deactivated';
-    comment.deletedAt = new Date();
+    comment.deletedAt = dayjs().toDate();
 
     return await this.commentRepository.save(comment);
   }

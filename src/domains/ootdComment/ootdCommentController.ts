@@ -103,7 +103,6 @@ router.patch('/comments/delete', async (req: Request, res: Response) => {
         postId: comment.post.id,
         content: comment.content,
         status: comment.status,
-        createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
         deletedAt: new Date(),
       },

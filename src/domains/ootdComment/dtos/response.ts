@@ -4,7 +4,6 @@ export interface DeleteCommentResponse {
   postId: number;
   content: string;
   status: 'deactivated' | 'activated';
-  createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
 }
