@@ -42,14 +42,14 @@ export class AuthService {
     return user;
   }
 
-  // Naver 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
-  async handleNaverUser(payload: any): Promise<void> {
-    // Naver ID로 사용자 조회
-    let user = await this.userService.findUserByNaverId(payload.NaverId);
-
-    // 사용자가 없으면 새로 가입 처리
-    if (!user) {
-      await this.userService.createUserByPayload(payload);
+    // Naver 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
+    async handleNaverUser(payload: any): Promise<void> {
+      // Naver ID로 사용자 조회
+      let user = await this.userService.findUserByNaverId(payload.NaverId);
+  
+      // 사용자가 없으면 새로 가입 처리
+      if (!user) {
+        await this.userService.createUserByPayload(payload);
+      }
     }
-  }
 }
