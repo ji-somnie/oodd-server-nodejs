@@ -48,9 +48,10 @@ app.use((0, cors_1.default)({
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 //app.use('/posts', authenticateJWT, postRouter);
 app.use('/ootd', authMiddleware_1.authenticateJWT, ootdController_1.default);
+//app.use('/posts', authenticateJWT, postRouter);
 app.use('/chat-rooms', authMiddleware_1.authenticateJWT, chatRoomController_1.default);
 app.use('/user-relationships', authMiddleware_1.authenticateJWT, userRelationshipController_1.default);
-//app.use("/block", authenticateJWT, blockRouter);
+app.use('/users', userController_1.default);
 const httpServer = (0, http_1.createServer)(app);
 exports.httpServer = httpServer;
 const io = new socket_io_1.Server(httpServer, {

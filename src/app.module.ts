@@ -41,15 +41,9 @@ app.use(
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 //app.use('/posts', authenticateJWT, postRouter);
 app.use('/ootd', authenticateJWT, ootdRouter);
-//app.use('/posts', authenticateJWT, postRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
-<<<<<<< HEAD
 //app.use("/block", authenticateJWT, blockRouter);
-app.use('/users', userRouter);
-=======
-app.use('/block', authenticateJWT, blockRouter);
->>>>>>> 949326c (Merge: with dev)
 
 const httpServer = createServer(app);
 
