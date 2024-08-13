@@ -45,16 +45,9 @@ app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: true,
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  },
-});
+const io = new Server(httpServer);
 
-const startServer = async () => {
+export const startServer = async () => {
   try {
     await initializeDatabase();
     console.log('Database has been initialized!');
@@ -119,7 +112,5 @@ const startServer = async () => {
     console.error('Error during DataBase initialization:', error);
   }
 };
-
-startServer();
 
 export {app, httpServer, io};
