@@ -1,4 +1,4 @@
-export interface OotdLikeResponse {
+export interface GetOotdLikeResponse {
   id: number;
   userId: number;
   postId: number;
@@ -11,4 +11,14 @@ export interface OotdLikeResponse {
     nickname: string;
     profilePictureUrl?: string;
   };
+}
+
+export interface OotdLikeResponse {
+  id: number;
+  userId: number;
+  postId: number;
+  status: 'deactivated' | 'activated';
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
 }

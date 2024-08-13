@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
-import {OotdLikeResponse} from './dtos/response';
+import {GetOotdLikeResponse, OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {UserService} from '../user/userService';
 import {validatePostById} from '../../validationTest/validatePost';
@@ -73,11 +73,6 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
         status: like.status,
         updatedAt: like.updatedAt,
         deletedAt: like.deletedAt,
-        user: {
-          id: user.id,
-          nickname: user.nickname,
-          profilePictureUrl: user.profilePictureUrl,
-        },
       },
     };
 
@@ -113,7 +108,7 @@ router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     // post ID로 likes 가져오기
     const likes = await likeService.getLikesByPostId(numericPostId);
 
-    const response: BaseResponse<{totalLikes: number; likes: OotdLikeResponse[]}> = {
+    const response: BaseResponse<{totalLikes: number; likes: GetOotdLikeResponse[]}> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
