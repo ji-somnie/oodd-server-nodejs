@@ -1,10 +1,11 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from 'typeorm';
-import {User} from './userEntity';
-import {Post} from './postEntity';
-import {BaseEntity} from '../base/baseEntity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { User } from './userEntity';
+import { Post } from './postEntity';
+import { BaseEntity } from '../base/baseEntity';
 
 @Entity('Comment')
 export class Comment extends BaseEntity {
+  
   @Column('text')
   content!: string;
 
