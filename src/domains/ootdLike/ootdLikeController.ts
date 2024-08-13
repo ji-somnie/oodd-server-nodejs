@@ -119,6 +119,11 @@ router.get('/:postId/like', async (req: Request, res: Response) => {
           status: like.status,
           createdAt: like.createdAt,
           updatedAt: like.updatedAt,
+          user: {
+            id: like.user?.id,
+            nickname: like.user?.nickname,
+            profilePictureUrl: like.user?.profilePictureUrl,
+          },
         })),
       },
     };

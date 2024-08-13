@@ -6,10 +6,9 @@ export interface OotdLikeResponse {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  /*
   user: {
     id: number;
     nickname: string;
     profilePictureUrl?: string;
-  }; */
+  };
 }
