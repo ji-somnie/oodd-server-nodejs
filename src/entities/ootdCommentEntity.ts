@@ -5,7 +5,7 @@ import {BaseEntity} from '../base/baseEntity';
 
 @Entity('Comments')
 export class Comment extends BaseEntity {
-  @ManyToOne(() => User, user => user.comments)
+  @ManyToOne(() => User, user => user.comments) //userEntity에 추가 (@OneToMany로)
   @JoinColumn({name: 'userId'})
   user!: User;
 

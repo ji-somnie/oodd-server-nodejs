@@ -12,6 +12,8 @@ export class CommentService {
   }
 
   async deleteComment(request: CommentDeleteRequest): Promise<Comment | null> {
+    //유효성검사 제대로하면 null일 필요 없음
+    //유효성 검사 다른 데로 따로 빼기 (서비스 안의 함수로)
     const {commentId} = request;
     const comment = await this.commentRepository.findOne({where: {id: commentId}});
 
@@ -20,7 +22,7 @@ export class CommentService {
     }
 
     comment.status = false;
-    comment.deletedAt = dayjs();
+    comment.deletedAt = dayjs(); //ec2로 가면 이렇게 dayjs 쓰는 거 안될수도
 
     return await this.commentRepository.save(comment);
   }

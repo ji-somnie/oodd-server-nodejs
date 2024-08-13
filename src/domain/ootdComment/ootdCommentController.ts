@@ -8,11 +8,14 @@ const commentService = new CommentService();
 const router = Router();
 
 router.put('/comments/delete', async (req: Request, res: Response) => {
+  //request를 path 안에
+  //comment 있는지 유효성 확인
   try {
     const {commentId}: CommentDeleteRequest = req.body;
     const comment = await commentService.deleteComment({commentId});
 
     if (!comment) {
+      //유효성 검사하면 사라질 코드
       const response: BaseResponse<null> = {
         isSuccess: false,
         code: HTTP_OK.code,
