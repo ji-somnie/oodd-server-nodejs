@@ -17,5 +17,5 @@ export class BaseEntity {
 
   @DeleteDateColumn({type: 'datetime'})
   @Column({nullable: true})
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 }
