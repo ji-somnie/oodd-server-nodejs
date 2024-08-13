@@ -89,8 +89,17 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
 router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   const {postId} = req.params;
   const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
+  const userId = (req.user as any).id;
 
   try {
+    if (!userId) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
+      });
+    }
+
     // Post 유효성 검사
     const postExists = await validatePostById(numericPostId);
     if (!postExists) {
