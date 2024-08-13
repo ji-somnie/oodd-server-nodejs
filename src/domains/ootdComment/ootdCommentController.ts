@@ -16,7 +16,6 @@ import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
-const userService = new UserService();
 const router = Router();
 
 //댓글 생성
