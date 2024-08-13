@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {CommentService} from './ootdCommentService';
-import {CommentRequest} from './dtos/request';
-import {CommentResponse} from './dtos/response';
+import {DeleteCommentRequest} from './dtos/request';
+import {DeleteCommentResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {
   HTTP_OK,
@@ -94,7 +94,7 @@ router.patch('/comments/delete', async (req: Request, res: Response) => {
 
     const comment = await commentService.deleteComment({commentId});
 
-    const response: BaseResponse<CommentDeleteResponse> = {
+    const response: BaseResponse<DeleteCommentResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,

@@ -1,4 +1,4 @@
-export interface CommentResponse {
+export interface DeleteCommentResponse {
   id: number;
   userId: number;
   postId: number;
