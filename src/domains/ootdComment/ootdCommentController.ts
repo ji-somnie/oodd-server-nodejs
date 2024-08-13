@@ -10,6 +10,7 @@ import {
   NOT_FOUND_USER,
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
+  INVALID_CONTENT,
 } from '../../variables/httpCode';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
@@ -52,6 +53,15 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
       });
     }
 
+    //content 유효성
+    if (!content || content.trim() === '' || content.length > 500) {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_CONTENT.code,
+        message: INVALID_CONTENT.message,
+      });
+    }
+
     const comment = await commentService.createComment({userId, postId, content});
 
     const response: BaseResponse<CommentResponse> = {
@@ -63,8 +73,8 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
         userId: comment.user.id,
         postId: comment.post.id,
         content: comment.content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
       },
     };
 
