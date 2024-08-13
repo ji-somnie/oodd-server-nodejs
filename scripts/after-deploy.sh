@@ -5,7 +5,7 @@ APP_NAME=node_app
 cd $REPOSITORY
 
 # Check if the app is already running
-if pm2 list | grep $APP_NAME > /dev/null
+if sudo pm2 list | grep $APP_NAME > /dev/null
 then
   echo "$APP_NAME is already running. Restarting..."
   sudo pm2 delete $APP_NAME

@@ -39,8 +39,6 @@ app.use(
       process.env.CALLBACK_URL || '',
     ],
     credentials: true,
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-    exposedHeaders: ['set-cookie'],
   }),
 );
 
