@@ -42,8 +42,10 @@ export class CommentService {
     }
     */
 
+    const now = dayjs().toDate();
     comment.status = 'deactivated';
-    comment.deletedAt = dayjs().toDate();
+    comment.updatedAt = now;
+    comment.deletedAt = now;
 
     return await this.commentRepository.save(comment);
   }
