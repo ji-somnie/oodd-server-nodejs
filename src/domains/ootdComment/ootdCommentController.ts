@@ -80,7 +80,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
 
 router.patch('/comments/delete', async (req: Request, res: Response) => {
   try {
-    const {commentId}: CommentDeleteRequest = req.body;
+    const commentId = parseInt(req.params.commentId);
 
     // comment 유효성 검사
     const commentExists = await commentService.getCommentById(commentId);

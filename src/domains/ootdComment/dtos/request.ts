@@ -4,6 +4,6 @@ export interface CommentRequest {
   content: string;
 }
 
-export interface CommentDeleteRequest {
+export interface DeleteCommentRequest {
   commentId: number;
 }
