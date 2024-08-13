@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.io = exports.httpServer = exports.app = void 0;
+exports.io = exports.httpServer = exports.app = exports.startServer = void 0;
 const express_1 = __importDefault(require("express"));
 const userController_1 = __importDefault(require("./domains/user/userController"));
+const postController_1 = __importDefault(require("./domains/post/postController"));
 const ootdController_1 = __importDefault(require("./domains/ootd/ootdController"));
 const authController_1 = __importDefault(require("./domains/auth/authController"));
 const blockController_1 = __importDefault(require("./domains/block/blockController"));
@@ -40,27 +41,19 @@ app.use(express_1.default.json());
 app.use('/auth', authController_1.default); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userController_1.default);
 app.use('/block', blockController_1.default); //테스트용
-app.use('/posts', ootdLikeController_1.default);
+app.use('/posts', ootdLikeController_1.default, postController_1.default);
 app.use((0, cors_1.default)({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
 }));
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
-//app.use('/posts', authenticateJWT, postRouter);
 app.use('/ootd', authMiddleware_1.authenticateJWT, ootdController_1.default);
 app.use('/chat-rooms', authMiddleware_1.authenticateJWT, chatRoomController_1.default);
 app.use('/user-relationships', authMiddleware_1.authenticateJWT, userRelationshipController_1.default);
 //app.use("/block", authenticateJWT, blockRouter);
 const httpServer = (0, http_1.createServer)(app);
 exports.httpServer = httpServer;
-const io = new socket_io_1.Server(httpServer, {
-    cors: {
-        origin: true,
-        methods: ['GET', 'POST'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-    },
-});
+const io = new socket_io_1.Server(httpServer);
 exports.io = io;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -121,4 +114,4 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error('Error during DataBase initialization:', error);
     }
 });
-startServer();
+exports.startServer = startServer;
