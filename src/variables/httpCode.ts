@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {StatusCodes} from 'http-status-codes';
 
 export const status = {
@@ -155,6 +156,8 @@ export const status = {
   },
 };
 
+=======
+>>>>>>> 86ef082 (Feat: 좋아요 기능 + 토큰 (1021))
 export const HTTP_OK = {code: 2000, message: 'OK'};
 export const HTTP_BAD_REQUEST = {code: 4000, message: 'Bad Request'};
 export const HTTP_INTERNAL_SERVER_ERROR = {code: 5000, message: 'Internal Server Error'};
@@ -189,3 +192,39 @@ export const NOT_PENDING_REQUEST = {code: 3006, message: '대기중인 요청이
 export const ALREADY_REQUESTED = {code: 3007, message: '이미 요청한 관계입니다.', err_code: 'ALREADY_REQUESTED'};
 
 export const NO_AUTHORIZATION = {code: 1000, message: '권한이 없습니다.', err_code: 'NO_AUTHORIZATION'};
+export const KAKAO_AUTH_FAIL = {
+  isSuccess: false,
+  code: 4001,
+  message: 'Error getting Kakao auth',
+  err_code: 'KAKAO_AUTH_FAIL',
+};
+export const KAKAO_TOKEN_FAIL = {
+  isSuccess: false,
+  code: 4002,
+  message: 'Error getting Kakao token',
+  err_code: 'KAKAO_TOKEN_FAIL',
+};
+export const KAKAO_USER_NOT_FOUND = {
+  isSuccess: false,
+  code: 4002,
+  message: '카카오 계정의 정보를 불러오지 못했습니다.',
+  err_code: 'KAKAO_USER_NOT_FOUND',
+};
+export const GOOGLE_AUTH_FAIL = {
+  isSuccess: false,
+  code: 4003,
+  message: 'Google 사용자 인정 과정에서 오류가 발생했습니다',
+  err_code: 'GOOGLE_AUTH_FAIL',
+};
+export const GOOGLE_TOKEN_FAIL = {
+  isSuccess: false,
+  code: 4004,
+  message: 'Error getting Google token',
+  err_code: 'GOOGLE_TOKEN_FAIL',
+};
+export const GOOGLE_USER_NOT_FOUND = {
+  isSuccess: false,
+  code: 4005,
+  message: '구글 계정의 정보를 불러오지 못했습니다.',
+  err_code: 'GOOGLE_USER_NOT_FOUND',
+};
