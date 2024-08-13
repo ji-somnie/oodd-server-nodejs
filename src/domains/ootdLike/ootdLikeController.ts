@@ -2,6 +2,7 @@ import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
 import {GetOotdLikeResponse, OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
+<<<<<<< HEAD
 import {UserService} from '../user/userService';
 import {validatePostById} from '../../validationTest/validatePost';
 import {
@@ -47,6 +48,23 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
 
     // Post 유효성 검사
     const postExists = await validatePostById(postId);
+=======
+import {HTTP_OK, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_POST} from '../../variables/httpCode';
+import {OotdLikeGetResponse} from './dtos/response';
+import {PostService} from '../post/postService';
+
+const likeService = new OotdLikeService();
+const postService = new PostService();
+const router = Router();
+
+router.get('/:postId/like', async (req: Request, res: Response) => {
+  const {postId} = req.params;
+  const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
+
+  try {
+    // Post 유효성 검사
+    const postExists = await postService.getPostById(numericPostId);
+>>>>>>> cae8d49 (Feat: 댓글 남기기)
     if (!postExists) {
       return res.status(404).json({
         isSuccess: false,
@@ -56,13 +74,21 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
       });
     }
 
+<<<<<<< HEAD
     const like = await likeService.toggleLike({userId: user.id, postId});
 
     const response: BaseResponse<OotdLikeResponse> = {
+=======
+    // post ID로 likes 가져오기
+    const likes = await likeService.getLikesByPostId(numericPostId);
+
+    const response: BaseResponse<{totalLikes: number; likes: OotdLikeGetResponse[]}> = {
+>>>>>>> cae8d49 (Feat: 댓글 남기기)
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
       result: {
+<<<<<<< HEAD
         id: like.id,
         userId: user.id,
         postId: postId,
@@ -74,8 +100,13 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
 
     return res.status(200).json(response);
   } catch (error: any) {
+<<<<<<< HEAD
     console.error('Like Error:', error);
     const errorResponse = {
+=======
+    console.error('Like Fetch Error:', error);
+    res.status(500).json({
+>>>>>>> cae8d49 (Feat: 댓글 남기기)
       isSuccess: false,
       code: error.name === 'QueryFailedError' ? DATABASE_ERROR.code : HTTP_INTERNAL_SERVER_ERROR.code,
       message: error.name === 'QueryFailedError' ? DATABASE_ERROR.message : HTTP_INTERNAL_SERVER_ERROR.message,
