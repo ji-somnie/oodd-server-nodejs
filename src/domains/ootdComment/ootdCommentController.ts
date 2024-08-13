@@ -83,7 +83,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
 });
 
 //댓글 삭제
-router.patch('/:postId/comment/:commentId', authenticateJWT async (req: Request, res: Response) => {
+router.patch('/:postId/comment/:commentId', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
