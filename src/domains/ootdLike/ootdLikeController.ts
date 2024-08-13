@@ -106,18 +106,21 @@ router.get('/:postId/like', async (req: Request, res: Response) => {
     // post ID로 likes 가져오기
     const likes = await likeService.getLikesByPostId(numericPostId);
 
-    const response: BaseResponse<OotdLikeResponse[]> = {
+    const response: BaseResponse<{totalLikes: number; likes: OotdLikeResponse[]}> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
-      result: likes.map(like => ({
-        id: like.id,
-        userId: like.user?.id,
-        postId: like.post?.id,
-        status: like.status,
-        createdAt: like.createdAt,
-        updatedAt: like.updatedAt,
-      })),
+      result: {
+        totalLikes: likes.length,
+        likes: likes.map(like => ({
+          id: like.id,
+          userId: like.user?.id,
+          postId: like.post?.id,
+          status: like.status,
+          createdAt: like.createdAt,
+          updatedAt: like.updatedAt,
+        })),
+      },
     };
 
     res.status(200).json(response);
