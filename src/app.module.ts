@@ -5,6 +5,7 @@ import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
 import blockRouter from './domains/block/blockController';
 import ootdLikeRouter from './domains/ootdLike/ootdLikeController';
+import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
