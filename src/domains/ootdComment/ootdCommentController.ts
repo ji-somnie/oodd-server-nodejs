@@ -104,7 +104,7 @@ router.patch('/:postId/comments/:commentId', async (req: Request, res: Response)
         content: comment.content,
         status: comment.status,
         updatedAt: comment.updatedAt,
-        deletedAt: comment.deletedAt,
+        deletedAt: comment.deletedAt || null,
       },
     };
 

@@ -5,5 +5,5 @@ export interface DeleteCommentResponse {
   content: string;
   status: 'deactivated' | 'activated';
   updatedAt: Date;
-  deletedAt: Date;
+  deletedAt: Date | null;
 }
