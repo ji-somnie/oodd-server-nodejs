@@ -27,6 +27,10 @@ export class CommentService {
     return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}, relations: ['user', 'post']});
   }
 
+  async getCommentsByPostId(postId: number): Promise<Comment[]> {
+    return this.commentRepository.find({where: {post: {id: postId}, status: 'activated'}});
+  }
+
   //댓글 삭제
   async deleteComment(request: DeleteCommentRequest): Promise<Comment> {
     const {commentId} = request;

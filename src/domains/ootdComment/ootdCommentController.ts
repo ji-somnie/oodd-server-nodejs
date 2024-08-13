@@ -16,7 +16,6 @@ import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
-const userService = new UserService();
 const router = Router();
 
 //댓글 생성
@@ -134,6 +133,64 @@ router.patch('/:postId/comment/:commentId', authenticateJWT, async (req: Request
         updatedAt: comment.updatedAt,
         deletedAt: comment.deletedAt || null,
       },
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    console.error('Comment Deletion Error:', error);
+    const response: BaseResponse<null> = {
+      isSuccess: false,
+      code: HTTP_INTERNAL_SERVER_ERROR.code,
+      message: error.message,
+    };
+    res.status(500).json(response);
+  }
+});
+
+//댓글 조회
+router.get('/:postId/comments', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const postId: number = parseInt(req.params.postId);
+    const user = req.user as any;
+
+    // 댓글 조회
+    const comments = await commentService.getCommentsByPostId(postId);
+
+    if (comments.length === 0) {
+      const response: BaseResponse<null> = {
+        isSuccess: false,
+        code: INVALID_COMMENT.code,
+        message: 'No comments found',
+      };
+      return res.status(400).json(response);
+    }
+
+    // 댓글과 유저 정보를 동시에 반환
+    const response: BaseResponse<any[]> = {
+      isSuccess: true,
+      code: HTTP_OK.code,
+      message: HTTP_OK.message,
+      result: await Promise.all(
+        comments.map(async comment => {
+          const user = await userService.getUserByUserId(comment.user.id);
+          return {
+            comment: {
+              id: comment.id,
+              postId: comment.post.id,
+              content: comment.content,
+              status: comment.status,
+              createdAt: comment.createdAt,
+              updatedAt: comment.updatedAt,
+              deletedAt: comment.deletedAt,
+            },
+            user: {
+              id: user?.id,
+              nickname: user?.nickname,
+              profilePictureUrl: user?.profilePictureUrl,
+            },
+          };
+        }),
+      ),
     };
 
     res.status(200).json(response);
