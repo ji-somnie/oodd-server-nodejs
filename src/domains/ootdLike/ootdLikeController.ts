@@ -33,7 +33,7 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
       });
     }
 
-    // kakaoId로 사용자 찾기
+    // 사용자 찾기
     const user = await userService.getUserByUserId(tokenUser.id);
 
     if (!user) {
@@ -69,7 +69,6 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
         createdAt: like.createdAt,
         status: like.status,
         updatedAt: like.updatedAt,
-        deletedAt: like.deletedAt,
       },
     };
 
