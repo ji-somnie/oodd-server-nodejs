@@ -1,9 +1,11 @@
-import { BasePostDto } from "./basePost.dto";
+import { PostRequestDto } from "./postRequest.dto";
 
-export class PostResponseDto extends BasePostDto{
+export class PostResponseDto extends PostRequestDto{
   postId!: number;
   userId!: number;
-  
+}
+
+export class PostDetailResponseDto extends PostResponseDto{
   likes!: number | null;
   comments!: {
       commentId: number | null;
