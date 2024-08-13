@@ -77,7 +77,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
   }
 });
 
-router.patch('/comments/delete', async (req: Request, res: Response) => {
+router.patch('/:postId/comments/:commentId', async (req: Request, res: Response) => {
   try {
     const commentId = parseInt(req.params.commentId);
 
