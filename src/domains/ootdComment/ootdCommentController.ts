@@ -17,7 +17,6 @@ import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
 const userService = new UserService();
-const postService = new PostService();
 const router = Router();
 
 //댓글 생성
