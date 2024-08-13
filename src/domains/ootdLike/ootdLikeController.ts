@@ -37,7 +37,7 @@ router.put('/:postId/like', authenticateJWT, async (req: Request, res: Response)
     }
 
     // kakaoId로 사용자 찾기
-    const user = await userService.findUserByKakaoId(tokenUser.kakaoId);
+    const user = await userService.getUserByUserId(tokenUser.id);
 
     if (!user) {
       return res.status(401).json({
