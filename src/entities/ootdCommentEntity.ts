@@ -21,12 +21,5 @@ export class Comment extends BaseEntity {
 
   @Column()
   content!: string;
-
-  constructor(userId: number, postId: number, content: string) {
-    super();
-    this.userId = userId;
-    this.postId = postId;
-    this.content = content;
-  }
 }
 
