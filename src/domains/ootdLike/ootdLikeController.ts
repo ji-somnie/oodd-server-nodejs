@@ -50,7 +50,7 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
     const postExists = await validatePostById(postId);
 =======
 import {HTTP_OK, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_POST} from '../../variables/httpCode';
-import {OotdLikeGetResponse} from './dtos/response';
+import {OotdLikeResponse} from './dtos/response';
 import {validatePostById} from '../../validationTest/validatePost';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 
