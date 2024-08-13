@@ -1,13 +1,14 @@
 import {Repository} from 'typeorm';
 import {Comment} from '../../entities/commentEntity';
-import {DeleteCommentRequest} from './dtos/request';
+import {PostCommentRequest, DeleteCommentRequest} from './dtos/request';
 import myDataBase from '../../data-source';
 import dayjs from 'dayjs';
 
 export class CommentService {
   private commentRepository: Repository<Comment> = myDataBase.getRepository(Comment);
 
-  async createComment(request: CommentRequest): Promise<Comment> {
+  //댓글 생성
+  async createComment(request: PostCommentRequest): Promise<Comment> {
     const {userId, postId, content} = request;
     const now = dayjs().toDate();
     const newComment = this.commentRepository.create({
@@ -21,10 +22,12 @@ export class CommentService {
     return await this.commentRepository.save(newComment);
   }
 
+  //댓글 조회
   async getCommentById(commentId: number): Promise<Comment | null> {
     return this.commentRepository.findOne({where: {id: commentId, status: 'activated'}, relations: ['user', 'post']});
   }
 
+  //댓글 삭제
   async deleteComment(request: DeleteCommentRequest): Promise<Comment> {
     const {commentId} = request;
     const comment = await this.getCommentById(commentId);

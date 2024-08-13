@@ -1,6 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {CommentService} from './ootdCommentService';
-import {DeleteCommentResponse} from './dtos/response';
+import {PostCommentRequest} from './dtos/request';
+import {CommentResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {
   HTTP_OK,
@@ -8,6 +9,8 @@ import {
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
   INVALID_CONTENT,
+  INVALID_COMMENT,
+  INVALID_POST_ID,
 } from '../../variables/httpCode';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
@@ -19,7 +22,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
   try {
     const postId: number = parseInt(req.params.postId);
     const user = req.user as any;
-    const {content}: CommentRequest = req.body;
+    const {content}: PostCommentRequest = req.body;
 
     if (!user || !user.id) {
       return res.status(401).json({
@@ -61,6 +64,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
         userId: comment.user.id,
         postId: comment.post.id,
         content: comment.content,
+        status: comment.status,
         createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
       },
@@ -77,7 +81,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
   }
 });
 
-router.patch('/:postId/comments/:commentId', async (req: Request, res: Response) => {
+router.patch('/:postId/comment/:commentId', async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
@@ -87,8 +91,8 @@ router.patch('/:postId/comments/:commentId', async (req: Request, res: Response)
     if (!postExists) {
       return res.status(400).json({
         isSuccess: false,
-        code: INVALID_POST.code,
-        message: INVALID_POST.message,
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
       });
     }
 
@@ -104,7 +108,7 @@ router.patch('/:postId/comments/:commentId', async (req: Request, res: Response)
 
     const comment = await commentService.deleteComment({commentId});
 
-    const response: BaseResponse<DeleteCommentResponse> = {
+    const response: BaseResponse<CommentResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,

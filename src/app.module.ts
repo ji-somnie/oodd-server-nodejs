@@ -17,7 +17,6 @@ import {initializeDatabase} from './data-source';
 import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
 import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
-import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
