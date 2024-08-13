@@ -114,7 +114,13 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async getUserByUserId(userId: number): Promise<User | null> {
-    return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
+  async createUser(name: string, email: string): Promise<User> {
+    const user = this.userRepository.create({name, email});
+    return this.userRepository.save(user);
+  }
+
+  //유저 유효성 검사
+  async getUserByID(id: number): Promise<User | null> {
+    return this.userRepository.findOneBy({id, status: 'activated'});
   }
 }
