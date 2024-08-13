@@ -83,7 +83,7 @@ router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Respo
 });
 
 //댓글 삭제
-router.patch('/:postId/comment/:commentId', async (req: Request, res: Response) => {
+router.patch('/:postId/comment/:commentId', authenticateJWT async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
@@ -111,7 +111,7 @@ router.patch('/:postId/comment/:commentId', async (req: Request, res: Response) 
 
     // 사용자 유효성 검사
     if (!user || !user.id || commentExists.user?.id !== user.id) {
-      return res.status(401).json({
+      return res.status(403).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
         message: NO_AUTHORIZATION.message,
