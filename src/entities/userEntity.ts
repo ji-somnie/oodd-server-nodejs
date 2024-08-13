@@ -1,25 +1,39 @@
-//임시 수정
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
+import {Entity, Column, OneToMany} from 'typeorm';
 import {Like} from './ootdLikeEntity';
+import {Post} from './postEntity';
+import {Comment} from './ootdCommentEntity';
+import {BaseEntity} from '../base/baseEntity';
 
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+@Entity('Users')
+export class User extends BaseEntity {
+  @Column()
+  name!: string;
 
   @Column()
-  name: string;
+  email!: string;
 
   @Column()
-  email: string;
+  nickname!: string;
 
-  @OneToMany(() => Like, like => like.post)
-  likes: Like[];
+  @Column()
+  phoneNumber!: string;
 
-  constructor(name: string, email: string, likes: Like[]) {
-    this.name = name;
-    this.email = email;
-    this.likes = likes;
-  }
+  @Column({nullable: true})
+  profilePictureUrl?: string;
+
+  @Column({nullable: true})
+  bio?: string;
+
+  @Column()
+  joinStatus!: 'deactivated' | 'activated';
+
+  @OneToMany(() => Like, like => like.user)
+  likes?: Like[];
+
+  @OneToMany(() => Post, post => post.user)
+  posts?: Post[];
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments?: Comment[];
 }
 

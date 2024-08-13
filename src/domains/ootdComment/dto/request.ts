@@ -1,1 +1,5 @@
-src / domain / ootdComment / dto / request.ts;
+export interface CommentRequest {
+  userId: number;
+  postId: number;
+  content: string;
+}

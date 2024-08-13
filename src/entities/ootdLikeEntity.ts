@@ -1,4 +1,3 @@
-//src/entities/ootdLikeEntity.ts
 import {Entity, Column, ManyToOne, JoinColumn} from 'typeorm';
 import {User} from './userEntity';
 import {Post} from './postEntity';
