@@ -7,7 +7,6 @@ import {validatePostById} from '../../validationTest/validatePost';
 import {
   HTTP_OK,
   HTTP_INTERNAL_SERVER_ERROR,
-  NOT_FOUND_USER,
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
   INVALID_POST_ID,
