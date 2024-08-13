@@ -1,4 +1,4 @@
-//src/domain/ootdLike/ootdLikeService.ts
+// src/domain/ootdLike/ootdLikeService.ts
 import {Repository} from 'typeorm';
 import {myDataBase} from '../../data-source';
 import {Like} from '../../entities/ootdLikeEntity';
@@ -11,19 +11,13 @@ export class OotdLikeService {
     this.ootdLikeRepository = myDataBase.getRepository(Like);
   }
 
-  async toggleLike(requestDTO: OotdLikeRequest): Promise<Like | null> {
+  async checkLike(requestDTO: OotdLikeRequest): Promise<boolean> {
     const {userId, postId} = requestDTO;
 
-    const existingLike = await this.ootdLikeRepository.findOneBy({userId, postId});
+    const existingLike = await this.ootdLikeRepository.findOne({
+      where: {userId, postId},
+    });
 
-    if (existingLike) {
-      existingLike.status = !existingLike.status;
-      await this.ootdLikeRepository.save(existingLike);
-      return existingLike;
-    }
-
-    const newLike = this.ootdLikeRepository.create({userId, postId, status: true});
-    await this.ootdLikeRepository.save(newLike);
-    return newLike;
+    return !!existingLike; // 좋아요가 존재하면 true, 아니면 false
   }
 }
