@@ -189,3 +189,71 @@ export const NOT_PENDING_REQUEST = {code: 3006, message: '대기중인 요청이
 export const ALREADY_REQUESTED = {code: 3007, message: '이미 요청한 관계입니다.', err_code: 'ALREADY_REQUESTED'};
 
 export const NO_AUTHORIZATION = {code: 1000, message: '권한이 없습니다.', err_code: 'NO_AUTHORIZATION'};
+export const INVALID_POST_ID = {code: 1001, message: '유효하지 않은 게시물 ID입니다.', err_code: 'INVALID_POST_ID'};
+export const DATABASE_ERROR = {code: 1002, message: '데이터베이스 오류입니다.', err_code: 'DATABASE_ERROR'};
+
+export const KAKAO_AUTH_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4003',
+  message: 'Kakao 사용자 인정 과정에서 오류가 발생했습니다',
+  err_code: 'KAKAO_AUTH_FAIL',
+};
+export const KAKAO_TOKEN_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4002',
+  message: 'Error getting Kakao token',
+  err_code: 'KAKAO_TOKEN_FAIL',
+};
+export const KAKAO_USER_NOT_FOUND = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4002',
+  message: '카카오 계정의 정보를 불러오지 못했습니다.',
+  err_code: 'KAKAO_USER_NOT_FOUND',
+};
+
+export const GOOGLE_AUTH_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4003',
+  message: 'Google 사용자 인정 과정에서 오류가 발생했습니다',
+  err_code: 'GOOGLE_AUTH_FAIL',
+};
+export const GOOGLE_TOKEN_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4004',
+  message: 'Error getting Google token',
+  err_code: 'GOOGLE_TOKEN_FAIL',
+};
+export const GOOGLE_USER_NOT_FOUND = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4005',
+  message: '구글 계정의 정보를 불러오지 못했습니다.',
+  err_code: 'GOOGLE_USER_NOT_FOUND',
+};
+
+export const NAVER_AUTH_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4006',
+  message: 'NAVER 사용자 인정 과정에서 오류가 발생했습니다',
+  err_code: 'NAVER_AUTH_FAIL',
+};
+export const NAVER_TOKEN_FAIL = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4007',
+  message: 'Error getting NAVER token',
+  err_code: 'NAVER_TOKEN_FAIL',
+};
+export const NAVER_USER_NOT_FOUND = {
+  status: StatusCodes.BAD_REQUEST,
+  isSuccess: false,
+  code: 'USER4008',
+  message: 'NAVER 계정의 정보를 불러오지 못했습니다.',
+  err_code: 'NAVER_USER_NOT_FOUND',
+};
