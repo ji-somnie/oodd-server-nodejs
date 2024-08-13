@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {CommentService} from './ootdCommentService';
 import {PostCommentRequest} from './dtos/request';
-import {CommentResponse} from './dtos/response';
+import {CommentResponse, GetCommentResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {
   HTTP_OK,
@@ -153,9 +153,20 @@ router.get('/:postId/comments', authenticateJWT, async (req: Request, res: Respo
     const postId: number = parseInt(req.params.postId);
     const user = req.user as any;
 
+    // post 유효성 검사
+    const postExists = await validatePostById(postId);
+    if (!postExists || postExists.status === 'deactivated') {
+      return res.status(400).json({
+        isSuccess: false,
+        code: INVALID_POST_ID.code,
+        message: INVALID_POST_ID.message,
+      });
+    }
+
     // 댓글 조회
     const comments = await commentService.getCommentsByPostId(postId);
 
+    // 댓글이 없을 경우
     if (comments.length === 0) {
       const response: BaseResponse<null> = {
         isSuccess: false,
@@ -166,31 +177,26 @@ router.get('/:postId/comments', authenticateJWT, async (req: Request, res: Respo
     }
 
     // 댓글과 유저 정보를 동시에 반환
-    const response: BaseResponse<any[]> = {
+    const response: BaseResponse<GetCommentResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
-      result: await Promise.all(
-        comments.map(async comment => {
-          const user = await userService.getUserByUserId(comment.user.id);
-          return {
-            comment: {
-              id: comment.id,
-              postId: comment.post.id,
-              content: comment.content,
-              status: comment.status,
-              createdAt: comment.createdAt,
-              updatedAt: comment.updatedAt,
-              deletedAt: comment.deletedAt,
-            },
-            user: {
-              id: user?.id,
-              nickname: user?.nickname,
-              profilePictureUrl: user?.profilePictureUrl,
-            },
-          };
-        }),
-      ),
+      result: {
+        comments: comments.map(comment => ({
+          id: comment.id,
+          postId: comment.post.id,
+          content: comment.content,
+          status: comment.status,
+          createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
+          deletedAt: comment.deletedAt || null,
+          user: {
+            id: comment.user.id,
+            nickname: comment.user.nickname,
+            profilePictureUrl: comment.user.profilePictureUrl,
+          },
+        })),
+      },
     };
 
     res.status(200).json(response);

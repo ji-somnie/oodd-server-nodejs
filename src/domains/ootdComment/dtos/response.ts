@@ -10,17 +10,18 @@ export interface CommentResponse {
 }
 
 export interface GetCommentResponse {
-  id: number;
-  userId: number;
-  postId: number;
-  content: string;
-  status: 'deactivated' | 'activated';
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-  user: {
+  comments: {
     id: number;
-    nickname: string;
-    profilePictureUrl: string;
-  };
+    postId: number;
+    content: string;
+    status: 'deactivated' | 'activated';
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt: Date | null;
+    user: {
+      id: number;
+      nickname: string;
+      profilePictureUrl: string;
+    };
+  }[];
 }
