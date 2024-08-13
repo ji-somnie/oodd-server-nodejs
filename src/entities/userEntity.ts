@@ -1,6 +1,7 @@
 import {Entity, OneToMany, Column} from 'typeorm';
 import {BaseEntity} from '../base/baseEntity';
 import {Post} from './postEntity';
+<<<<<<< HEAD
 import {Comment} from './commentEntity';
 import {ChatRoom} from './chatRoomEntity';
 import {UserRelationship} from './userRelationshipEntity';
@@ -15,7 +16,11 @@ export class User extends BaseEntity {
   googleId!: string; // 구글 고유 ID를 저장하는 필드
 
   @Column({unique: true, length: 255})
+<<<<<<< HEAD
   naverId!: string; // 네이버 고유 ID를 저장하는 필드
+=======
+  naverId!: string; // 구글 고유 ID를 저장하는 필드
+>>>>>>> f200b7d (Merge: with dev)
 
   @Column({length: 100})
   name!: string;
@@ -50,6 +55,7 @@ export class User extends BaseEntity {
   @OneToMany(() => ChatRoom, chatRoom => chatRoom.fromUser)
   sentChatRooms?: ChatRoom[];
 
+<<<<<<< HEAD
   @OneToMany(() => UserRelationship, userRelationship => userRelationship.requester)
   requestedUserRelationships?: UserRelationship[];
 

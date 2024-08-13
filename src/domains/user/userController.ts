@@ -7,7 +7,7 @@ import {status} from '../../variables/httpCode';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const router = Router();
+const userRouter = Router();
 const userService = new UserService();
 
 // //일반 회원가입 (추후 삭제 필요)
