@@ -1,6 +1,5 @@
 import {Request, Response, Router} from 'express';
 import {UserService} from '../user/userService';
-import {PostService} from '../post/postService';
 import {CommentService} from './ootdCommentService';
 import {CommentRequest} from './dtos/request';
 import {CommentResponse} from './dtos/response';
@@ -12,15 +11,14 @@ import {
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
 } from '../../variables/httpCode';
-//import {authenticateJWT} from '../../middlewares/authMiddleware';
+import {authenticateJWT} from '../../middlewares/authMiddleware';
+import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
 const userService = new UserService();
-const postService = new PostService();
 const router = Router();
 
-router.post('/:postId/comment', async (req: Request, res: Response) => {
-  //router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
+router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const userId = (req.user as any).id;
@@ -45,7 +43,7 @@ router.post('/:postId/comment', async (req: Request, res: Response) => {
     }
 
     //post 유효성
-    const postExists = await postService.getPostById(postId);
+    const postExists = await validatePostById(postId);
     if (!postExists) {
       return res.status(404).json({
         isSuccess: false,
@@ -66,6 +64,7 @@ router.post('/:postId/comment', async (req: Request, res: Response) => {
         postId: comment.post.id,
         content: comment.content,
         createdAt: new Date(),
+        updatedAt: new Date(),
       },
     };
 

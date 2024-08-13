@@ -51,10 +51,10 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
 =======
 import {HTTP_OK, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_POST} from '../../variables/httpCode';
 import {OotdLikeGetResponse} from './dtos/response';
-import {PostService} from '../post/postService';
+import {validatePostById} from '../../validationTest/validatePost';
+import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const likeService = new OotdLikeService();
-const postService = new PostService();
 const router = Router();
 
 router.get('/:postId/like', async (req: Request, res: Response) => {

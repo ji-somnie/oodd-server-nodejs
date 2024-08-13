@@ -1,7 +1,7 @@
-import {Entity, Column, ManyToOne, OneToMany} from 'typeorm';
-import {BaseEntity} from '../base/baseEntity';
-import {Post} from './postEntity';
-import {PostClothing} from './postClothingEntity';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from '../base/baseEntity';
+import { Post } from './postEntity';
+import { PostClothing } from './postClothingEntity';
 
 @Entity('Clothing')
 export class Clothing extends BaseEntity {

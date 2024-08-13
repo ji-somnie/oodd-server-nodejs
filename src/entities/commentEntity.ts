@@ -3,7 +3,7 @@ import {User} from './userEntity';
 import {Post} from './postEntity';
 import {BaseEntity} from '../base/baseEntity';
 
-@Entity('Comment')
+@Entity()
 export class Comment extends BaseEntity {
   @Column('text')
   content!: string;
