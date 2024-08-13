@@ -28,6 +28,7 @@ app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userRouter);
+<<<<<<< HEAD
 app.use('/block', blockRouter); //테스트용
 app.use('/posts', ootdLikeRouter);
 
@@ -45,6 +46,7 @@ app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 //app.use("/block", authenticateJWT, blockRouter);
+app.use('/users', userRouter);
 
 const httpServer = createServer(app);
 
