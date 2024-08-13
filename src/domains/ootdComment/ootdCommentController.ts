@@ -12,14 +12,15 @@ import {
   NOT_FOUND_POST,
   NO_AUTHORIZATION,
 } from '../../variables/httpCode';
-import {authenticateJWT} from '../../middlewares/authMiddleware';
+//import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const commentService = new CommentService();
 const userService = new UserService();
 const postService = new PostService();
 const router = Router();
 
-router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
+router.post('/:postId/comment', async (req: Request, res: Response) => {
+  //router.post('/:postId/comment', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
     const userId = (req.user as any).id;
