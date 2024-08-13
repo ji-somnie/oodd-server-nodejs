@@ -1,3 +1,3 @@
-export interface CommentDeleteRequest {
-  commentId: number;
+export interface CommentGetRequest {
+  postId: number;
 }

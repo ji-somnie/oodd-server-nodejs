@@ -16,6 +16,7 @@ import {authenticateJWT} from '../../middlewares/authMiddleware';
 import {validatePostById} from '../../validationTest/validatePost';
 
 const commentService = new CommentService();
+const userService = new UserService();
 const router = Router();
 
 //댓글 생성
@@ -137,7 +138,7 @@ router.patch('/:postId/comment/:commentId', authenticateJWT, async (req: Request
 
     res.status(200).json(response);
   } catch (error: any) {
-    console.error('Comment Deletion Error:', error);
+    console.error('Comment Fetch Error:', error);
     const response: BaseResponse<null> = {
       isSuccess: false,
       code: HTTP_INTERNAL_SERVER_ERROR.code,
