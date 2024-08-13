@@ -1,6 +1,5 @@
 import {Request, Response, Router} from 'express';
 import {CommentService} from './ootdCommentService';
-import {DeleteCommentRequest} from './dtos/request';
 import {DeleteCommentResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {
