@@ -1,6 +1,5 @@
 import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
-import {OotdLikeRequest} from './dtos/request';
 import {OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {UserService} from '../user/userService';
