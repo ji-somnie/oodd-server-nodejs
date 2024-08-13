@@ -46,7 +46,6 @@ export class CommentService {
     if (!comment) {
       throw new Error('Comment not found');
     }
-
     /*
     if (comment.status === 'deactivated') {
       throw new Error('Comment already deleted');
