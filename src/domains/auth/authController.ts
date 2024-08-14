@@ -22,19 +22,19 @@ const authService = new AuthService();
 const kakaoOpt = {
   clientId: process.env.KAKAO_CLIENT_ID || '',
   clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/kakao/callback',
+  redirectUri: 'http://localhost:8080/auth/kakao/callback',
 };
 
 const googleOpt = {
   clientId: process.env.GOOGLE_CLIENT_ID || '',
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/google/callback',
+  redirectUri: 'http://localhost:8080/auth/google/callback',
 };
 
 const naverOpt = {
   clientId: process.env.NAVER_CLIENT_ID || '',
   clientSecret: process.env.NAVER_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/naver/callback',
+  redirectUri: 'http://localhost:8080/auth/naver/callback',
 };
 
 // // 카카오 소셜 로그인 요청 시작
@@ -259,16 +259,16 @@ router.get('/naver/callback', async (req: Request, res: Response) => {
     };
     const response = await axios.get(url, {headers});
     console.log('Naver user info response:', response.data);
-    const {nickname, profile_image: img, email, id: naverId} = response.data.response;
+    const {name: username, profile_image: img, email, id: naverId} = response.data.response;
 
-    if (!nickname || !naverId || !img || !email) {
+    if (!username || !naverId || !img || !email) {
       return res
         .status(status.NAVER_USER_NOT_FOUND.status)
         .json({message: status.NAVER_USER_NOT_FOUND.message, err_code: status.NAVER_USER_NOT_FOUND.err_code});
     }
 
     // JWT 토큰 생성: 사용자 정보를 바탕으로 JWT 토큰을 생성하여 클라이언트에 응답
-    const payload = {nickname, naverId, img, email};
+    const payload = {username, naverId, img, email};
 
     // 유저 확인하고 없으면 회원가입 처리
     const user = await authService.handleNaverUser(payload);
@@ -279,7 +279,7 @@ router.get('/naver/callback', async (req: Request, res: Response) => {
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효
     res.cookie('accessToken', accessToken, cookieOpt);
-    res.status(200).json({message: `${nickname}님 로그인 되었습니다`, accessToken});
+    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken});
   } catch (err) {
     console.error('Error getting user info from Naver:', err);
     res
