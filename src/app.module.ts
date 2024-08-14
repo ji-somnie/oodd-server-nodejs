@@ -49,20 +49,6 @@ app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 //app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
-
-
-// Socket.io 설정
-const io = new Server(httpServer, {
-  cors: {
-    origin: true,
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  },
-});
-
-// 서버 시작
-
 const io = new Server(httpServer);
 
 export const startServer = async () => {
@@ -73,19 +59,22 @@ export const startServer = async () => {
     io.on('connect', socket => {
       console.log('connected!!!');
 
-      // 채팅방 입장
+      /* 채팅방 입장: 해당 채팅방의 모든 메세지 가져오기 */
       socket.on('enterChatRoom', async (roomId: number) => {
         try {
           if (!roomId) {
             throw new Error('Required fields are missing.');
           }
 
+          // room 찾아오기
           const room = await chatRoomService.getChatRoomById(roomId);
           if (!room) throw new Error('Room not found.');
 
+          // room 들어가기
           socket.join(roomId.toString());
           console.log(`Entered room ${roomId}!`);
 
+          /* 해당 방의 모든 메세지 클라이언트로 전송 */
           const allMessages = await chatMessageService.getChatMessagesByChatRoom(room);
           socket.emit('AllMessages', allMessages);
         } catch (error) {
@@ -94,7 +83,7 @@ export const startServer = async () => {
         }
       });
 
-      // 메세지 처리
+      /* 메세지 받고 주기 */
       socket.on('message', async (roomId: number, fromUserId: number, toUserId: number, message: string) => {
         try {
           if (!roomId || !fromUserId || !toUserId || !message) {
@@ -104,6 +93,7 @@ export const startServer = async () => {
           socket.join(roomId.toString());
           console.log(`Entered in ${roomId}!`);
 
+          // room 찾아오기
           const room = await chatRoomService.getChatRoomById(roomId);
           if (!room) throw new Error('Room not found.');
 
@@ -127,8 +117,4 @@ export const startServer = async () => {
   }
 };
 
-
-startServer();
-
-export { app, httpServer, io };
-
+export {app, httpServer, io};

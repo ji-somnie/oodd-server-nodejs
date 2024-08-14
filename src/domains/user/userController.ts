@@ -66,5 +66,25 @@ userRouter.post("/phone/verification/check", async (req: Request, res: Response)
     return res.status(status.VERIFY_FAILED.status).json({ message: status.VERIFY_FAILED.message, err_code: status.VERIFY_FAILED.err_code });
   }
 });
+ 
+// 사용자 정보 조회
+userRouter.get("/users/:userId", async (req: Request, res: Response) => {
+  const userId=10;
+  try {
+      const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
+      if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID" });
+      }
+      const user = await userService.getUserByUserId(userId);
+      if (user) {
+          return res.status(200).json(user);
+      } else {
+          return res.status(404).json({ message: "User not found" });
+      }
+  } catch (error) {
+      return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 export default userRouter;

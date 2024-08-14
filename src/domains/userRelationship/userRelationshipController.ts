@@ -25,18 +25,18 @@ const userRelationshipService = new UserRelationshipService();
 const userService = new UserService();
 const chatRoomService = new ChatRoomService();
 
-// 매칭 신청 리스트 조회
-userRelationshipRouter.get('/', async (req: Request, res: Response): Promise<void> => {
-  const user = req.user as User;
+// // 매칭 신청 리스트 조회
+// userRelationshipRouter.get('/', async (req: Request, res: Response): Promise<void> => {
+//   const user = req.user as User;
 
-  console.log(user);
+//   console.log(user);
 
-  const userRelationships = await userRelationshipService.getUserRelationshipsByUser(user);
-  console.log(userRelationships);
+//   const userRelationships = await userRelationshipService.getUserRelationshipsByUser(user);
+//   console.log(userRelationships);
 
-  res.status(200).json(new BaseResponse<UserRelationship>(true, HTTP_OK.code, HTTP_OK.message, userRelationships));
-  return;
-});
+//   res.status(200).json(new BaseResponse<UserRelationship>(true, HTTP_OK.code, HTTP_OK.message, userRelationships));
+//   return;
+// });
 
 // 매칭 신청
 userRelationshipRouter.post('/', async (req: Request, res: Response): Promise<void> => {
@@ -76,49 +76,49 @@ userRelationshipRouter.post('/', async (req: Request, res: Response): Promise<vo
   return;
 });
 
-// 매칭 신청 수락 및 취소
-userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: Response): Promise<void> => {
-  const user = req.user as User;
-  const userRelationshipId = Number.parseInt(req.params.userRelationshipId);
-  const requestStatus: 'rejected' | 'accepted' = req.body.requestStatus;
+// // 매칭 신청 수락 및 취소
+// userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: Response): Promise<void> => {
+//   const user = req.user as User;
+//   const userRelationshipId = Number.parseInt(req.params.userRelationshipId);
+//   const requestStatus: 'rejected' | 'accepted' = req.body.requestStatus;
 
-  if (requestStatus !== 'rejected' && requestStatus !== 'accepted') {
-    res.status(400).json(new BaseResponse(false, NO_PARAMETER.code, NO_PARAMETER.message));
-    return;
-  }
+//   if (requestStatus !== 'rejected' && requestStatus !== 'accepted') {
+//     res.status(400).json(new BaseResponse(false, NO_PARAMETER.code, NO_PARAMETER.message));
+//     return;
+//   }
 
-  if (!userRelationshipId || !requestStatus) {
-    res.status(400).json(new BaseResponse(false, NO_PARAMETER.code, NO_PARAMETER.message));
-    return;
-  }
+//   if (!userRelationshipId || !requestStatus) {
+//     res.status(400).json(new BaseResponse(false, NO_PARAMETER.code, NO_PARAMETER.message));
+//     return;
+//   }
 
-  const userRelationship = await userRelationshipService.getUserRelationshipById(userRelationshipId);
+//   const userRelationship = await userRelationshipService.getUserRelationshipById(userRelationshipId);
 
-  console.log(userRelationship);
+//   console.log(userRelationship);
 
-  if (!userRelationship) {
-    res
-      .status(404)
-      .json(new BaseResponse(false, NOT_FOUND_USER_RELATIONSHIP.code, NOT_FOUND_USER_RELATIONSHIP.message));
-    return;
-  }
+//   if (!userRelationship) {
+//     res
+//       .status(404)
+//       .json(new BaseResponse(false, NOT_FOUND_USER_RELATIONSHIP.code, NOT_FOUND_USER_RELATIONSHIP.message));
+//     return;
+//   }
 
-  if (userRelationship.requestStatus !== 'pending') {
-    res.status(400).json(new BaseResponse(false, NOT_PENDING_REQUEST.code, NOT_PENDING_REQUEST.message));
-    return;
-  }
+//   if (userRelationship.requestStatus !== 'pending') {
+//     res.status(400).json(new BaseResponse(false, NOT_PENDING_REQUEST.code, NOT_PENDING_REQUEST.message));
+//     return;
+//   }
 
-  if (user.id !== userRelationship.target.id) {
-    res.status(401).json(new BaseResponse(false, NO_AUTHORIZATION.code, NO_AUTHORIZATION.message));
-    return;
-  }
+//   if (user.id !== userRelationship.target.id) {
+//     res.status(401).json(new BaseResponse(false, NO_AUTHORIZATION.code, NO_AUTHORIZATION.message));
+//     return;
+//   }
 
-  await userRelationshipService.patchRequestStatus(userRelationship, requestStatus);
+//   await userRelationshipService.patchRequestStatus(userRelationship, requestStatus);
 
-  const chatRoom = await chatRoomService.getChatRoomByUserRelationship(userRelationship);
+//   const chatRoom = await chatRoomService.getChatRoomByUserRelationship(userRelationship);
 
-  res.status(201).json(new BaseResponse<ChatRoom>(true, HTTP_OK.code, HTTP_OK.message, chatRoom));
-  return;
-});
+//   res.status(201).json(new BaseResponse<ChatRoom>(true, HTTP_OK.code, HTTP_OK.message, chatRoom));
+//   return;
+// });
 
 export default userRelationshipRouter;
