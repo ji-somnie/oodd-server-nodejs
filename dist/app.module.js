@@ -32,7 +32,6 @@ const data_source_1 = require("./data-source");
 const authMiddleware_1 = require("./middlewares/authMiddleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const userRelationshipController_1 = __importDefault(require("./domains/userRelationship/userRelationshipController"));
-const userInterestController_1 = __importDefault(require("./domains/userInterest/userInterestController"));
 const chatRoomService = new chatRoomService_1.ChatRoomService();
 const chatMessageService = new chatMessageService_1.ChatMessageService();
 const userService = new userService_1.UserService();
@@ -41,7 +40,7 @@ exports.app = app;
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use('/auth', authController_1.default); //소셜 로그인 처리는 인증 없이 바로
-app.use('/users', userController_1.default, userInterestController_1.default);
+app.use('/users', userController_1.default);
 app.use('/block', blockController_1.default); //테스트용
 app.use('/posts', ootdLikeController_1.default, ootdCommentController_1.default, postController_1.default);
 app.use((0, cors_1.default)({
