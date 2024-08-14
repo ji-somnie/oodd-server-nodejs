@@ -9,12 +9,12 @@ import {
   NOT_FOUND_USER,
   CANNOT_REQUEST_MYSELF,
   NO_AUTHORIZATION,
+  BLOCKED_USER,
 } from '../../variables/httpCode';
-import {UserService} from '../user/userService';
+import {validatedUser, getBlockStatus} from '../../validationTest/validateUser';
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const userInterestService = new UserInterestService();
-const userService = new UserService();
 const router = Router();
 
 router.patch('/interest', authenticateJWT, async (req: Request, res: Response) => {
@@ -32,8 +32,8 @@ router.patch('/interest', authenticateJWT, async (req: Request, res: Response) =
     }
 
     // userId와 friendId의 유효성 검사
-    const userExists = await userService.getUserByUserId(userId);
-    const friendExists = await userService.getUserByUserId(friendId);
+    const userExists = await validatedUser(userId);
+    const friendExists = await validatedUser(friendId);
 
     if (!userId || !friendId || !userExists || !friendExists) {
       return res.status(400).json({
@@ -49,6 +49,16 @@ router.patch('/interest', authenticateJWT, async (req: Request, res: Response) =
         isSuccess: false,
         code: CANNOT_REQUEST_MYSELF.code,
         message: CANNOT_REQUEST_MYSELF.message,
+      });
+    }
+
+    // 차단 여부 확인
+    const blockStatus = await getBlockStatus(userId, friendId);
+    if (blockStatus === 'blocked') {
+      return res.status(400).json({
+        isSuccess: false,
+        code: BLOCKED_USER.code,
+        message: BLOCKED_USER.message,
       });
     }
 

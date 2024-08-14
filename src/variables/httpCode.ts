@@ -259,3 +259,4 @@ export const NAVER_USER_NOT_FOUND = {
 };
 
 export const INVALID_CONTENT = {code: 1003, message: 'Invalid Content', err_code: 'INVALID_CONTENT'};
+export const BLOCKED_USER = {code: 1004, message: '차단된 사용자입니다.', err_code: 'BLOCKED_USER'};
