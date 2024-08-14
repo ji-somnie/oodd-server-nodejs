@@ -17,6 +17,7 @@ import {initializeDatabase} from './data-source';
 import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
 import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
+import userInterestRouter from './domains/userInterest/userInterestController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -28,7 +29,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
-app.use('/users', userRouter);
+app.use('/users', userRouter, userInterestRouter);
 app.use('/block', blockRouter); //테스트용
 app.use('/posts', ootdLikeRouter, ootdCommentRouter, postRouter);
 
