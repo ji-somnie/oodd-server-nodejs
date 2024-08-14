@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
-import cors from 'cors';
+import  cors  from 'cors';
 import { Server } from 'socket.io';
 import { initializeDatabase } from './data-source';
 

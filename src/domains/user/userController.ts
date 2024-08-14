@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
-import  status  from '../../variables/httpCode';
+import { status } from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
@@ -19,7 +19,7 @@ const userService = new UserService();
 //     res.status(201).json(newUser); // 201 Created 상태 코드와 함께 응답
 //   } catch (error) {
 //     res.status(500).json({ message: "Internal Server Error" }); // 에러 발생 시 500 상태 코드와 함께 응답
-//   }
+//   } 
 // });
 
 
