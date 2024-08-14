@@ -39,6 +39,7 @@ jobs:
           echo DB_USER=${{ secrets.DEV_DB_USER }} >> .env
           echo DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }} >> .env
           echo DB_DATABASE=${{ secrets.DEV_DB_DATABASE }} >> .env
+          echo JWT_SECRET_KEY=${{ secrets.DEV_JWT_SECRET_KEY }} >> .env
           cat .env
 
       - name: copy appspec.yml

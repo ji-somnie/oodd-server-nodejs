@@ -32,11 +32,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< HEAD
 exports.initializeDatabase = void 0;
 const typeorm_1 = require("typeorm");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const myDataBase = new typeorm_1.DataSource({
+=======
+exports.initializeDatabase = exports.myDataBase = void 0;
+const typeorm_1 = require("typeorm");
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+exports.myDataBase = new typeorm_1.DataSource({
+>>>>>>> 6ae1845ca38705c0db41df06b7b723721086ef1e
     type: 'mysql',
     host: process.env.DEV_DB_HOST ? process.env.DEV_DB_HOST : process.env.DB_HOST,
     port: 3306,
@@ -47,6 +55,7 @@ const myDataBase = new typeorm_1.DataSource({
     logging: true, // 정확히 어떤 sql 쿼리가 실행됐는지 로그 출력
     synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
 });
+<<<<<<< HEAD
 // 데이터베이스 초기화 함수
 const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -55,6 +64,15 @@ const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () 
             console.log('Data Source has been initialized!');
         }
         return myDataBase;
+=======
+const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!exports.myDataBase.isInitialized) {
+            yield exports.myDataBase.initialize();
+            console.log('Data Source has been initialized!');
+        }
+        return exports.myDataBase;
+>>>>>>> 6ae1845ca38705c0db41df06b7b723721086ef1e
     }
     catch (err) {
         console.error('Error during Data Source initialization:', err);
@@ -62,4 +80,8 @@ const initializeDatabase = () => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.initializeDatabase = initializeDatabase;
+<<<<<<< HEAD
 exports.default = myDataBase;
+=======
+exports.default = exports.myDataBase;
+>>>>>>> 6ae1845ca38705c0db41df06b7b723721086ef1e

@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express';
 import {PostService} from './postService';
-import {PostRequestDto} from './dtos/postRequest.dto';
+import { PostRequestDto } from './dtos/postRequest.dto';
 import {
   HTTP_OK,
   HTTP_BAD_REQUEST,
@@ -19,7 +19,7 @@ const router = Router();
 const postService = new PostService();
 const userService = new UserService();
 
-// // 토큰 검증 대신 일단 하드코딩
+// // // 토큰 검증 대신 일단 하드코딩
 // const tempUserId = 6;
 // const userId = tempUserId;
 
@@ -35,7 +35,6 @@ router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<v
       return;
     }
     const newPostResponse = await postService.createPost(userId, postRequestDto);
-
     if (newPostResponse.isSuccess) {
       res.status(201).json(newPostResponse);
     }
@@ -75,9 +74,31 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
   }
 });
 
-// 게시물 상세 조회
-// 홈 - 게시물 조회 화면
-// 게시물 1개만 반환
+// 게시물 수정
+router.patch('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);    
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
+
+    const postRequestDto: PostRequestDto = req.body;
+
+    const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
+
+    if (updatePostResponse.isSuccess) {
+      res.status(201).json(updatePostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 게시물 상세 조회: 게시물 1개만 반환
 router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = parseInt(req.params.postId, 10);
