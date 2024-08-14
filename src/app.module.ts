@@ -53,7 +53,7 @@ app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 
 const httpServer = createServer(app);
 
-<<<<<<< HEAD
+
 // Socket.io 설정
 const io = new Server(httpServer, {
   cors: {
@@ -65,12 +65,10 @@ const io = new Server(httpServer, {
 });
 
 // 서버 시작
-const startServer = async () => {
-=======
+
 const io = new Server(httpServer);
 
 export const startServer = async () => {
->>>>>>> 6ae1845ca38705c0db41df06b7b723721086ef1e
   try {
     await initializeDatabase();
     console.log('Database has been initialized!');
@@ -132,10 +130,8 @@ export const startServer = async () => {
   }
 };
 
-<<<<<<< HEAD
+
 startServer();
 
 export { app, httpServer, io };
-=======
-export {app, httpServer, io};
->>>>>>> 6ae1845ca38705c0db41df06b7b723721086ef1e
+
