@@ -9,13 +9,12 @@ export class BaseEntity {
   @Column({default: 'activated'})
   status!: 'activated' | 'deactivated';
 
-  @CreateDateColumn({type: 'timestamp'})
+  @CreateDateColumn({type: 'datetime'})
   createdAt!: Date;
 
-  @UpdateDateColumn({type: 'timestamp'})
+  @UpdateDateColumn({type: 'datetime'})
   updatedAt!: Date;
 
-  @DeleteDateColumn({type: 'timestamp'})
-  @Column({nullable: true})
-  deletedAt?: Date;
+  @Column({type: 'datetime', nullable: true})
+  deletedAt?: Date | null;
 }

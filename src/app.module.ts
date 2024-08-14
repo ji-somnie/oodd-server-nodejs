@@ -1,8 +1,11 @@
 import express from 'express';
 import userRouter from './domains/user/userController';
-import postRouter from './domains/ootd/postController';
+import postRouter from './domains/post/postController';
+import ootdRouter from './domains/ootd/ootdController';
 import authRouter from './domains/auth/authController';
 import blockRouter from './domains/block/blockController';
+import ootdLikeRouter from './domains/ootdLike/ootdLikeController';
+import ootdCommentRouter from './domains/ootdComment/ootdCommentController';
 import {createServer} from 'http';
 import cors from 'cors';
 import {Server} from 'socket.io';
@@ -11,9 +14,9 @@ import {ChatRoomService} from './domains/chatRoom/chatRoomService';
 import {ChatMessageService} from './domains/chatMessage/chatMessageService';
 import {UserService} from './domains/user/userService';
 import {initializeDatabase} from './data-source';
-import { authenticateJWT } from './middlewares/authMiddleware';
+import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
-
+import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -25,35 +28,28 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
-app.use("/block", blockRouter); //테스트용
+app.use('/users', userRouter);
+app.use('/block', blockRouter); //테스트용
+app.use('/posts', ootdLikeRouter, ootdCommentRouter, postRouter);
 
 app.use(
   cors({
-    origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', process.env.CALLBACK_URL || ''],
+    origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-    exposedHeaders: ['set-cookie'],
   }),
 );
 
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
-app.use("/posts", authenticateJWT, postRouter);
+app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
-app.use("/users", authenticateJWT, userRouter);
+app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 //app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: true,
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  },
-});
+const io = new Server(httpServer);
 
-const startServer = async () => {
+export const startServer = async () => {
   try {
     await initializeDatabase();
     console.log('Database has been initialized!');
@@ -118,7 +114,5 @@ const startServer = async () => {
     console.error('Error during DataBase initialization:', error);
   }
 };
-
-startServer();
 
 export {app, httpServer, io};

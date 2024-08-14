@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express';
 import {PostService} from './postService';
-import {PostRequestDto} from './dtos/postRequest.dto';
+import { PostRequestDto } from './dtos/postRequest.dto';
 import {
   HTTP_OK,
   HTTP_BAD_REQUEST,
@@ -19,18 +19,22 @@ const router = Router();
 const postService = new PostService();
 const userService = new UserService();
 
-// 토큰 검증 대신 일단 하드코딩
-const tempUserId = 1;
-const userId = tempUserId;
-
-//app.use("/posts", authenticateJWT, postRouter);
+// // // 토큰 검증 대신 일단 하드코딩
+// const tempUserId = 6;
+// const userId = tempUserId;
 
 // 게시물 업로드
 router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
     const postRequestDto: PostRequestDto = req.body;
-    const newPostResponse = await postService.createPost(userId, postRequestDto);
 
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER});
+      return;
+    }
+    const newPostResponse = await postService.createPost(userId, postRequestDto);
     if (newPostResponse.isSuccess) {
       res.status(201).json(newPostResponse);
     }
@@ -48,6 +52,12 @@ router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<v
 router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = parseInt(req.params.postId, 10);
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
 
     const deletePostResponse = await postService.deletePost(userId, postId);
 
@@ -64,8 +74,88 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
   }
 });
 
+// 게시물 수정
+router.patch('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);    
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
+
+    const postRequestDto: PostRequestDto = req.body;
+
+    const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
+
+    if (updatePostResponse.isSuccess) {
+      res.status(201).json(updatePostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 게시물 상세 조회: 게시물 1개만 반환
+router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const userId = req.user?.id; 
+
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
+
+    const getPostDetailResponse = await postService.getPostDetail(userId, postId);
+
+    if (getPostDetailResponse.isSuccess) {
+      res.status(200).json(getPostDetailResponse);
+    } else {
+      res.status(404).json({
+        isSuccess: false,
+        code: getPostDetailResponse.code,
+        message: getPostDetailResponse.message,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 게시물 리스트 조회: 여러 게시물 반환
+router.get('/', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const queryUserId = parseInt(req.query.userId as string, 10);
+
+    if (isNaN(queryUserId)) {
+      res.status(400).json(new BaseResponse(false, 400, 'Invalid userId'));
+      return;
+    }
+
+    const userId = req.user?.id; 
+
+    if (!userId) {
+      res.status(401).json(new BaseResponse(false, 401, 'Unauthorized'));
+      return;
+    }
+
+    const postListResponse = await postService.getPostList(queryUserId, userId);
+
+    if (postListResponse.isSuccess) {
+      res.status(200).json(postListResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(new BaseResponse(false, HTTP_INTERNAL_SERVER_ERROR.code, HTTP_INTERNAL_SERVER_ERROR.message));
+  }
+});
+
 // 대표 OOTD 지정
-router.patch('/:postId/isRepresentative/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+router.patch('/:postId/isRepresentative/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = parseInt(req.params.postId, 10);
     const userId = parseInt(req.params.userId, 10);
