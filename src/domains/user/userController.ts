@@ -1,10 +1,12 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
-import { status } from '../../variables/httpCode';
+import { HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, status } from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
+import { authenticateJWT } from "../../middlewares/authMiddleware";
+import { UserResponseDto } from "./dtos/userResponse.dto";
 dotenv.config();
 
 const userRouter = Router();
@@ -68,21 +70,31 @@ userRouter.post("/phone/verification/check", async (req: Request, res: Response)
 });
  
 // 사용자 정보 조회
-userRouter.get("/users/:userId", async (req: Request, res: Response) => {
-  const userId=10;
+userRouter.get("/:userId", authenticateJWT, async (req: Request, res: Response) => {
   try {
       const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
       if (isNaN(userId)) {
-          return res.status(400).json({ message: "Invalid user ID" });
+          return res.status(400).json({ message: NOT_FOUND_USER.message});
       }
+
       const user = await userService.getUserByUserId(userId);
-      if (user) {
-          return res.status(200).json(user);
-      } else {
-          return res.status(404).json({ message: "User not found" });
+      if (!user) {
+          return res.status(404).json({ message: NOT_FOUND_USER.message });
       }
+
+      const userResponse = new UserResponseDto();
+      userResponse.id = user.id;
+      userResponse.name = user.name;
+      userResponse.email = user.email;
+      userResponse.nickname = user.nickname;
+      userResponse.phoneNumber = user.phoneNumber;
+      userResponse.profilePictureUrl = user.profilePictureUrl;
+      userResponse.bio = user.bio;
+      userResponse.joinedAt = user.joinedAt;
+
+      return res.status(200).json(userResponse);
   } catch (error) {
-      return res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
 });
 

@@ -114,6 +114,7 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  // 사용자 정보 조회
   async getUserByUserId(userId: number): Promise<User | null> {
     return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
   }
