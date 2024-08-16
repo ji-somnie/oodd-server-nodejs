@@ -101,6 +101,7 @@ export class PostService {
           const postStyletag = new PostStyletag();
           postStyletag.post = savedPost;
           postStyletag.styletag = styletag;
+          postStyletag.status = 'activated';
           postStyletag.createdAt = now;
           postStyletag.updatedAt = now;
           await queryRunner.manager.save(postStyletag);
@@ -132,6 +133,7 @@ export class PostService {
             clothing.modelName = clothingItem.model ?? '';
             clothing.modelNumber = clothingItem.modelNumber ?? '';
             clothing.url = clothingItem.url ?? '';
+            clothing.status = 'activated';
             clothing.createdAt = now;
             clothing.updatedAt = now;
             clothing = await queryRunner.manager.save(clothing);
@@ -142,6 +144,7 @@ export class PostService {
           const postClothing = new PostClothing();
           postClothing.post = savedPost;
           postClothing.clothing = clothing;
+          postClothing.status = 'activated';
           postClothing.createdAt = now;
           postClothing.updatedAt = now;
           await queryRunner.manager.save(postClothing);
