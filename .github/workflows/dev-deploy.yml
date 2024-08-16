@@ -40,6 +40,10 @@ jobs:
           echo DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }} >> .env
           echo DB_DATABASE=${{ secrets.DEV_DB_DATABASE }} >> .env
           echo JWT_SECRET_KEY=${{ secrets.DEV_JWT_SECRET_KEY }} >> .env
+          echo KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} >> .env
+          echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> .env
+          echo NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} >> .env
+          echo NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} >> .env
           cat .env
 
       - name: copy appspec.yml
