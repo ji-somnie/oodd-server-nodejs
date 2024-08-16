@@ -24,13 +24,14 @@ export class UserService {
   }
 
   async findUserByNaverId(naverId: string): Promise<User | null> {
-    return await this.userRepository.findOne({where: {naverId: naverId}});
+    return await this.userRepository.findOne({where: {naverId: naverId, status: 'activated'}});
   }
 
   async createUserByPayload(payload: any): Promise<User> {
     let user = this.userRepository.create();
     user.googleId = payload.googleId ? payload.googleId : null;
     user.kakaoId = payload.kakaoId ? payload.kakaoId : null;
+    user.naverId = payload.naverId ? payload.naverId : null;
     user.email = payload.email;
     user.name = payload.username;
     user.profilePictureUrl = payload.img;

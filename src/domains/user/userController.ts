@@ -25,16 +25,8 @@ const userService = new UserService();
 // });
 
 
-
-//구글 로그인
-userRouter.post("/login/google", async (req: Request, res: Response) => {
-  
-}); 
-
-
-
 // 휴대폰번호 본인인증 코드 전송
-userRouter.post("/phone/verification", async (req: Request, res: Response) => {
+userRouter.post("/phone/verification", authenticateJWT, async (req: Request, res: Response) => {
   const { phone } = req.body;
 
   if (!phone) {
@@ -50,7 +42,7 @@ userRouter.post("/phone/verification", async (req: Request, res: Response) => {
 });
 
 //휴대폰번호 본인인증 코드 확인
-userRouter.post("/phone/verification/check", async (req: Request, res: Response) => {
+userRouter.post("/phone/verification/check", authenticateJWT, async (req: Request, res: Response) => {
   const { phone, token } = req.body;
 
   if (!phone || !token) {
