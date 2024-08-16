@@ -32,7 +32,9 @@ app.use(express.json());
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users',authenticateJWT, userRouter);
 app.use('/block', blockRouter); //테스트용
-app.use('/posts', ootdLikeRouter, ootdCommentRouter, postRouter);
+// app.use('/posts', authenticateJWT, ootdLikeRouter, ootdCommentRouter, postRouter);
+app.use('/posts', authenticateJWT, postRouter);
+
 
 app.use(
   cors({
