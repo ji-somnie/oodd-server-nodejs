@@ -22,7 +22,7 @@ const authService = new AuthService();
 const kakaoOpt = {
   clientId: process.env.KAKAO_CLIENT_ID || '',
   clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:8080/auth/kakao/callback',
+  redirectUri: 'http://localhost:3000/auth/kakao/callback',
 };
 
 const googleOpt = {
