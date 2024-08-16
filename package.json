@@ -36,7 +36,7 @@
     "typeorm": "^0.3.20"
   },
   "scripts": {
-    "dev": "nodemon --exec ts-node ./src/app.ts --watch ./src",
+    "dev": "nodemon --exec \"ts-node --project ./tsconfig.json\" ./src/app.ts --watch ./src",
     "build": "tsc",
     "start": "node dist/app.js",
     "prisma:migrate": "prisma migrate dev",

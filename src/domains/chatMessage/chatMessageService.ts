@@ -43,6 +43,7 @@ export class ChatMessageService {
   async getLatestMessage(chatRoom: ChatRoom): Promise<ChatMessage | null> {
     return await this.chatMessageRepository.findOne({
       where: {chatRoom: chatRoom},
+      relations: ['fromUser', 'toUser'],
       order: {createdAt: 'DESC'},
     });
   }

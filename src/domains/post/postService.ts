@@ -528,4 +528,20 @@ export class PostService {
     post.isRepresentative = true;
     await this.postRepository.save(post);
   }
+
+  async getRepresentativePost(user: User): Promise<Post | null> {
+    return this.postRepository.findOne({
+      where: {user, isRepresentative: true, status: 'activated'},
+      relations: ['images', 'postStyletags', 'postClothings'],
+      order: {createdAt: 'DESC'},
+    });
+  }
+
+  async getLastestPost(user: User): Promise<Post | null> {
+    return this.postRepository.findOne({
+      where: {user, status: 'activated'},
+      relations: ['images', 'postStyletags', 'postClothings'],
+      order: {createdAt: 'DESC'},
+    });
+  }
 }
