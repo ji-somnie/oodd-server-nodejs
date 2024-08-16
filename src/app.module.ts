@@ -16,7 +16,7 @@ import {UserService} from './domains/user/userService';
 import {initializeDatabase} from './data-source';
 import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
-import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
+// import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -30,8 +30,8 @@ app.use(express.json());
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userRouter);
 app.use('/block', blockRouter); //테스트용
-app.use('/posts', authenticateJWT, ootdLikeRouter, ootdCommentRouter, postRouter);
-// app.use('/posts', authenticateJWT, postRouter);
+// app.use('/posts', authenticateJWT, ootdLikeRouter, ootdCommentRouter, postRouter);
+app.use('/posts', authenticateJWT, postRouter);
 
 
 app.use(
@@ -44,7 +44,7 @@ app.use(
 // JWT 인증이 필요한 라우트 (개별적으로 하나씩)
 app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
-app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
+// app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 //app.use("/block", authenticateJWT, blockRouter);
 
 const httpServer = createServer(app);
