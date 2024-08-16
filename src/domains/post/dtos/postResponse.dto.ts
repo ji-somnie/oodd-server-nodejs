@@ -3,6 +3,7 @@ import { PostRequestDto } from "./postRequest.dto";
 export class PostResponseDto extends PostRequestDto{
   postId!: number;
   userId!: number;
+  isRepresentative?: boolean ;
 }
 
 export class PostDetailResponseDto extends PostResponseDto{

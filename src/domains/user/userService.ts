@@ -126,9 +126,15 @@ export class UserService {
 
   // 사용자 정보 수정
   async updateUserInfo(userId: number, userRequestDto: UserInfoRequestDto): Promise<BaseResponse<UserInfoResponseDto | null>> {
-    try{
+    const queryRunner = this.userRepository.manager.connection.createQueryRunner();
+  
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
+    try {
       const user = await validatedUser(userId);
       if (!user) {
+        await queryRunner.rollbackTransaction();
         return {
           isSuccess: false,
           code: NOT_FOUND_USER.code,
@@ -136,12 +142,15 @@ export class UserService {
           result: null,
         };
       }
-      
+  
       user.bio = userRequestDto.bio ?? '';
       user.nickname = userRequestDto.nickname ?? '';
       user.profilePictureUrl = userRequestDto.profilePictureUrl ?? '';
-      await this.userRepository.save(user);
-
+  
+      await queryRunner.manager.save(user);
+  
+      await queryRunner.commitTransaction();
+  
       const userInfoResponseDto: UserInfoResponseDto = {
         id: user.id,
         name: user.name,
@@ -152,22 +161,26 @@ export class UserService {
         bio: user.bio,
         joinedAt: user.joinedAt,
       };
-
+  
       return {
         isSuccess: true,
         code: HTTP_OK.code,
         message: HTTP_OK.message,
         result: userInfoResponseDto,
       };
-
-    } catch(error){
-      console.error(error);
+  
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('Transaction rolled back due to an error:', error);
       return {
         isSuccess: false,
         code: HTTP_INTERNAL_SERVER_ERROR.code,
         message: HTTP_INTERNAL_SERVER_ERROR.message,
         result: null,
       };
+    } finally {
+      await queryRunner.release();
     }
   }
+  
 }
