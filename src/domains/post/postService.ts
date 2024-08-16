@@ -195,6 +195,11 @@ export class PostService {
 
   // 게시물 삭제
   async deletePost(userId: number, postId: number): Promise<BaseResponse<null>> {
+    const queryRunner = this.postRepository.manager.connection.createQueryRunner();
+  
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
     try {
       const user = await validatedUser(userId); // 토큰 제대로 확인되면 나중에 빼자
       if (!user) {
@@ -205,7 +210,7 @@ export class PostService {
           result: null,
         };
       }
-
+  
       const post = await validatePost(userId, postId);
       if (!post) {
         return {
@@ -215,14 +220,15 @@ export class PostService {
           result: null,
         };
       }
+  
+      await queryRunner.manager.delete(PostStyletag, { post: { id: postId } });
+      await queryRunner.manager.delete(PostClothing, { post: { id: postId } });
+      await queryRunner.manager.delete(Image, { post: { id: postId } });
+  
+      await queryRunner.manager.remove(post);
 
-      // 연관된 엔티티 직접 삭제
-      await this.postStyletagRepository.delete({post: {id: postId}});
-      await this.postClothingRepository.delete({post: {id: postId}});
-      await this.imageRepository.delete({post: {id: postId}});
-
-      await this.postRepository.remove(post);
-
+      await queryRunner.commitTransaction();
+  
       return {
         isSuccess: true,
         code: HTTP_OK.code,
@@ -230,6 +236,7 @@ export class PostService {
         result: null,
       };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.error(error);
       return {
         isSuccess: false,
@@ -237,8 +244,11 @@ export class PostService {
         message: HTTP_INTERNAL_SERVER_ERROR.message,
         result: null,
       };
+    } finally {
+      await queryRunner.release();
     }
   }
+  
 
   // // 게시물 수정
   // async updatePost(

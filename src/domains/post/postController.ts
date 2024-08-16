@@ -63,6 +63,11 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
       return;
     }
 
+    if (!postId){
+      res.status(401).json({ message: NOT_FOUND_POST.message});
+      return;
+    }
+
     const deletePostResponse = await postService.deletePost(userId, postId);
 
     if (deletePostResponse.isSuccess) {
