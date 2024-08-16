@@ -1,12 +1,13 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
-import { UserRequestDto } from "./dtos/userRequest.dto";
-import { HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, status } from '../../variables/httpCode';
+import { UserInfoRequestDto, UserRequestDto } from "./dtos/userRequest.dto";
+import { HTTP_INTERNAL_SERVER_ERROR, NO_AUTHORIZATION, NOT_FOUND_USER, status } from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 import { authenticateJWT } from "../../middlewares/authMiddleware";
 import { UserResponseDto } from "./dtos/userResponse.dto";
+import { BaseResponse } from "../../base/baseResponse";
 dotenv.config();
 
 const userRouter = Router();
@@ -85,6 +86,29 @@ userRouter.get("/:userId", authenticateJWT, async (req: Request, res: Response) 
       userResponse.joinedAt = user.joinedAt;
 
       return res.status(200).json(userResponse);
+  } catch (error) {
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
+// 사용자 정보 수정
+userRouter.patch("/:userId", authenticateJWT, async (req: Request, res: Response) => {
+  try {
+      const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
+      const loginedUserId = req.user?.id;
+
+      if (isNaN(userId)) {
+          return res.status(400).json({ message: NOT_FOUND_USER.message});
+      }
+      if (userId !== loginedUserId){
+        return new BaseResponse(false, NO_AUTHORIZATION.code, NO_AUTHORIZATION.message);
+      } else{
+        const userRequestDto: UserInfoRequestDto = req.body;
+        const userResponse = await userService.updateUserInfo(userId, userRequestDto);
+        
+        return res.status(200).json(userResponse);
+      }
+    
   } catch (error) {
     res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
   }
