@@ -2,7 +2,7 @@ import myDataBase from '../../data-source';
 import {Post} from '../../entities/postEntity';
 import {PostRequestDto} from './dtos/postRequest.dto';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER} from '../../variables/httpCode';
+import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_STYLETAGS} from '../../variables/httpCode';
 import {User} from '../../entities/userEntity';
 import {validatedUser} from '../../validationTest/validateUser';
 import {validatePost} from '../../validationTest/validatePost';
@@ -64,10 +64,11 @@ export class PostService {
         .createQueryBuilder('postClothing')
         .leftJoinAndSelect('postClothing.clothing', 'clothing')
         .where('postClothing.postId = :postId', {postId})
-        .select(['clothing.brandName', 'clothing.modelName', 'clothing.modelNumber', 'clothing.url'])
+        .select(['clothing.imageUrl','clothing.brandName', 'clothing.modelName', 'clothing.modelNumber', 'clothing.url'])
         .getRawMany();
 
       const clothingDetails = clothingInfo.map(info => ({
+        imageUrl: info.clothing_imageUrl,
         brand: info.clothing_brandName,
         model: info.clothing_modelName,
         modelNumber: info.clothing_modelNumber,
@@ -101,22 +102,22 @@ export class PostService {
         clothingInfo: clothingDetails.length > 0 ? clothingDetails : null,
       };
 
-    return {
-      isSuccess: true,
-      code: HTTP_OK.code,
-      message: HTTP_OK.message,
-      result: postResponseDto,
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      isSuccess: false,
-      code: HTTP_INTERNAL_SERVER_ERROR.code,
-      message: HTTP_INTERNAL_SERVER_ERROR.message,
-      result: null,
-    };
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: postResponseDto,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
   }
-}
 
 
   async getPostById(postId: number): Promise<Post | null> {
@@ -129,5 +130,21 @@ export class PostService {
   async updatePostIsRepresentative(post: Post): Promise<void> {
     post.isRepresentative = true;
     await this.postRepository.save(post);
+  }
+
+  async getRepresentativePost(user: User): Promise<Post | null> {
+    return this.postRepository.findOne({
+      where: {user, isRepresentative: true, status: 'activated'},
+      relations: ['images', 'postStyletags', 'postClothings'],
+      order: {createdAt: 'DESC'},
+    });
+  }
+
+  async getLastestPost(user: User): Promise<Post | null> {
+    return this.postRepository.findOne({
+      where: {user, status: 'activated'},
+      relations: ['images', 'postStyletags', 'postClothings'],
+      order: {createdAt: 'DESC'},
+    });
   }
 }

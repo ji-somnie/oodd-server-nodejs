@@ -10,7 +10,6 @@ import {
   NO_AUTHORIZATION,
   NOT_FOUND_POST,
   NOT_FOUND_STYLETAGS,
-  NOT_FOUND_STYLETAGS,
 } from '../../variables/httpCode';
 import {BaseResponse} from '../../base/baseResponse';
 import {User} from '../../entities/userEntity';
@@ -24,8 +23,6 @@ const userService = new UserService();
 // // // 토큰 검증 대신 일단 하드코딩
 // const tempUserId = 6;
 // const userId = tempUserId;
-
-
 
 // 게시물 상세 조회: 게시물 1개만 반환
 router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
@@ -41,7 +38,7 @@ router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Pro
       res.status(401).json({message: NOT_FOUND_POST.message});
       return;
     }
-  
+
     const getPostDetailResponse = await postService.getPostDetail(userId, postId);
 
     if (getPostDetailResponse.isSuccess) {
