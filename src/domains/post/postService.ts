@@ -2,7 +2,7 @@ import myDataBase from '../../data-source';
 import {Post} from '../../entities/postEntity';
 import {PostRequestDto} from './dtos/postRequest.dto';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_STYLETAGS} from '../../variables/httpCode';
+import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_STYLETAGS, NOT_FOUND_POST} from '../../variables/httpCode';
 import {User} from '../../entities/userEntity';
 import {validatedUser} from '../../validationTest/validateUser';
 import {validatePost} from '../../validationTest/validatePost';
@@ -249,175 +249,190 @@ export class PostService {
     }
   }
   
-
-  // 게시물 수정
-  async updatePost(
-    userId: number,
-    postId: number,
-    postRequestDto: PostRequestDto,
-  ): Promise<BaseResponse<PostResponseDto | null>> {
-    try {
-      const user = await validatedUser(userId);
-      if (!user) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-
-      const post = await validatePost(userId, postId);
-      if (!post) {
-        return {
-          isSuccess: false,
-          code: HTTP_NOT_FOUND.code,
-          message: HTTP_NOT_FOUND.message,
-          result: null,
-        };
-      }
-
-      post.content = postRequestDto.content ?? '';
-
-      if (!post.isRepresentative && postRequestDto.isRepresentative) {
-        await this.updatePostIsRepresentative(post);
-      }
-
-      const updatedPost = await this.postRepository.save(post);
-
-      // 이미지 업데이트 (완전 대체 방식)
-      const existingImages = await this.imageRepository
-        .createQueryBuilder('image')
-        .where('image.postId = :postId', {postId})
-        .getMany();
-
-      const existingImageUrls = existingImages.map(image => image.url);
-      const newImageUrls = postRequestDto.photoUrls || [];
-
-      // 삭제해야 할 이미지
-      const imagesToDelete = existingImages.filter(image => !newImageUrls.includes(image.url));
-      for (const image of imagesToDelete) {
-        await this.imageRepository.remove(image);
-      }
-
-      // 새로 추가해야 할 이미지
-      const urlsToAdd = newImageUrls.filter(url => !existingImageUrls.includes(url));
-      for (const url of urlsToAdd) {
-        const newImage = this.imageRepository.create({url, post: updatedPost});
-        await this.imageRepository.save(newImage);
-      }
-
-      // order 값 업데이트
-      const orderedImages = await this.imageRepository
-        .createQueryBuilder('image')
-        .where('image.postId = :postId', {postId})
-        .orderBy('image.id', 'ASC')
-        .getMany();
-
-      for (let i = 0; i < orderedImages.length; i++) {
-        orderedImages[i].order = i + 1;
-        await this.imageRepository.save(orderedImages[i]);
-      }
-
-      // 스타일 태그 업데이트 (완전 대체 방식)
-      const allowedStyletags = [
-        "#street", "#casual", "#sporty", "#feminine", "#hip",
-        "#classic", "#minimal", "#formal", "#luxury", "#outdoor"
-      ];
-
-    // 스타일 태그 업데이트 (완전 대체 방식)
-    await this.postStyletagRepository.createQueryBuilder().delete().where('postId = :postId', { postId: updatedPost.id }).execute();
-
-    const updatedStyletags: string[] = [];
-    for (const tag of postRequestDto.styletags || []) {
-      if (!allowedStyletags.includes(tag)) {
-        return {
-          isSuccess: false,
-          code: NOT_FOUND_STYLETAGS.code,
-          message: `Invalid style tag: ${tag}`,
-          result: null,
-        };
-      }
-
-      // 스타일 태그가 허용된 목록에 있는지 확인한 후, 이미 존재하는 태그를 찾기
-      const styletag = await this.styletagRepository.findOne({ where: { tag } });
-      if (styletag) {
-        const postStyletag = this.postStyletagRepository.create({ post: updatedPost, styletag });
-        await this.postStyletagRepository.save(postStyletag);
-        updatedStyletags.push(tag);
-      }
-    }
-
-      // 옷 정보 업데이트 (완전 대체 방식)
-      await this.postClothingRepository
-        .createQueryBuilder()
-        .delete()
-        .where('postId = :postId', {postId: updatedPost.id})
-        .execute();
-
-      const updatedClothingInfos = [];
-
-      for (const clothingItem of postRequestDto.clothingInfo || []) {
-        let clothing = await this.clothingRepository
-          .createQueryBuilder('clothing')
-          .where('clothing.imageUrl = :imageUrl', {imageUrl: clothingItem.imageUrl})
-          .andWhere('clothing.brandName = :brandName', {brandName: clothingItem.brand})
-          .andWhere('clothing.modelName = :modelName', {modelName: clothingItem.model})
-          .andWhere('clothing.modelNumber = :modelNumber', {modelNumber: clothingItem.modelNumber})
-          .andWhere('clothing.url = :url', {url: clothingItem.url})
-          .getOne();
-
-        if (!clothing) {
-          clothing = this.clothingRepository.create() as Clothing;
-          clothing.imageUrl = clothingItem.imageUrl ?? '';
-          clothing.brandName = clothingItem.brand ?? '';
-          clothing.modelName = clothingItem.model ?? '';
-          clothing.modelNumber = clothingItem.modelNumber ?? '';
-          clothing.url = clothingItem.url ?? '';
-          clothing = await this.clothingRepository.save(clothing);
-        }
-
-        const postClothing = this.postClothingRepository.create({
-          post: updatedPost,
-          clothing: clothing,
-        });
-        await this.postClothingRepository.save(postClothing);
-        updatedClothingInfos.push(clothing);
-      }
-
-      // PostResponseDto 구성
-      const postResponseDto: PostResponseDto = {
-        postId: updatedPost.id,
-        userId: user.id,
-        photoUrls: newImageUrls,
-        content: updatedPost.content,
-        styletags: updatedStyletags,
-        clothingInfo: updatedClothingInfos.map(clothing => ({
-          imageUrl: clothing.imageUrl,
-          brand: clothing.brandName,
-          model: clothing.modelName,
-          modelNumber: clothing.modelNumber,
-          url: clothing.url,
-        })),
-        isRepresentative: updatedPost.isRepresentative,
-      };
-
-      return {
-        isSuccess: true,
-        code: HTTP_OK.code,
-        message: HTTP_OK.message,
-        result: postResponseDto,
-      };
-    } catch (error) {
-      console.error(error);
+// 게시물 수정
+async updatePost(
+  userId: number,
+  postId: number,
+  postRequestDto: PostRequestDto,
+): Promise<BaseResponse<PostResponseDto | null>> {
+  try {
+    const user = await validatedUser(userId);
+    if (!user) {
       return {
         isSuccess: false,
-        code: HTTP_INTERNAL_SERVER_ERROR.code,
-        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        code: HTTP_NOT_FOUND.code,
+        message: HTTP_NOT_FOUND.message,
         result: null,
       };
     }
+
+    const post = await validatePost(userId, postId);
+    if (!post) {
+      return {
+        isSuccess: false,
+        code: HTTP_NOT_FOUND.code,
+        message: HTTP_NOT_FOUND.message,
+        result: null,
+      };
+    }
+    const now = dayjs().toDate();
+
+    post.content = postRequestDto.content ?? '';
+
+    const updatedPost = await this.postRepository.save(post);
+
+
+    // 대표 ootd 설정 
+    const isRepresentative = postRequestDto.isRepresentative ?? false;
+    if (post.isRepresentative !== isRepresentative) {
+      post.isRepresentative = isRepresentative;
+
+      if (post.isRepresentative) {
+        await this.updatePostIsRepresentative(post);
+      } else {
+        await this.postRepository.save(post);
+      }
+    }
+
+    // 이미지 업데이트 (완전 대체 방식)
+    const existingImages = await this.imageRepository
+      .createQueryBuilder('image')
+      .where('image.postId = :postId', {postId})
+      .getMany();
+
+    const existingImageUrls = existingImages.map(image => image.url);
+    const newImageUrls = postRequestDto.photoUrls || [];
+
+    // 삭제해야 할 이미지
+    const imagesToDelete = existingImages.filter(image => !newImageUrls.includes(image.url));
+    for (const image of imagesToDelete) {
+      await this.imageRepository.remove(image);
+    }
+
+    // 새로 추가해야 할 이미지
+    const urlsToAdd = newImageUrls.filter(url => !existingImageUrls.includes(url));
+    for (const url of urlsToAdd) {
+      const newImage = this.imageRepository.create({url, post: updatedPost});
+      await this.imageRepository.save(newImage);
+    }
+
+    // order 값 업데이트
+    const orderedImages = await this.imageRepository
+      .createQueryBuilder('image')
+      .where('image.postId = :postId', {postId})
+      .orderBy('image.id', 'ASC')
+      .getMany();
+
+    for (let i = 0; i < orderedImages.length; i++) {
+      orderedImages[i].order = i + 1;
+      await this.imageRepository.save(orderedImages[i]);
+    }
+
+    // 스타일 태그 업데이트 (완전 대체 방식)
+    const allowedStyletags = [
+      "#street", "#casual", "#sporty", "#feminine", "#hip",
+      "#classic", "#minimal", "#formal", "#luxury", "#outdoor"
+    ];
+
+  // 스타일 태그 업데이트 (완전 대체 방식)
+  await this.postStyletagRepository.createQueryBuilder().delete().where('postId = :postId', { postId: updatedPost.id }).execute();
+
+  const updatedStyletags: string[] = [];
+  for (const tag of postRequestDto.styletags || []) {
+    if (!allowedStyletags.includes(tag)) {
+      return {
+        isSuccess: false,
+        code: NOT_FOUND_STYLETAGS.code,
+        message: NOT_FOUND_STYLETAGS.message,
+        result: null,
+      };
+    }
+
+    const styletag = await this.styletagRepository.findOne({ where: { tag } });
+    if (styletag) {
+      const postStyletag = this.postStyletagRepository.create({ post: updatedPost, styletag });
+      postStyletag.status = 'activated';
+      postStyletag.updatedAt = now;
+      await this.postStyletagRepository.save(postStyletag);
+      updatedStyletags.push(tag);
+    }
   }
+
+    // 옷 정보 업데이트 (완전 대체 방식)
+    await this.postClothingRepository
+      .createQueryBuilder()
+      .delete()
+      .where('postId = :postId', {postId: updatedPost.id})
+      .execute();
+
+    const updatedClothingInfos = [];
+
+    for (const clothingItem of postRequestDto.clothingInfo || []) {
+      let clothing = await this.clothingRepository
+        .createQueryBuilder('clothing')
+        .where('clothing.imageUrl = :imageUrl', {imageUrl: clothingItem.imageUrl})
+        .andWhere('clothing.brandName = :brandName', {brandName: clothingItem.brand})
+        .andWhere('clothing.modelName = :modelName', {modelName: clothingItem.model})
+        .andWhere('clothing.modelNumber = :modelNumber', {modelNumber: clothingItem.modelNumber})
+        .andWhere('clothing.url = :url', {url: clothingItem.url})
+        .getOne();
+
+      if (!clothing) {
+        clothing = this.clothingRepository.create() as Clothing;
+        clothing.imageUrl = clothingItem.imageUrl ?? '';
+        clothing.brandName = clothingItem.brand ?? '';
+        clothing.modelName = clothingItem.model ?? '';
+        clothing.modelNumber = clothingItem.modelNumber ?? '';
+        clothing.url = clothingItem.url ?? '';
+        clothing.status = 'activated';
+        clothing.createdAt = now;
+        clothing.updatedAt = now;
+        clothing = await this.clothingRepository.save(clothing);
+      }
+
+      const postClothing = this.postClothingRepository.create({
+        post: updatedPost,
+        clothing: clothing,
+      });
+      postClothing.status = 'activated';
+      postClothing.updatedAt = now;
+      await this.postClothingRepository.save(postClothing);
+      updatedClothingInfos.push(clothing);
+    }
+
+    const postResponseDto: PostResponseDto = {
+      postId: updatedPost.id,
+      userId: user.id,
+      photoUrls: newImageUrls,
+      content: updatedPost.content,
+      styletags: updatedStyletags,
+      clothingInfo: updatedClothingInfos.map(clothing => ({
+        imageUrl: clothing.imageUrl,
+        brand: clothing.brandName,
+        model: clothing.modelName,
+        modelNumber: clothing.modelNumber,
+        url: clothing.url,
+      })),
+      isRepresentative: updatedPost.isRepresentative,
+    };
+
+    return {
+      isSuccess: true,
+      code: HTTP_OK.code,
+      message: HTTP_OK.message,
+      result: postResponseDto,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      isSuccess: false,
+      code: HTTP_INTERNAL_SERVER_ERROR.code,
+      message: HTTP_INTERNAL_SERVER_ERROR.message,
+      result: null,
+    };
+  }
+}
+
 
   // // 게시물 상세 조회
   // async getPostDetail(userId: number, postId: number): Promise<BaseResponse<PostDetailResponseDto | null>> {
