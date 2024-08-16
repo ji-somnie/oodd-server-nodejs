@@ -13,8 +13,8 @@ export class AuthService {
   private secretKey = 'your-secret-key'; // 실제로는 환경 변수로 관리하는 것이 좋습니다.
 
   // 1일 동안 유효한 토큰 생성
-  makeToken({id: number, ...payload}: JwtPayload): string {
-    return jwt.sign(payload, this.secretKey, {expiresIn: '1d'});
+  makeToken({id, ...payload}: JwtPayload): string {
+    return jwt.sign({id: id, ...payload}, this.secretKey, {expiresIn: '1d'});
   }
 
   // Kakao 사용자 등록 안 되어있으면 회원가입, 있으면 기존 회원 반환
