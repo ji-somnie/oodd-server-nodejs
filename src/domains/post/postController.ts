@@ -24,33 +24,6 @@ const userService = new UserService();
 // const tempUserId = 6;
 // const userId = tempUserId;
 
-// 게시물 업로드
-router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const postRequestDto: PostRequestDto = req.body;
-
-    const userId = req.user?.id;
-    console.log(userId);
-
-    if (!userId) {
-      res.status(401).json({message: NOT_FOUND_USER});
-      return;
-    }
-    const newPostResponse = await postService.createPost(userId, postRequestDto);
-    if (newPostResponse.isSuccess) {
-      res.status(201).json(newPostResponse);
-    } else {
-      res.status(400).json({message: HTTP_BAD_REQUEST.message});
-    }
-  } catch (error) {
-    console.error(error);
-    if (error instanceof Error) {
-      res.status(400).json({message: HTTP_BAD_REQUEST.message});
-    } else {
-      res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
-    }
-  }
-});
 
 // 게시물 삭제
 router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
