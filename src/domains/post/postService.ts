@@ -2,7 +2,7 @@ import myDataBase from '../../data-source';
 import {Post} from '../../entities/postEntity';
 import {PostRequestDto} from './dtos/postRequest.dto';
 import {BaseResponse} from '../../base/baseResponse';
-import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_STYLETAGS, NOT_FOUND_POST} from '../../variables/httpCode';
+import {HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, NOT_FOUND_STYLETAGS} from '../../variables/httpCode';
 import {User} from '../../entities/userEntity';
 import {validatedUser} from '../../validationTest/validateUser';
 import {validatePost} from '../../validationTest/validatePost';
@@ -101,6 +101,7 @@ export class PostService {
           const postStyletag = new PostStyletag();
           postStyletag.post = savedPost;
           postStyletag.styletag = styletag;
+          postStyletag.status = 'activated';
           postStyletag.createdAt = now;
           postStyletag.updatedAt = now;
           await queryRunner.manager.save(postStyletag);
@@ -132,6 +133,7 @@ export class PostService {
             clothing.modelName = clothingItem.model ?? '';
             clothing.modelNumber = clothingItem.modelNumber ?? '';
             clothing.url = clothingItem.url ?? '';
+            clothing.status = 'activated';
             clothing.createdAt = now;
             clothing.updatedAt = now;
             clothing = await queryRunner.manager.save(clothing);
@@ -142,6 +144,7 @@ export class PostService {
           const postClothing = new PostClothing();
           postClothing.post = savedPost;
           postClothing.clothing = clothing;
+          postClothing.status = 'activated';
           postClothing.createdAt = now;
           postClothing.updatedAt = now;
           await queryRunner.manager.save(postClothing);
@@ -433,167 +436,6 @@ async updatePost(
   }
 }
 
-
-  // // 게시물 상세 조회
-  // async getPostDetail(userId: number, postId: number): Promise<BaseResponse<PostDetailResponseDto | null>> {
-  //   try {
-  //     const post = await this.getPostById(postId);
-  //     if (!post) {
-  //       return {
-  //         isSuccess: false,
-  //         code: HTTP_NOT_FOUND.code,
-  //         message: HTTP_NOT_FOUND.message,
-  //         result: null,
-  //       };
-  //     }
-
-  //     const likes = await this.likeRepository.count({where: {post}});
-
-  //     // 스타일 태그 정보
-  //     const styletagInfo = await this.postStyletagRepository
-  //       .createQueryBuilder('postStyletag')
-  //       .leftJoinAndSelect('postStyletag.styletag', 'styletag')
-  //       .where('postStyletag.postId = :postId', {postId})
-  //       .select('styletag.tag')
-  //       .getRawMany();
-
-  //     const styletags = styletagInfo.map(tag => tag.styletag_tag);
-
-  //     // 옷 정보
-  //     const clothingInfo = await this.postClothingRepository
-  //       .createQueryBuilder('postClothing')
-  //       .leftJoinAndSelect('postClothing.clothing', 'clothing')
-  //       .where('postClothing.postId = :postId', {postId})
-  //       .select(['clothing.brandName', 'clothing.modelName', 'clothing.modelNumber', 'clothing.url'])
-  //       .getRawMany();
-
-  //     const clothingDetails = clothingInfo.map(info => ({
-  //       brand: info.clothing_brandName,
-  //       model: info.clothing_modelName,
-  //       modelNumber: info.clothing_modelNumber,
-  //       url: info.clothing_url,
-  //     }));
-
-  //     // 댓글 - 내 게시물 때만
-  //     let comments = [];
-  //     if (post.user.id === userId) {
-  //       comments = await this.commentRepository
-  //         .createQueryBuilder('comment')
-  //         .leftJoinAndSelect('comment.user', 'user')
-  //         .where('comment.postId = :postId', {postId})
-  //         .select([
-  //           'comment.id AS commentId',
-  //           'user.id AS userId',
-  //           'comment.content AS text',
-  //           'comment.createdAt AS timestamp',
-  //         ])
-  //         .getRawMany();
-  //     }
-
-  //     const postResponseDto: PostDetailResponseDto = {
-  //       postId: post.id,
-  //       userId: post.user.id,
-  //       likes: likes > 0 ? likes : null,
-  //       comments: post.user.id === userId && comments.length > 0 ? comments : null,
-  //       photoUrls: post.images.length > 0 ? post.images.map(image => image.url) : null,
-  //       content: post.content || null,
-  //       styletags: styletags.length > 0 ? styletags : null,
-  //       clothingInfo: clothingDetails.length > 0 ? clothingDetails : null,
-  //     };
-
-  //     return {
-  //       isSuccess: true,
-  //       code: HTTP_OK.code,
-  //       message: HTTP_OK.message,
-  //       result: postResponseDto,
-  //     };
-  //   } catch (error) {
-  //     console.error(error);
-  //     return {
-  //       isSuccess: false,
-  //       code: HTTP_INTERNAL_SERVER_ERROR.code,
-  //       message: HTTP_INTERNAL_SERVER_ERROR.message,
-  //       result: null,
-  //     };
-  //   }
-  // }
-
-  // // 게시물 리스트 조회
-  // async getPostList(queryUserId: number, currentUserId: number): Promise<BaseResponse<PostListResponseDto>> {
-  //   try {
-  //     // 특정 사용자의 모든 게시물
-  //     const posts = await this.postRepository
-  //       .createQueryBuilder('post')
-  //       .leftJoinAndSelect('post.user', 'user')
-  //       .leftJoinAndSelect('post.images', 'image')
-  //       .where('post.userId = :queryUserId', {queryUserId})
-  //       .andWhere('post.status = :status', {status: 'activated'})
-  //       .orderBy('post.createdAt', 'DESC')
-  //       .getMany();
-
-  //     // 총 좋아요 수
-  //     const totalLikes = await this.likeRepository
-  //       .createQueryBuilder('like')
-  //       .leftJoin('like.post', 'post')
-  //       .where('post.userId = :queryUserId', {queryUserId})
-  //       .andWhere('post.status = :status', {status: 'activated'})
-  //       .getCount();
-
-  //     // 각각의 게시물에 대한 정보
-  //     const postDtos: BasePostListResponseDto[] = [];
-
-  //     for (const post of posts) {
-  //       // console.log("postId is: ", post.id);
-
-  //       // 해당 게시물의 좋아요 수
-  //       const likes = await this.likeRepository
-  //         .createQueryBuilder('like')
-  //         .where('like.postId = :postId', {postId: post.id})
-  //         .getCount();
-  //       // console.log("postId is: ", post.id);
-
-  //       // 해당 게시물의 댓글 수 - 내 게시물일 때만
-  //       let commentsCount: number | undefined;
-  //       if (queryUserId === currentUserId) {
-  //         commentsCount = await this.commentRepository
-  //           .createQueryBuilder('comment')
-  //           .where('comment.postId = :postId', {postId: post.id})
-  //           .getCount();
-  //         // console.log("postId is: ", post.id);
-  //       }
-
-  //       // 게시물 리스트에 보여질 첫번째 사진
-  //       const firstPhoto = post.images.find(image => image.order === 1)?.url || '';
-  //       // console.log('firstPhoto: ', firstPhoto);
-
-  //       const postDto: BasePostListResponseDto = {
-  //         postId: post.id,
-  //         userId: post.user.id,
-  //         likes: likes > 0 ? likes : 0,
-  //         firstPhoto: firstPhoto,
-  //         isRepresentative: post.isRepresentative,
-  //         ...(queryUserId === currentUserId && commentsCount !== undefined ? {commentsCount} : {}),
-  //       };
-
-  //       postDtos.push(postDto);
-  //     }
-
-  //     const postListResponseDto: PostListResponseDto = {
-  //       totalPosts: posts.length,
-  //       totalLikes: totalLikes,
-  //       posts: postDtos,
-  //     };
-
-  //     return new BaseResponse<PostListResponseDto>(true, HTTP_OK.code, HTTP_OK.message, postListResponseDto);
-  //   } catch (error) {
-  //     console.error(error);
-  //     return new BaseResponse<PostListResponseDto>(
-  //       false,
-  //       HTTP_INTERNAL_SERVER_ERROR.code,
-  //       HTTP_INTERNAL_SERVER_ERROR.message,
-  //     );
-  //   }
-  // }
 
   async getPostById(postId: number): Promise<Post | null> {
     return this.postRepository.findOne({
