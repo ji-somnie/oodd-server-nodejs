@@ -8,14 +8,14 @@ import {Like} from './likeEntity';
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
-  @Column({unique: true, length: 255})
-  kakaoId!: string; // 카카오 고유 ID를 저장하는 필드
+  @Column({unique: true, length: 255, nullable: true})
+  kakaoId!: string | null; // 카카오 고유 ID를 저장하는 필드
 
-  @Column({unique: true, length: 255})
-  googleId!: string; // 구글 고유 ID를 저장하는 필드
+  @Column({unique: true, length: 255, nullable: true})
+  googleId!: string | null; // 구글 고유 ID를 저장하는 필드
 
-  @Column({unique: true, length: 255})
-  naverId!: string; // 네이버 고유 ID를 저장하는 필드
+  @Column({unique: true, length: 255, nullable: true})
+  naverId!: string | null; // 네이버 고유 ID를 저장하는 필드
 
   @Column({length: 100})
   name!: string;
@@ -55,6 +55,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserRelationship, userRelationship => userRelationship.target)
   targetedUserRelationships?: UserRelationship[];
+
   @OneToMany(() => Like, like => like.user)
   likes!: Like[];
+
+  // 대표 게시물 필드 추가
+  representativePost?: Post | null;
 }
