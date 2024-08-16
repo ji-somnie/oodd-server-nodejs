@@ -19,6 +19,8 @@ const postController_1 = __importDefault(require("./domains/post/postController"
 const ootdController_1 = __importDefault(require("./domains/ootd/ootdController"));
 const authController_1 = __importDefault(require("./domains/auth/authController"));
 const blockController_1 = __importDefault(require("./domains/block/blockController"));
+const ootdLikeController_1 = __importDefault(require("./domains/ootdLike/ootdLikeController"));
+const ootdCommentController_1 = __importDefault(require("./domains/ootdComment/ootdCommentController"));
 const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
@@ -40,8 +42,8 @@ app.use(express_1.default.json());
 app.use('/auth', authController_1.default); //소셜 로그인 처리는 인증 없이 바로
 app.use('/users', userController_1.default);
 app.use('/block', blockController_1.default); //테스트용
-// app.use('/posts', authenticateJWT, ootdLikeRouter, ootdCommentRouter, postRouter);
-app.use('/posts', authMiddleware_1.authenticateJWT, postController_1.default);
+app.use('/posts', authMiddleware_1.authenticateJWT, ootdLikeController_1.default, ootdCommentController_1.default, postController_1.default);
+// app.use('/posts', authenticateJWT, postRouter);
 app.use((0, cors_1.default)({
     origin: ['https://oodd.today', 'https://dev.oodd.today', 'http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
@@ -115,3 +117,4 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.startServer = startServer;
+(0, exports.startServer)();

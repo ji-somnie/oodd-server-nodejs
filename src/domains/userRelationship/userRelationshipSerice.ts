@@ -5,22 +5,42 @@ import {User} from '../../entities/userEntity';
 import dayjs from 'dayjs';
 import {ChatRoomService} from '../chatRoom/chatRoomService';
 import {ChatMessageService} from '../chatMessage/chatMessageService';
+import {PostService} from '../post/postService';
 
 export class UserRelationshipService {
   private userRelationshipRepository: Repository<UserRelationship>;
 
   private chatRoomService = new ChatRoomService();
   private chatMessageService = new ChatMessageService();
+  private postService = new PostService();
 
   constructor() {
     this.userRelationshipRepository = myDataBase.getRepository(UserRelationship);
   }
 
-  async getUserRelationshipsByUser(fromUser: User): Promise<UserRelationship[]> {
-    return this.userRelationshipRepository.find({
-      where: {target: fromUser, requestStatus: 'pending', status: 'activated'},
+  async getUserRelationshipsByUser(toUser: User): Promise<UserRelationship[]> {
+    const userRelationships = await this.userRelationshipRepository.find({
+      where: {target: toUser, requestStatus: 'pending', status: 'activated'},
       relations: ['target', 'requester'],
     });
+
+    // 각 UserRelationship의 requester에 대해 대표 게시물 추가
+    for (const relationship of userRelationships) {
+      const requester = relationship.requester;
+
+      // 대표 게시물 조회
+      const representativePost = await this.postService.getRepresentativePost(requester);
+
+      // 대표 게시물이 없으면 최신 게시물 조회
+      if (!representativePost) {
+        const latestPost = await this.postService.getLastestPost(requester);
+        requester['representativePost'] = latestPost;
+      } else {
+        requester['representativePost'] = representativePost;
+      }
+    }
+
+    return userRelationships;
   }
 
   async getUserRelationshipById(userRelationshipId: number): Promise<UserRelationship | null> {

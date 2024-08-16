@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 
 import CoolsmsMessageService from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
+import {JwtPayload} from '../auth/dtos/dto';
 dotenv.config();
 
 export class UserService {
@@ -27,7 +28,7 @@ export class UserService {
     return await this.userRepository.findOne({where: {naverId: naverId, status: 'activated'}});
   }
 
-  async createUserByPayload(payload: any): Promise<User> {
+  async createUserByPayload(payload: JwtPayload): Promise<User> {
     let user = this.userRepository.create();
     user.googleId = payload.googleId ? payload.googleId : null;
     user.kakaoId = payload.kakaoId ? payload.kakaoId : null;
