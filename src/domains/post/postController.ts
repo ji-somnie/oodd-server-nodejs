@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express';
 import {PostService} from './postService';
-import { PostRequestDto } from './dtos/postRequest.dto';
+import {PostRequestDto} from './dtos/postRequest.dto';
 import {
   HTTP_OK,
   HTTP_BAD_REQUEST,
@@ -14,7 +14,7 @@ import {
 import {BaseResponse} from '../../base/baseResponse';
 import {User} from '../../entities/userEntity';
 import {UserService} from '../user/userService';
-import { authenticateJWT } from '../../middlewares/authMiddleware';
+import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const router = Router();
 const postService = new PostService();
@@ -33,7 +33,7 @@ router.post('/', authenticateJWT, async (req: Request, res: Response): Promise<v
     console.log(userId);
 
     if (!userId) {
-      res.status(401).json({ message: NOT_FOUND_USER});
+      res.status(401).json({message: NOT_FOUND_USER});
       return;
     }
     const newPostResponse = await postService.createPost(userId, postRequestDto);
@@ -59,7 +59,7 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
     const userId = req.user?.id;
 
     if (!userId) {
-      res.status(401).json({ message: NOT_FOUND_USER.message});
+      res.status(401).json({message: NOT_FOUND_USER.message});
       return;
     }
 
