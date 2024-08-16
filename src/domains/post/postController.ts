@@ -83,29 +83,34 @@ router.delete('/:postId', authenticateJWT, async (req: Request, res: Response): 
   }
 });
 
-// // 게시물 수정
-// router.patch('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const postId = parseInt(req.params.postId, 10);    
-//     const userId = req.user?.id;
+// 게시물 수정
+router.patch('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = parseInt(req.params.postId, 10);    
+    const userId = req.user?.id;
 
-//     if (!userId) {
-//       res.status(401).json({ message: NOT_FOUND_USER.message});
-//       return;
-//     }
+    if (!userId) {
+      res.status(401).json({ message: NOT_FOUND_USER.message});
+      return;
+    }
+    
+    if (!postId){
+      res.status(401).json({ message: NOT_FOUND_POST.message});
+      return;
+    }
 
-//     const postRequestDto: PostRequestDto = req.body;
+    const postRequestDto: PostRequestDto = req.body;
 
-//     const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
+    const updatePostResponse = await postService.updatePost(userId, postId, postRequestDto);
 
-//     if (updatePostResponse.isSuccess) {
-//       res.status(201).json(updatePostResponse);
-//     } 
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
-//   }
-// });
+    if (updatePostResponse.isSuccess) {
+      res.status(201).json(updatePostResponse);
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
 
 // // 게시물 상세 조회: 게시물 1개만 반환
 // router.get('/:postId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
