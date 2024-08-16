@@ -13,6 +13,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_module_1 = require("./app.module");
 const PORT = process.env.PORT || 8080;
 app_module_1.httpServer.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, app_module_1.startServer)();
     console.log(`Server is running on port ${PORT}`);
 }));
