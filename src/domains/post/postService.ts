@@ -168,6 +168,7 @@ export class PostService {
         content: savedPost.content,
         styletags: savedStyletags,
         clothingInfo: savedClothingInfo,
+        isRepresentative: savedPost.isRepresentative,
       };
 
       return {
