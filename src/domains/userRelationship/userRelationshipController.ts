@@ -32,7 +32,6 @@ userRelationshipRouter.get('/', async (req: Request, res: Response): Promise<voi
   console.log(user);
 
   const userRelationships = await userRelationshipService.getUserRelationshipsByUser(user);
-  console.log(userRelationships);
 
   res.status(200).json(new BaseResponse<UserRelationship>(true, HTTP_OK.code, HTTP_OK.message, userRelationships));
   return;
