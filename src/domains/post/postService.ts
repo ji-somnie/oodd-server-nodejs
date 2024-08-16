@@ -278,6 +278,11 @@ export class PostService {
       }
 
       post.content = postRequestDto.content ?? '';
+
+      if (!post.isRepresentative && postRequestDto.isRepresentative) {
+        await this.updatePostIsRepresentative(post);
+      }
+
       const updatedPost = await this.postRepository.save(post);
 
       // 이미지 업데이트 (완전 대체 방식)
@@ -315,28 +320,33 @@ export class PostService {
       }
 
       // 스타일 태그 업데이트 (완전 대체 방식)
-      await this.postStyletagRepository
-        .createQueryBuilder()
-        .delete()
-        .where('postId = :postId', {postId: updatedPost.id})
-        .execute();
+      const allowedStyletags = [
+        "#street", "#casual", "#sporty", "#feminine", "#hip",
+        "#classic", "#minimal", "#formal", "#luxury", "#outdoor"
+      ];
 
-      const updatedStyletags: string[] = [];
-      for (const tag of postRequestDto.styletags || []) {
-        let styletag = await this.styletagRepository
-          .createQueryBuilder('styletag')
-          .where('styletag.tag = :tag', {tag})
-          .getOne();
+    // 스타일 태그 업데이트 (완전 대체 방식)
+    await this.postStyletagRepository.createQueryBuilder().delete().where('postId = :postId', { postId: updatedPost.id }).execute();
 
-        if (!styletag) {
-          styletag = this.styletagRepository.create({tag});
-          styletag = await this.styletagRepository.save(styletag);
-        }
+    const updatedStyletags: string[] = [];
+    for (const tag of postRequestDto.styletags || []) {
+      if (!allowedStyletags.includes(tag)) {
+        return {
+          isSuccess: false,
+          code: NOT_FOUND_STYLETAGS.code,
+          message: `Invalid style tag: ${tag}`,
+          result: null,
+        };
+      }
 
-        const postStyletag = this.postStyletagRepository.create({post: updatedPost, styletag});
+      // 스타일 태그가 허용된 목록에 있는지 확인한 후, 이미 존재하는 태그를 찾기
+      const styletag = await this.styletagRepository.findOne({ where: { tag } });
+      if (styletag) {
+        const postStyletag = this.postStyletagRepository.create({ post: updatedPost, styletag });
         await this.postStyletagRepository.save(postStyletag);
         updatedStyletags.push(tag);
       }
+    }
 
       // 옷 정보 업데이트 (완전 대체 방식)
       await this.postClothingRepository
@@ -350,7 +360,8 @@ export class PostService {
       for (const clothingItem of postRequestDto.clothingInfo || []) {
         let clothing = await this.clothingRepository
           .createQueryBuilder('clothing')
-          .where('clothing.brandName = :brandName', {brandName: clothingItem.brand})
+          .where('clothing.imageUrl = :imageUrl', {imageUrl: clothingItem.imageUrl})
+          .andWhere('clothing.brandName = :brandName', {brandName: clothingItem.brand})
           .andWhere('clothing.modelName = :modelName', {modelName: clothingItem.model})
           .andWhere('clothing.modelNumber = :modelNumber', {modelNumber: clothingItem.modelNumber})
           .andWhere('clothing.url = :url', {url: clothingItem.url})
@@ -358,6 +369,7 @@ export class PostService {
 
         if (!clothing) {
           clothing = this.clothingRepository.create() as Clothing;
+          clothing.imageUrl = clothingItem.imageUrl ?? '';
           clothing.brandName = clothingItem.brand ?? '';
           clothing.modelName = clothingItem.model ?? '';
           clothing.modelNumber = clothingItem.modelNumber ?? '';
@@ -381,11 +393,13 @@ export class PostService {
         content: updatedPost.content,
         styletags: updatedStyletags,
         clothingInfo: updatedClothingInfos.map(clothing => ({
+          imageUrl: clothing.imageUrl,
           brand: clothing.brandName,
           model: clothing.modelName,
           modelNumber: clothing.modelNumber,
           url: clothing.url,
         })),
+        isRepresentative: updatedPost.isRepresentative,
       };
 
       return {
