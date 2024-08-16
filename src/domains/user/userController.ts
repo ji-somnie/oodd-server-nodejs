@@ -1,11 +1,12 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserRequestDto } from "./dtos/userRequest.dto";
-import { status } from '../../variables/httpCode';
-import { authenticateJWT } from '../../middlewares/authMiddleware';
+import { HTTP_INTERNAL_SERVER_ERROR, NOT_FOUND_USER, status } from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
+import { authenticateJWT } from "../../middlewares/authMiddleware";
+import { UserResponseDto } from "./dtos/userResponse.dto";
 dotenv.config();
 
 const userRouter = Router();
@@ -20,7 +21,7 @@ const userService = new UserService();
 //     res.status(201).json(newUser); // 201 Created 상태 코드와 함께 응답
 //   } catch (error) {
 //     res.status(500).json({ message: "Internal Server Error" }); // 에러 발생 시 500 상태 코드와 함께 응답
-//   }
+//   } 
 // });
 
 
@@ -59,5 +60,35 @@ userRouter.post("/phone/verification/check", authenticateJWT, async (req: Reques
     return res.status(status.VERIFY_FAILED.status).json({ message: status.VERIFY_FAILED.message, err_code: status.VERIFY_FAILED.err_code });
   }
 });
+ 
+// 사용자 정보 조회
+userRouter.get("/:userId", authenticateJWT, async (req: Request, res: Response) => {
+  try {
+      const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
+      if (isNaN(userId)) {
+          return res.status(400).json({ message: NOT_FOUND_USER.message});
+      }
+
+      const user = await userService.getUserByUserId(userId);
+      if (!user) {
+          return res.status(404).json({ message: NOT_FOUND_USER.message });
+      }
+
+      const userResponse = new UserResponseDto();
+      userResponse.id = user.id;
+      userResponse.name = user.name;
+      userResponse.email = user.email;
+      userResponse.nickname = user.nickname;
+      userResponse.phoneNumber = user.phoneNumber;
+      userResponse.profilePictureUrl = user.profilePictureUrl;
+      userResponse.bio = user.bio;
+      userResponse.joinedAt = user.joinedAt;
+
+      return res.status(200).json(userResponse);
+  } catch (error) {
+    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+  }
+});
+
 
 export default userRouter;

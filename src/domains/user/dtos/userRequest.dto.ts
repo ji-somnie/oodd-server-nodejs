@@ -1,4 +1,4 @@
-export class UserRequestDto { //수정 필요
+export class UserRequestDto { 
 
   id!: number; 
   name!: string;
@@ -7,10 +7,4 @@ export class UserRequestDto { //수정 필요
   phoneNumber!: string;
   profilePictureUrl!: string;
   bio!: string;
-  // status!: string;
-  // joinedAt!: string;
-  // createdAt!: string;
-  // updatedAt!: string;
-  // deletedAt!: string;
-
   }

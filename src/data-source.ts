@@ -1,4 +1,4 @@
-import {DataSource} from 'typeorm';
+import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -15,6 +15,7 @@ const myDataBase = new DataSource({
   synchronize: false, // 현재 entity 와 실제 데이터베이스 상 모델을 동기화
 });
 
+// 데이터베이스 초기화 함수
 export const initializeDatabase = async (): Promise<DataSource | null> => {
   try {
     if (!myDataBase.isInitialized) {
@@ -27,4 +28,5 @@ export const initializeDatabase = async (): Promise<DataSource | null> => {
     return null;
   }
 };
+
 export default myDataBase;
