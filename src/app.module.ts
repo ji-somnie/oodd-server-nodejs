@@ -115,4 +115,6 @@ export const startServer = async () => {
   }
 };
 
+startServer();
+
 export {app, httpServer, io};

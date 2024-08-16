@@ -8,13 +8,13 @@ import {Like} from './likeEntity';
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
-  @Column({unique: true, length: 255, nullable: true})
+  @Column({type: 'varchar', length: 255, nullable: true})
   kakaoId!: string | null; // 카카오 고유 ID를 저장하는 필드
 
-  @Column({unique: true, length: 255, nullable: true})
+  @Column({type: 'varchar', length: 255, nullable: true})
   googleId!: string | null; // 구글 고유 ID를 저장하는 필드
 
-  @Column({unique: true, length: 255, nullable: true})
+  @Column({type: 'varchar', length: 255, nullable: true})
   naverId!: string | null; // 네이버 고유 ID를 저장하는 필드
 
   @Column({length: 100})
