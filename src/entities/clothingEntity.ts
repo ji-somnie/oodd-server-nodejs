@@ -12,6 +12,9 @@ export class Clothing extends BaseEntity {
   postClothings!: PostClothing[];
 
   @Column()
+  imageUrl!: string;
+  
+  @Column()
   brandName!: string;
 
   @Column()
