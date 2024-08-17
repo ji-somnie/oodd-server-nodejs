@@ -29,9 +29,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/auth', authRouter); //소셜 로그인 처리는 인증 없이 바로
-app.use('/users', authenticateJWT, userRouter, userInterestRouter);
+app.use('/users', authenticateJWT, userRouter);
+app.use('/user-interests', authenticateJWT, userInterestRouter);
 app.use('/block', blockRouter); //테스트용
-app.use('/posts', authenticateJWT, ootdLikeRouter, ootdCommentRouter, postRouter);
+app.use('/posts', authenticateJWT, postRouter, ootdLikeRouter, ootdCommentRouter);
 
 app.use(
   cors({

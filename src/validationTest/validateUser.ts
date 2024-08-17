@@ -6,8 +6,7 @@ const userRepository = myDataBase.getRepository(User);
 const blockRepository = myDataBase.getRepository(Block);
 
 export const validatedUser = async (userId: number): Promise<User | null> => {
-  const user = await userRepository.findOne({where: {id: userId}});
-  return user || null;
+  return await userRepository.findOne({where: {id: userId, status: 'activated'}});
 };
 
 export const getBlockStatus = async (userId: number, friendId: number): Promise<string> => {

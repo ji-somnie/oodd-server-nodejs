@@ -90,6 +90,6 @@ export class UserInterestService {
       }),
     );
 
-    return filteredInterestFriends.filter((friend): friend is InterestFriend => friend !== null);
+    return filteredInterestFriends.filter((friend: InterestFriend | null): friend is InterestFriend => friend !== null);
   }
 }

@@ -18,13 +18,14 @@ const userInterestService = new UserInterestService();
 const router = Router();
 
 // 관심 친구 상태 조회
-router.get('/interest', authenticateJWT, async (req: Request, res: Response) => {
+router.get('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req.user as any).id;
     const userExists = await validatedUser(userId);
 
     // 유저 유효성 검사
     if (!userExists) {
+      console.log('User not found:', userId);
       return res.status(400).json({
         isSuccess: false,
         code: NOT_FOUND_USER.code,
@@ -73,7 +74,7 @@ router.get('/interest', authenticateJWT, async (req: Request, res: Response) => 
 });
 
 // 관심 친구 상태 변경
-router.patch('/interest', authenticateJWT, async (req: Request, res: Response) => {
+router.patch('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const {userId, friendId}: UserInterestRequest = req.body;
     const tokenUser = req.user as any;
