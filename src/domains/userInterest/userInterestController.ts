@@ -8,7 +8,6 @@ import {
   HTTP_INTERNAL_SERVER_ERROR,
   NOT_FOUND_USER,
   CANNOT_REQUEST_MYSELF,
-  NO_AUTHORIZATION,
   BLOCKED_USER,
 } from '../../variables/httpCode';
 import {validatedUser, getBlockStatus} from '../../validationTest/validateUser';
