@@ -76,17 +76,9 @@ router.get('/', authenticateJWT, async (req: Request, res: Response) => {
 // 관심 친구 상태 변경
 router.patch('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
-    const {userId, friendId}: UserInterestRequest = req.body;
+    const {friendId}: UserInterestRequest = req.body;
     const tokenUser = req.user as any;
-
-    // 토큰 사용자 검증
-    if (tokenUser.id !== userId) {
-      return res.status(403).json({
-        isSuccess: false,
-        code: NO_AUTHORIZATION.code,
-        message: NO_AUTHORIZATION.message,
-      });
-    }
+    const userId = tokenUser.id;
 
     // userId와 friendId의 유효성 검사
     const userExists = await validatedUser(userId);
@@ -100,7 +92,7 @@ router.patch('/', authenticateJWT, async (req: Request, res: Response) => {
       });
     }
 
-    //스스로에게 요청할 경우
+    // 스스로에게 요청할 경우
     if (userId === friendId) {
       return res.status(400).json({
         isSuccess: false,
