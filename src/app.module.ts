@@ -53,7 +53,6 @@ const io = new Server(httpServer);
 export const startServer = async () => {
   try {
     await initializeDatabase();
-    console.log('Database has been initialized!');
 
     io.on('connect', socket => {
       console.log('connected!!!');
