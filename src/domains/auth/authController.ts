@@ -120,7 +120,7 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효
     res.cookie('accessToken', accessToken, cookieOpt);
-    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken});
+    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken, id: user.id});
   } catch (err) {
     console.error('Error getting user info from Kakao:', err);
     res
@@ -194,7 +194,7 @@ router.get('/login/google', async (req: Request, res: Response) => {
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효
     res.cookie('accessToken', accessToken, cookieOpt);
-    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken});
+    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken, id: user.id});
   } catch (err) {
     console.error('Error getting user info from Google:', err);
     res
@@ -279,7 +279,7 @@ router.get('/naver/callback', async (req: Request, res: Response) => {
     // 쿠키 옵션 설정
     const cookieOpt = {maxAge: 1000 * 60 * 60 * 24}; // 1일 동안 유효
     res.cookie('accessToken', accessToken, cookieOpt);
-    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken});
+    res.status(200).json({message: `${username}님 로그인 되었습니다`, accessToken, id: user.id});
   } catch (err) {
     console.error('Error getting user info from Naver:', err);
     res
