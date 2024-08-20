@@ -39,6 +39,8 @@ export class ChatRoomService {
       .select([
         'chatRoom.id',
         'chatRoom.createdAt',
+        'chatRoom.requestStatus',
+        'chatRoom.fromUserId',
         'toUser.id',
         'toUser.nickname',
         'toUser.profilePictureUrl',
@@ -91,6 +93,8 @@ export class ChatRoomService {
       return {
         id: chatRoom.chatRoom_id,
         createdAt: chatRoom.chatRoom_createdAt,
+        requestStatus: chatRoom.chatRoom_requestStatus,
+        fromUserId: chatRoom.fromUser_id,
         opponent: {
           id: isCurrentUserToUser ? chatRoom.fromUser_id : chatRoom.toUser_id,
           nickname: isCurrentUserToUser ? chatRoom.fromUser_nickname : chatRoom.toUser_nickname,

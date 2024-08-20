@@ -19,6 +19,9 @@ export class ChatRoom extends BaseEntity {
   @Column({nullable: true, type: 'datetime'})
   fromUserLeavedAt?: Date;
 
+  @Column({type: 'enum', enum: ['pending', 'accepted', 'rejected']})
+  requestStatus!: 'pending' | 'accepted' | 'rejected';
+
   @OneToMany(() => ChatMessage, chatMessage => chatMessage.chatRoom)
   chatMessages?: ChatMessage[];
 }
