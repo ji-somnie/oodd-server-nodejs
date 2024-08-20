@@ -11,7 +11,7 @@ export class OotdLikeService {
   async getLikesByPostId(postId: number, userId: number, isAuthor: boolean): Promise<Like[]> {
     let likes: Like[];
     if (isAuthor) {
-      return this.ootdLikeRepository.find({
+      likes = await this.ootdLikeRepository.find({
         where: {
           post: {id: postId},
           status: 'activated',
@@ -23,6 +23,7 @@ export class OotdLikeService {
         where: {
           post: {id: postId},
           user: {id: userId},
+          status: 'activated',
         },
         relations: ['user', 'post'],
       });
@@ -35,13 +36,11 @@ export class OotdLikeService {
         if (like.user && like.user.id) {
           const blockStatus = await getBlockStatus(userId, like.user.id);
           const likeUser = await validatedUser(like.user.id);
-          if (blockStatus === 'blocked' || !likeUser) {
-            return null;
+          if (blockStatus !== 'blocked' && likeUser) {
+            return like;
           }
-        } else {
-          return null;
         }
-        return like;
+        return null;
       }),
     );
 
