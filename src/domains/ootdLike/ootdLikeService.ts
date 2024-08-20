@@ -2,19 +2,50 @@ import {Repository} from 'typeorm';
 import myDataBase from '../../data-source';
 import {Like} from '../../entities/likeEntity';
 import {OotdLikeRequest} from './dtos/request';
+import {validatedUser, getBlockStatus} from '../../validationTest/validateUser';
 import dayjs from 'dayjs';
 
 export class OotdLikeService {
   private ootdLikeRepository: Repository<Like> = myDataBase.getRepository(Like);
 
-  async getLikesByPostId(postId: number): Promise<Like[]> {
-    return this.ootdLikeRepository.find({
-      where: {
-        post: {id: postId},
-        status: 'activated',
-      },
-      relations: ['user', 'post'], // 'user' 관계 로드
-    });
+  async getLikesByPostId(postId: number, userId: number, isAuthor: boolean): Promise<Like[]> {
+    let likes: Like[];
+    if (isAuthor) {
+      return this.ootdLikeRepository.find({
+        where: {
+          post: {id: postId},
+          status: 'activated',
+        },
+        relations: ['user', 'post'],
+      });
+    } else {
+      const userLike = await this.ootdLikeRepository.findOne({
+        where: {
+          post: {id: postId},
+          user: {id: userId},
+        },
+        relations: ['user', 'post'],
+      });
+      likes = userLike ? [userLike] : [];
+    }
+
+    // 차단된 사용자와 삭제된 계정 필터링
+    const filteredLikes = await Promise.all(
+      likes.map(async like => {
+        if (like.user && like.user.id) {
+          const blockStatus = await getBlockStatus(userId, like.user.id);
+          const likeUser = await validatedUser(like.user.id);
+          if (blockStatus === 'blocked' || !likeUser) {
+            return null;
+          }
+        } else {
+          return null;
+        }
+        return like;
+      }),
+    );
+
+    return filteredLikes.filter((like): like is Like => like !== null);
   }
 
   async toggleLike(requestDTO: OotdLikeRequest): Promise<Like> {

@@ -9,5 +9,9 @@ export async function validatePost(userId: number, postId: number): Promise<Post
 
 export async function validatePostById(id: number): Promise<Post | null> {
   const postRepository = myDataBase.getRepository(Post);
-  return postRepository.findOneBy({id, status: 'activated'});
+  const post = await postRepository.findOne({
+    where: {id, status: 'activated'},
+    relations: ['user'],
+  });
+  return post || null;
 }
