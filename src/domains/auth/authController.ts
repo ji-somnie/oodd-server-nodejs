@@ -28,13 +28,13 @@ const kakaoOpt = {
 const googleOpt = {
   clientId: process.env.GOOGLE_CLIENT_ID || '',
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:8080/auth/google/callback',
+  redirectUri: 'http://localhost:3000/auth/google/callback',
 };
 
 const naverOpt = {
   clientId: process.env.NAVER_CLIENT_ID || '',
   clientSecret: process.env.NAVER_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:8080/auth/naver/callback',
+  redirectUri: 'http://localhost:3000/auth/naver/callback',
 };
 
 // // 카카오 소셜 로그인 요청 시작
@@ -55,7 +55,7 @@ const naverOpt = {
 //     const code = req.query.code as string;
 
 // 카카오 소셜 로그인 콜백
-router.get('/login/kakao', async (req: Request, res: Response) => {
+router.get('/kakao/callback', async (req: Request, res: Response) => {
   const code = req.query.code as string;
 
   if (!code) {
@@ -129,7 +129,9 @@ router.get('/login/kakao', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/login/google', async (req: Request, res: Response) => {
+
+// 구글 소셜 로그인 콜백
+router.get('/google/callback', async (req: Request, res: Response) => {
   const code = req.query.code as string;
 
   if (!code) {
@@ -203,19 +205,20 @@ router.get('/login/google', async (req: Request, res: Response) => {
   }
 });
 
-// 네이버 소셜 로그인 요청 시작
-router.get('/login/naver', (req: Request, res: Response) => {
-  const naverAuthUrl = 'https://nid.naver.com/oauth2.0/authorize';
-  const state = Math.random().toString(36).substring(2, 12); // CSRF 방지를 위한 상태 토큰 생성
-  const params = qs.stringify({
-    response_type: 'code',
-    client_id: naverOpt.clientId,
-    redirect_uri: naverOpt.redirectUri,
-    state: state,
-  });
 
-  res.redirect(`${naverAuthUrl}?${params}`);
-});
+// // 네이버 소셜 로그인 요청 시작
+// router.get('/login/naver', (req: Request, res: Response) => {
+//   const naverAuthUrl = 'https://nid.naver.com/oauth2.0/authorize';
+//   const state = Math.random().toString(36).substring(2, 12); // CSRF 방지를 위한 상태 토큰 생성
+//   const params = qs.stringify({
+//     response_type: 'code',
+//     client_id: naverOpt.clientId,
+//     redirect_uri: naverOpt.redirectUri,
+//     state: state,
+//   });
+
+//   res.redirect(`${naverAuthUrl}?${params}`);
+// });
 
 // 네이버 소셜 로그인 콜백
 router.get('/naver/callback', async (req: Request, res: Response) => {
