@@ -22,19 +22,19 @@ const authService = new AuthService();
 const kakaoOpt = {
   clientId: process.env.KAKAO_CLIENT_ID || '',
   clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/kakao/callback',
+  redirectUri: 'http://localhost:8080/auth/kakao/callback',
 };
 
 const googleOpt = {
   clientId: process.env.GOOGLE_CLIENT_ID || '',
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/google/callback',
+  redirectUri: 'http://localhost:8080/auth/google/callback',
 };
 
 const naverOpt = {
   clientId: process.env.NAVER_CLIENT_ID || '',
   clientSecret: process.env.NAVER_CLIENT_SECRET || '',
-  redirectUri: 'http://localhost:3000/auth/naver/callback',
+  redirectUri: 'http://localhost:8080/auth/naver/callback',
 };
 
 // // 카카오 소셜 로그인 요청 시작
@@ -129,8 +129,6 @@ router.get('/kakao/callback', async (req: Request, res: Response) => {
   }
 });
 
-
-// 구글 소셜 로그인 콜백
 router.get('/google/callback', async (req: Request, res: Response) => {
   const code = req.query.code as string;
 
