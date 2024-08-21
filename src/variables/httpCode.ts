@@ -260,5 +260,10 @@ export const NAVER_USER_NOT_FOUND = {
 
 export const INVALID_CONTENT = {code: 1003, message: 'Invalid Content', err_code: 'INVALID_CONTENT'};
 
-export const NOT_FOUND_STYLETAGS = {code: 6000, message: '해당 스타일태그를 지정할 수 없습니다', err_code: 'NOT_FOUND_STYLETAGS'};
+export const NOT_FOUND_STYLETAGS = {
+  code: 6000,
+  message: '해당 스타일태그를 지정할 수 없습니다',
+  err_code: 'NOT_FOUND_STYLETAGS',
+};
 export const INVALID_COMMENT = {code: 1001, message: 'Invalid comment', err_code: 'INVALID_COMMENT'};
+export const BLOCKED_USER = {code: 1004, message: '차단된 사용자입니다.', err_code: 'BLOCKED_USER'};

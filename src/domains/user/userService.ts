@@ -1,5 +1,5 @@
-import {UserRequestDto} from './dtos/userRequest.dto';
-import {UserResponseDto} from './dtos/userResponse.dto';
+import {UserInfoRequestDto, UserRequestDto} from './dtos/userRequest.dto';
+import {UserInfoResponseDto, UserResponseDto} from './dtos/userResponse.dto';
 import {User} from '../../entities/userEntity';
 import myDataBase from '../../data-source';
 import dayjs from 'dayjs';
@@ -7,6 +7,9 @@ import dayjs from 'dayjs';
 import CoolsmsMessageService from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 import {JwtPayload} from '../auth/dtos/dto';
+import { BaseResponse } from '../../base/baseResponse';
+import { validatedUser } from '../../validationTest/validateUser';
+import { HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER } from '../../variables/httpCode';
 dotenv.config();
 
 export class UserService {
@@ -120,4 +123,64 @@ export class UserService {
   async getUserByUserId(userId: number): Promise<User | null> {
     return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
   }
+
+  // 사용자 정보 수정
+  async updateUserInfo(userId: number, userRequestDto: UserInfoRequestDto): Promise<BaseResponse<UserInfoResponseDto | null>> {
+    const queryRunner = this.userRepository.manager.connection.createQueryRunner();
+  
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
+    try {
+      const user = await validatedUser(userId);
+      if (!user) {
+        await queryRunner.rollbackTransaction();
+        return {
+          isSuccess: false,
+          code: NOT_FOUND_USER.code,
+          message: NOT_FOUND_USER.message,
+          result: null,
+        };
+      }
+  
+      user.bio = userRequestDto.bio ?? '';
+      user.nickname = userRequestDto.nickname ?? '';
+      user.profilePictureUrl = userRequestDto.profilePictureUrl ?? '';
+  
+      await queryRunner.manager.save(user);
+  
+      await queryRunner.commitTransaction();
+  
+      const userInfoResponseDto: UserInfoResponseDto = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        nickname: user.nickname,
+        phoneNumber: user.phoneNumber,
+        profilePictureUrl: user.profilePictureUrl,
+        bio: user.bio,
+        joinedAt: user.joinedAt,
+      };
+  
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: userInfoResponseDto,
+      };
+  
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('Transaction rolled back due to an error:', error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  
 }

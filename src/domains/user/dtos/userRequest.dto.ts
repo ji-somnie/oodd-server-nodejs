@@ -8,3 +8,9 @@ export class UserRequestDto {
   profilePictureUrl!: string;
   bio!: string;
   }
+
+export class UserInfoRequestDto {
+  nickname ?: string;
+  profilePictureUrl ?: string;
+  bio ?: string;
+}

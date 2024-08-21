@@ -14,6 +14,8 @@ export interface ChatRoomsDto extends Pick<ChatRoom, 'id' | 'createdAt'> {
 export interface ChatRoomsQueryDto {
   chatRoom_id: number;
   chatRoom_createdAt: Date;
+  chatRoom_requestStatus: 'pending' | 'accepted' | 'rejected';
+  chatRoom_fromUserId: number;
   toUser_id: number;
   toUser_nickname: string;
   toUser_profilePictureUrl: string;

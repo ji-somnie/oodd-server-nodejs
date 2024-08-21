@@ -108,14 +108,14 @@ chatRoomRouter.patch(
     }
 
     // 채팅방에 해당 유저가 있는지 확인
-    if (chatRoom?.toUser.id !== user.id && chatRoom?.fromUser.id !== user.id) {
+    if (chatRoom.toUser && chatRoom?.toUser.id !== user.id && chatRoom.fromUser && chatRoom?.fromUser.id !== user.id) {
       res.status(400).json(new BaseResponse(false, NOT_MEMBER_IN_ROOM.code, NOT_MEMBER_IN_ROOM.message));
       return;
     }
 
     if (
-      (chatRoom.fromUserLeavedAt && chatRoom.fromUser.id === user.id) ||
-      (chatRoom.toUserLeavedAt && chatRoom.toUser.id === user.id)
+      (chatRoom.fromUserLeavedAt && chatRoom.fromUser && chatRoom.fromUser.id === user.id) ||
+      (chatRoom.toUserLeavedAt && chatRoom.toUser && chatRoom.toUser.id === user.id)
     ) {
       res.status(400).json(new BaseResponse(false, ALREADY_LEAVED_ROOM.code, ALREADY_LEAVED_ROOM.message));
       return;

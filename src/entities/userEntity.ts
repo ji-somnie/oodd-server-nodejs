@@ -5,6 +5,7 @@ import {Comment} from './commentEntity';
 import {ChatRoom} from './chatRoomEntity';
 import {UserRelationship} from './userRelationshipEntity';
 import {Like} from './likeEntity';
+import {InterestFriend} from './interestFriendEntity';
 
 @Entity('User') // 데이터베이스 테이블과 매핑되는 엔티티
 export class User extends BaseEntity {
@@ -58,6 +59,12 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Like, like => like.user)
   likes!: Like[];
+
+  @OneToMany(() => InterestFriend, interestFriend => interestFriend.sender)
+  sentInterests!: InterestFriend[];
+
+  @OneToMany(() => InterestFriend, interestFriend => interestFriend.receiver)
+  receivedInterests!: InterestFriend[];
 
   // 대표 게시물 필드 추가
   representativePost?: Post | null;
