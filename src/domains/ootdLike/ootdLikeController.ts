@@ -1,9 +1,10 @@
 import {Request, Response, Router} from 'express';
 import {OotdLikeService} from './ootdLikeService';
-import {GetOotdLikeResponse, OotdLikeResponse} from './dtos/response';
+import {OotdLikeListResponse, OotdLikeResponse} from './dtos/response';
 import {BaseResponse} from '../../base/baseResponse';
 import {UserService} from '../user/userService';
 import {validatePostById} from '../../validationTest/validatePost';
+import {validatedUser} from '../../validationTest/validateUser';
 import {
   HTTP_OK,
   HTTP_INTERNAL_SERVER_ERROR,
@@ -15,7 +16,6 @@ import {
 import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const likeService = new OotdLikeService();
-const userService = new UserService();
 const router = Router();
 
 //좋아요 누르기/취소
@@ -29,19 +29,16 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
         isSuccess: false,
         code: INVALID_POST_ID.code,
         message: INVALID_POST_ID.message,
-        result: {postId: null, userId: null},
       });
     }
 
-    // 사용자 찾기
-    const user = await userService.getUserByUserId(tokenUser.id);
-
-    if (!user) {
+    // 유저 유효성 검사
+    const validUser = await validatedUser(tokenUser.id);
+    if (!validUser) {
       return res.status(401).json({
         isSuccess: false,
         code: NO_AUTHORIZATION.code,
         message: NO_AUTHORIZATION.message,
-        result: {postId, userId: null},
       });
     }
 
@@ -52,11 +49,10 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
         isSuccess: false,
         code: NOT_FOUND_POST.code,
         message: NOT_FOUND_POST.message,
-        result: {postId, userId: user.id},
       });
     }
 
-    const like = await likeService.toggleLike({userId: user.id, postId});
+    const like = await likeService.toggleLike({userId: tokenUser.id, postId});
 
     const response: BaseResponse<OotdLikeResponse> = {
       isSuccess: true,
@@ -64,7 +60,7 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
       message: HTTP_OK.message,
       result: {
         id: like.id,
-        userId: user.id,
+        userId: tokenUser.id,
         postId: postId,
         createdAt: like.createdAt,
         status: like.status,
@@ -89,11 +85,12 @@ router.patch('/:postId/like', authenticateJWT, async (req: Request, res: Respons
 router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response) => {
   const {postId} = req.params;
   const numericPostId = parseInt(postId, 10); // postId를 숫자로 변환
+  const tokenUser = req.user as any;
 
   try {
     // Post 유효성 검사
     const postExists = await validatePostById(numericPostId);
-    if (!postExists) {
+    if (!postExists || !postExists.user) {
       return res.status(404).json({
         isSuccess: false,
         code: INVALID_POST_ID.code,
@@ -101,28 +98,41 @@ router.get('/:postId/like', authenticateJWT, async (req: Request, res: Response)
       });
     }
 
-    // post ID로 likes 가져오기
-    const likes = await likeService.getLikesByPostId(numericPostId);
+    // 유저 유효성 검사
+    if (!validatedUser(tokenUser.id)) {
+      return res.status(401).json({
+        isSuccess: false,
+        code: NO_AUTHORIZATION.code,
+        message: NO_AUTHORIZATION.message,
+      });
+    }
 
-    const response: BaseResponse<{totalLikes: number; likes: GetOotdLikeResponse[]}> = {
+    const isAuthor = postExists.user.id === tokenUser.id;
+    // post ID로 likes 가져오기
+    const likes = await likeService.getLikesByPostId(numericPostId, tokenUser.id, isAuthor);
+
+    const response: BaseResponse<OotdLikeListResponse> = {
       isSuccess: true,
       code: HTTP_OK.code,
       message: HTTP_OK.message,
       result: {
-        totalLikes: likes.length,
-        likes: likes.map(like => ({
-          id: like.id,
-          userId: like.user?.id,
-          postId: like.post?.id,
-          status: like.status,
-          createdAt: like.createdAt,
-          updatedAt: like.updatedAt,
-          user: {
-            id: like.user?.id,
-            nickname: like.user?.nickname,
-            profilePictureUrl: like.user?.profilePictureUrl,
-          },
-        })),
+        totalLikes: isAuthor ? likes.length : undefined,
+        likes: isAuthor
+          ? likes.map(like => ({
+              id: like.id,
+              userId: like.user?.id,
+              postId: like.post?.id,
+              status: like.status,
+              createdAt: like.createdAt,
+              updatedAt: like.updatedAt,
+              user: {
+                id: like.user?.id,
+                nickname: like.user?.nickname,
+                profilePictureUrl: like.user?.profilePictureUrl,
+              },
+            }))
+          : [],
+        isLiked: likes.some(like => like.user?.id === tokenUser.id && like.status === 'activated'),
       },
     };
 

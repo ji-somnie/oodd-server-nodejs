@@ -13,6 +13,12 @@ export interface GetOotdLikeResponse {
   };
 }
 
+export interface OotdLikeListResponse {
+  totalLikes: number | undefined;
+  likes: GetOotdLikeResponse[];
+  isLiked: boolean;
+}
+
 export interface OotdLikeResponse {
   id: number;
   userId: number;
