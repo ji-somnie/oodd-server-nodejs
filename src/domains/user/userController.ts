@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { UserService } from "./userService";
 import { UserInfoRequestDto, UserRequestDto } from "./dtos/userRequest.dto";
-import { HTTP_INTERNAL_SERVER_ERROR, NO_AUTHORIZATION, NOT_FOUND_USER, status } from '../../variables/httpCode';
+import { HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NO_AUTHORIZATION, NOT_FOUND_USER, status } from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
@@ -63,38 +63,26 @@ userRouter.post("/phone/verification/check", authenticateJWT, async (req: Reques
 });
  
 // 사용자 정보 조회
-userRouter.get("/:userId", authenticateJWT, async (req: Request, res: Response) => {
+userRouter.get('/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
-      const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
-      if (isNaN(userId)) {
-          return res.status(400).json({ message: NOT_FOUND_USER.message});
-      }
+    const requestingUserId = req.user!.id; // 토큰 인증된 유저
+    const targetUserId = parseInt(req.params.userId, 10); // 정보 조회할 유저
 
-      const user = await userService.getUserByUserId(userId);
-      if (!user) {
-          return res.status(404).json({ message: NOT_FOUND_USER.message });
-      }
+    const userInfoResponse = await userService.getUserInfo(requestingUserId, targetUserId);
 
-      const userResponse = new UserResponseDto();
-      userResponse.id = user.id;
-      userResponse.name = user.name;
-      userResponse.email = user.email;
-      userResponse.nickname = user.nickname;
-      userResponse.phoneNumber = user.phoneNumber;
-      userResponse.profilePictureUrl = user.profilePictureUrl;
-      userResponse.bio = user.bio;
-      userResponse.joinedAt = user.joinedAt;
-
-      return res.status(200).json(userResponse);
+    if (userInfoResponse.isSuccess) {
+      res.status(200).json(userInfoResponse);
+    }
   } catch (error) {
-    res.status(500).json({ message: HTTP_INTERNAL_SERVER_ERROR.message });
+    console.error('Error fetching user info:', error);
+    res.status(500).json(new BaseResponse(false, HTTP_INTERNAL_SERVER_ERROR.code, HTTP_INTERNAL_SERVER_ERROR.message));
   }
 });
 
 // 사용자 정보 수정
 userRouter.patch("/:userId", authenticateJWT, async (req: Request, res: Response) => {
   try {
-      const userId = parseInt(req.params.userId, 10);  // Number 대신 parseInt 사용
+      const userId = parseInt(req.params.userId, 10);  
       const loginedUserId = req.user?.id;
 
       if (isNaN(userId)) {

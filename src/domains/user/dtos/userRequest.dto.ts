@@ -1,5 +1,4 @@
 export class UserRequestDto { 
-
   id!: number; 
   name!: string;
   email!: string;
