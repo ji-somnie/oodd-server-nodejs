@@ -5,10 +5,11 @@ import {User} from '../../entities/userEntity';
 import dayjs from 'dayjs';
 import {ChatRoomService} from '../chatRoom/chatRoomService';
 import {ChatMessageService} from '../chatMessage/chatMessageService';
+import {PostService} from '../post/postService';
 
 export class UserRelationshipService {
   private userRelationshipRepository: Repository<UserRelationship>;
-
+  private postService = new PostService();
   private chatRoomService = new ChatRoomService();
   private chatMessageService = new ChatMessageService();
 
@@ -17,10 +18,21 @@ export class UserRelationshipService {
   }
 
   async getUserRelationshipsByUser(fromUser: User): Promise<UserRelationship[]> {
-    return this.userRelationshipRepository.find({
+    const userRelationships = await this.userRelationshipRepository.find({
       where: {target: fromUser, requestStatus: 'pending', status: 'activated'},
       relations: ['target', 'requester'],
     });
+
+    const promises = userRelationships.map(async userRelationship => {
+      userRelationship.requester.representativePost = await this.postService.getRepresentativePostByUserId(
+        userRelationship.requester.id,
+      );
+      return userRelationship;
+    });
+
+    const updatedUserRelationships = await Promise.all(promises);
+
+    return updatedUserRelationships;
   }
 
   async getUserRelationshipById(userRelationshipId: number): Promise<UserRelationship | null> {
