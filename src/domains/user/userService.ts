@@ -218,9 +218,10 @@ export class UserService {
         };
       }
 
-      user.bio = userRequestDto.bio ?? '';
-      user.nickname = userRequestDto.nickname ?? '';
-      user.profilePictureUrl = userRequestDto.profilePictureUrl ?? '';
+      user.bio = userRequestDto.bio ?? user.bio;
+      user.nickname = userRequestDto.nickname ?? user.nickname;
+      user.profilePictureUrl = userRequestDto.profilePictureUrl ?? user.profilePictureUrl;
+      user.updatedAt = dayjs().toDate();
 
       await queryRunner.manager.save(user);
 
