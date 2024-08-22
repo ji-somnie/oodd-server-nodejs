@@ -20,6 +20,7 @@ import cookieParser from 'cookie-parser';
 import userInterestRouter from './domains/userInterest/userInterestController';
 import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
 import userReportRouter from './domains/userReport/userReportController';
+import reportRouter from './domains/report/reportController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -48,6 +49,7 @@ app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
 app.use('/user-report', authenticateJWT, userReportRouter);
+app.use('/report', authenticateJWT, reportRouter);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer);

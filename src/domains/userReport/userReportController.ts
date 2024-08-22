@@ -17,9 +17,6 @@ userReportRouter.patch('/', async (req: Request, res: Response): Promise<void> =
   const fromUserId = req.body.fromUserId;
   const reason = req.body.reason;
 
-  console.log('fromUserID : ' + fromUserId);
-  console.log('fromUserID : ' + toUserId);
-
   if (!toUserId || !fromUserId || !reason) {
     res.status(400).json(new BaseResponse(false, NO_BODY_DATA.code, NO_BODY_DATA.message));
     return;

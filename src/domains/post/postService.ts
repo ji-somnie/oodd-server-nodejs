@@ -634,7 +634,7 @@ export class PostService {
   async getRepresentativePost(user: User): Promise<Post | null> {
     return this.postRepository.findOne({
       where: {user, isRepresentative: true, status: 'activated'},
-      relations: ['images', 'postStyletags', 'postClothings'],
+      relations: ['images', 'postStyletags', 'postStyletags.styletag'],
       order: {createdAt: 'DESC'},
     });
   }
@@ -642,7 +642,7 @@ export class PostService {
   async getLastestPost(user: User): Promise<Post | null> {
     return this.postRepository.findOne({
       where: {user, status: 'activated'},
-      relations: ['images', 'postStyletags', 'postClothings'],
+      relations: ['images', 'postStyletags', 'postStyletags.styletag'],
       order: {createdAt: 'DESC'},
     });
   }
