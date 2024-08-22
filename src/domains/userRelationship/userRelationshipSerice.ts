@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import {ChatRoomService} from '../chatRoom/chatRoomService';
 import {ChatMessageService} from '../chatMessage/chatMessageService';
 import {PostService} from '../post/postService';
+import {ChatRoom} from '../../entities/chatRoomEntity';
 
 export class UserRelationshipService {
   private userRelationshipRepository: Repository<UserRelationship>;
@@ -15,6 +16,17 @@ export class UserRelationshipService {
 
   constructor() {
     this.userRelationshipRepository = myDataBase.getRepository(UserRelationship);
+  }
+
+  async getUserRelationshipStatusByUserId(user: User, opponent: User): Promise<UserRelationship | null> {
+    const userRelationship = await this.userRelationshipRepository.findOne({
+      where: [
+        {requester: user, target: opponent, status: 'activated'},
+        {requester: opponent, target: user, status: 'activated'},
+      ],
+    });
+
+    return userRelationship;
   }
 
   async getUserRelationshipsByUser(fromUser: User): Promise<UserRelationship[]> {
@@ -42,7 +54,11 @@ export class UserRelationshipService {
     });
   }
 
-  async patchRequestStatus(userRelationship: UserRelationship, requestStatus: 'rejected' | 'accepted'): Promise<void> {
+  async patchRequestStatus(
+    userRelationship: UserRelationship,
+    requestStatus: 'rejected' | 'accepted',
+    chatRoom: ChatRoom,
+  ): Promise<void> {
     const queryRunner = myDataBase.createQueryRunner();
     await queryRunner.startTransaction();
 
@@ -53,9 +69,17 @@ export class UserRelationshipService {
         userRelationship.rejectedAt = dayjs().toDate();
 
         await this.chatRoomService.deleteChatRoomByUserRelationshipRejected(userRelationship);
+        chatRoom.status = 'deactivated';
+        chatRoom.requestStatus = 'rejected';
+        chatRoom.updatedAt = dayjs().toDate();
+        chatRoom.deletedAt = dayjs().toDate();
+        await queryRunner.manager.save(chatRoom);
       } else {
         userRelationship.requestStatus = 'accepted';
         userRelationship.acceptedAt = dayjs().toDate();
+        chatRoom.requestStatus = 'accepted';
+        chatRoom.updatedAt = dayjs().toDate();
+        await queryRunner.manager.save(chatRoom);
       }
       userRelationship.updatedAt = dayjs().toDate();
 
