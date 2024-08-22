@@ -175,7 +175,7 @@ export class UserService {
         profilePictureUrl: user.profilePictureUrl,
         bio: user.bio,
         joinedAt: user.joinedAt,
-        isFrined: isFriend,
+        isFriend: isFriend,
         // roomId: roomId,
       };
 
