@@ -15,21 +15,26 @@ export class OOTDService {
   private likeRepository = myDataBase.getRepository(Like);
 
 // OOTD 조회
-async getOOTD(styletagArray: string[]): Promise<BaseResponse<OotdResponseDto>> {
-    try {
-      // 스타일태그에 해당하는 게시물들 조회
-      const posts = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.user', 'user')
-        .leftJoinAndSelect('post.images', 'image')
-        .leftJoinAndSelect('post.postStyletags', 'postStyletag')
-        .leftJoinAndSelect('postStyletag.styletag', 'styletag')
-        .where('styletag.tag IN (:...styletagArray)', { styletagArray })
-        .andWhere('post.status = :status', { status: 'activated' })
-        .orderBy('post.createdAt', 'DESC')
-        .getMany();
+async getOOTD(userId: number, styletagArray: string[]): Promise<BaseResponse<OotdResponseDto>> {
+  try {
+
+    if (!userId) {
+      return new BaseResponse(false, NOT_FOUND_USER.code, NOT_FOUND_USER.message)
+    }
+
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.images', 'image')
+      .leftJoinAndSelect('post.postStyletags', 'postStyletag')
+      .leftJoinAndSelect('postStyletag.styletag', 'styletag')
+      .where('styletag.tag IN (:...styletagArray)', { styletagArray })
+      .andWhere('post.status = :status', { status: 'activated' })
+      .andWhere('post.userId != :userId', { userId })  
+      .orderBy('post.createdAt', 'DESC')
+      .getMany();
   
-        console.log('posts: ', posts);
+      console.log('posts: ', posts);
 
       // 각 게시물
       const postDtos: BaseOotdResponseDto[] = [];
