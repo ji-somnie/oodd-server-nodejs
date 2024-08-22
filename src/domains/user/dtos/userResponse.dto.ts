@@ -13,4 +13,6 @@ export class UserResponseDto extends BaseEntity{
 
 export class UserInfoResponseDto extends UserRequestDto{
   joinedAt !: Date;
+  isFrined?: boolean; // 다른 사람 프로필 조회할 때 친구 여부 표시
+  roomId?: number | null; // 요청으로 보내드리는 userId에 대한 채팅방 id
 }

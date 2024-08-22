@@ -1,7 +1,7 @@
 import {Router, Request, Response} from 'express';
 import {UserService} from './userService';
 import {UserInfoRequestDto, UserRequestDto} from './dtos/userRequest.dto';
-import {HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NO_AUTHORIZATION, NOT_FOUND_USER, status} from '../../variables/httpCode';
+import {HTTP_INTERNAL_SERVER_ERROR, NO_AUTHORIZATION, NOT_FOUND_USER, status} from '../../variables/httpCode';
 
 // import coolsms from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
@@ -76,6 +76,7 @@ userRouter.post('/phone/verification/check', authenticateJWT, async (req: Reques
 
 // 사용자 정보 조회
 userRouter.get('/:userId', authenticateJWT, async (req: Request, res: Response) => {
+userRouter.get('/:userId', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = parseInt(req.params.userId, 10); // Number 대신 parseInt 사용
     if (isNaN(userId)) {
@@ -98,6 +99,14 @@ userRouter.get('/:userId', authenticateJWT, async (req: Request, res: Response) 
     userResponse.joinedAt = user.joinedAt;
 
     return res.status(200).json(userResponse);
+    const requestingUserId = req.user!.id; // 토큰 인증된 유저
+    const targetUserId = parseInt(req.params.userId, 10); // 정보 조회할 유저
+
+    const userInfoResponse = await userService.getUserInfo(requestingUserId, targetUserId);
+
+    if (userInfoResponse.isSuccess) {
+      res.status(200).json(userInfoResponse);
+    }
   } catch (error) {
     res.status(500).json({message: HTTP_INTERNAL_SERVER_ERROR.message});
   }
