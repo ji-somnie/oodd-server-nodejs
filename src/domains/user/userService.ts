@@ -7,9 +7,9 @@ import dayjs from 'dayjs';
 import CoolsmsMessageService from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 import {JwtPayload} from '../auth/dtos/dto';
-import { BaseResponse } from '../../base/baseResponse';
-import { validatedUser } from '../../validationTest/validateUser';
-import { HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER } from '../../variables/httpCode';
+import {BaseResponse} from '../../base/baseResponse';
+import {validatedUser} from '../../validationTest/validateUser';
+import {HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER} from '../../variables/httpCode';
 dotenv.config();
 
 export class UserService {
@@ -125,12 +125,15 @@ export class UserService {
   }
 
   // 사용자 정보 수정
-  async updateUserInfo(userId: number, userRequestDto: UserInfoRequestDto): Promise<BaseResponse<UserInfoResponseDto | null>> {
+  async updateUserInfo(
+    userId: number,
+    userRequestDto: UserInfoRequestDto,
+  ): Promise<BaseResponse<UserInfoResponseDto | null>> {
     const queryRunner = this.userRepository.manager.connection.createQueryRunner();
-  
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
       const user = await validatedUser(userId);
       if (!user) {
@@ -142,15 +145,15 @@ export class UserService {
           result: null,
         };
       }
-  
+
       user.bio = userRequestDto.bio ?? '';
       user.nickname = userRequestDto.nickname ?? '';
       user.profilePictureUrl = userRequestDto.profilePictureUrl ?? '';
-  
+
       await queryRunner.manager.save(user);
-  
+
       await queryRunner.commitTransaction();
-  
+
       const userInfoResponseDto: UserInfoResponseDto = {
         id: user.id,
         name: user.name,
@@ -161,14 +164,13 @@ export class UserService {
         bio: user.bio,
         joinedAt: user.joinedAt,
       };
-  
+
       return {
         isSuccess: true,
         code: HTTP_OK.code,
         message: HTTP_OK.message,
         result: userInfoResponseDto,
       };
-  
     } catch (error) {
       await queryRunner.rollbackTransaction();
       console.error('Transaction rolled back due to an error:', error);
@@ -182,5 +184,11 @@ export class UserService {
       await queryRunner.release();
     }
   }
-  
+
+  async signOut(user: User): Promise<void> {
+    user.status = 'deactivated';
+    user.updatedAt = dayjs().toDate();
+    user.deletedAt = dayjs().toDate();
+    await this.userRepository.save(user);
+  }
 }

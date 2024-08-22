@@ -1,5 +1,5 @@
 import {Router, Request, Response} from 'express';
-import { OOTDService } from './ootdService';
+import {OOTDService} from './ootdService';
 import {
   HTTP_OK,
   HTTP_BAD_REQUEST,
@@ -12,7 +12,7 @@ import {
 import {BaseResponse} from '../../base/baseResponse';
 import {User} from '../../entities/userEntity';
 import {UserService} from '../user/userService';
-import { authenticateJWT } from '../../middlewares/authMiddleware';
+import {authenticateJWT} from '../../middlewares/authMiddleware';
 
 const router = Router();
 const ootdService = new OOTDService();
@@ -33,15 +33,13 @@ router.get('/', authenticateJWT, async (req: Request, res: Response): Promise<vo
     }
 
     // 스타일태그 앞에 '#' 없으면, 자동으로 추가
-    const styletagArray = Array.isArray(styletags) 
-      ? styletags.map(tag => tag.startsWith('#') ? tag : `#${tag}`)
-      : [styletags.startsWith('#') ? styletags : `#${styletags}`];
+    const styletagArray = Array.isArray(styletags) ? styletags : [styletags];
 
     const ootdResponse = await ootdService.getOOTD(styletagArray);
 
     if (ootdResponse.isSuccess) {
       res.status(200).json(ootdResponse);
-    } 
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json(new BaseResponse(false, HTTP_INTERNAL_SERVER_ERROR.code, HTTP_INTERNAL_SERVER_ERROR.message));
