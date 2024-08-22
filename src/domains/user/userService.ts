@@ -10,10 +10,16 @@ import {JwtPayload} from '../auth/dtos/dto';
 import { BaseResponse } from '../../base/baseResponse';
 import { validatedUser } from '../../validationTest/validateUser';
 import { HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER } from '../../variables/httpCode';
+import { UserRelationship } from '../../entities/userRelationshipEntity';
+import { ChatRoomService } from '../chatRoom/chatRoomService';
+import { ChatRoomsQueryDto } from '../chatRoom/dto/dto';
 dotenv.config();
 
 export class UserService {
   private userRepository = myDataBase.getRepository(User);
+  private userRelationshipRepository = myDataBase.getRepository(UserRelationship);
+  private chatRoomService = new ChatRoomService();
+
   private messageService = new CoolsmsMessageService(
     process.env.COOLSMS_API_KEY || '',
     process.env.COOLSMS_API_SECRET || '',
@@ -119,9 +125,74 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  // 사용자 정보 조회
   async getUserByUserId(userId: number): Promise<User | null> {
-    return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
+      return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
+  }
+  
+  // 사용자 정보 조회
+  async getUserInfo(requestingUserId: number, targetUserId: number): Promise<BaseResponse<UserInfoResponseDto | null>> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: targetUserId } });
+      if (!user) {
+        return {
+          isSuccess: false,
+          code: NOT_FOUND_USER.code,
+          message: NOT_FOUND_USER.message,
+          result: null,
+        };
+      }
+      // console.log('RequestId: ', requestingUserId);      
+      // console.log('targetId: ', targetUserId);
+
+      // 친구 여부
+      const isFriend = await this.userRelationshipRepository
+      .createQueryBuilder('relationship')
+      .where(
+        '(relationship.requesterId = :requestingUserId AND relationship.targetId = :targetUserId) OR ' +
+        '(relationship.requesterId = :targetUserId AND relationship.targetId = :requestingUserId)',
+        { requestingUserId, targetUserId }
+      )
+      .andWhere('relationship.requestStatus = :status', { status: 'accepted' })
+      .getCount() > 0;
+
+      // let roomId: number | null = null;
+      // if (isFriend) {
+      //   const chatRooms = await this.chatRoomService.getChatRoomsByUser(user);
+      //   const chatRoom = chatRooms.find((room: ChatRoomsQueryDto) => 
+      //     (room.fromUser_id === requestingUserId && room.toUser_id === targetUserId) ||
+      //     (room.fromUser_id === targetUserId && room.toUser_id === requestingUserId)
+      //   );
+      //   roomId = chatRoom ? chatRoom.chatRoom_id : null;
+      // }
+
+      const userResponseDto: UserInfoResponseDto = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        nickname: user.nickname,
+        phoneNumber: user.phoneNumber,
+        profilePictureUrl: user.profilePictureUrl,
+        bio: user.bio,
+        joinedAt: user.joinedAt,
+        isFrined: isFriend,
+        // roomId: roomId,
+      };
+
+      return {
+        isSuccess: true,
+        code: HTTP_OK.code,
+        message: HTTP_OK.message,
+        result: userResponseDto,
+      };
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      return {
+        isSuccess: false,
+        code: HTTP_INTERNAL_SERVER_ERROR.code,
+        message: HTTP_INTERNAL_SERVER_ERROR.message,
+        result: null,
+      };
+    }
   }
 
   // 사용자 정보 수정
