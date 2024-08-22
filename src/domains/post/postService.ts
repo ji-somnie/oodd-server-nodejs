@@ -27,6 +27,7 @@ import {
 import {Like} from '../../entities/likeEntity';
 import {Comment} from '../../entities/commentEntity';
 import dayjs from 'dayjs';
+import {InterestFriend} from '../../entities/interestFriendEntity';
 
 export class PostService {
   // 생성자 사용 안 하고 DB에서 바로 가져옴
@@ -39,6 +40,7 @@ export class PostService {
   private postClothingRepository = myDataBase.getRepository(PostClothing);
   private likeRepository = myDataBase.getRepository(Like);
   private commentRepository = myDataBase.getRepository(Comment);
+  private interestFriendRepository = myDataBase.getRepository(InterestFriend);
 
   // 게시물 업로드
   async createPost(userId: number, postRequestDto: PostRequestDto): Promise<BaseResponse<PostResponseDto | null>> {
@@ -586,6 +588,14 @@ export class PostService {
           // console.log("postId is: ", post.id);
         }
 
+        let hasLiked = !!(await this.likeRepository.findOne({
+          where: {post, user: {id: currentUserId}, status: 'activated'},
+        }));
+
+        let hasInterested = !!(await this.interestFriendRepository.findOne({
+          where: {userId: currentUserId, friendId: post.user.id, status: 'activated'},
+        }));
+
         // 게시물 리스트에 보여질 첫번째 사진
         const firstPhoto = post.images.find(image => image.order === 1)?.url || '';
         // console.log('firstPhoto: ', firstPhoto);
@@ -593,6 +603,8 @@ export class PostService {
         const postDto: BasePostListResponseDto = {
           postId: post.id,
           userId: post.user.id,
+          hasLiked: hasLiked,
+          hasInterested: hasInterested,
           likes: likes > 0 ? likes : 0,
           firstPhoto: firstPhoto,
           isRepresentative: post.isRepresentative,
