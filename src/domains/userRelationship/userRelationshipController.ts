@@ -38,6 +38,30 @@ userRelationshipRouter.get('/', async (req: Request, res: Response): Promise<voi
   return;
 });
 
+// 매칭 상태값 조회
+userRelationshipRouter.get('/status', async (req: Request, res: Response): Promise<void> => {
+  const user = req.user as User;
+  const opponentId = req.query.userId as string;
+
+  const opponent = await userService.getUserByUserId(parseInt(opponentId, 10));
+
+  if (!opponent) {
+    res.status(404).json(new BaseResponse(false, NOT_FOUND_USER.code, NOT_FOUND_USER.message));
+    return;
+  }
+
+  const userRelationship = await userRelationshipService.getUserRelationshipStatusByUserId(user, opponent);
+  if (!userRelationship) {
+    res
+      .status(404)
+      .json(new BaseResponse(false, NOT_FOUND_USER_RELATIONSHIP.code, NOT_FOUND_USER_RELATIONSHIP.message));
+    return;
+  }
+
+  res.status(200).json(new BaseResponse<UserRelationship>(true, HTTP_OK.code, HTTP_OK.message, userRelationship));
+  return;
+});
+
 // 매칭 신청
 userRelationshipRouter.post('/', async (req: Request, res: Response): Promise<void> => {
   const user = req.user as User;
@@ -113,9 +137,9 @@ userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: R
     return;
   }
 
-  await userRelationshipService.patchRequestStatus(userRelationship, requestStatus);
-
   const chatRoom = await chatRoomService.getChatRoomByUserRelationship(userRelationship);
+
+  await userRelationshipService.patchRequestStatus(userRelationship, requestStatus, chatRoom as ChatRoom);
 
   res.status(201).json(new BaseResponse<ChatRoom | null>(true, HTTP_OK.code, HTTP_OK.message, chatRoom));
   return;
