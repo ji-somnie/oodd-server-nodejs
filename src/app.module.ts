@@ -19,6 +19,7 @@ import {authenticateJWT} from './middlewares/authMiddleware';
 import cookieParser from 'cookie-parser';
 import userInterestRouter from './domains/userInterest/userInterestController';
 import userRelationshipRouter from './domains/userRelationship/userRelationshipController';
+import userReportRouter from './domains/userReport/userReportController';
 
 const chatRoomService = new ChatRoomService();
 const chatMessageService = new ChatMessageService();
@@ -46,7 +47,7 @@ app.use(
 app.use('/ootd', authenticateJWT, ootdRouter);
 app.use('/chat-rooms', authenticateJWT, chatRoomRouter);
 app.use('/user-relationships', authenticateJWT, userRelationshipRouter);
-//app.use("/block", authenticateJWT, blockRouter);
+app.use('/user-report', authenticateJWT, userReportRouter);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer);

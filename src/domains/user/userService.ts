@@ -7,12 +7,12 @@ import dayjs from 'dayjs';
 import CoolsmsMessageService from 'coolsms-node-sdk';
 import dotenv from 'dotenv';
 import {JwtPayload} from '../auth/dtos/dto';
-import { BaseResponse } from '../../base/baseResponse';
-import { validatedUser } from '../../validationTest/validateUser';
-import { HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER } from '../../variables/httpCode';
-import { UserRelationship } from '../../entities/userRelationshipEntity';
-import { ChatRoomService } from '../chatRoom/chatRoomService';
-import { ChatRoomsQueryDto } from '../chatRoom/dto/dto';
+import {BaseResponse} from '../../base/baseResponse';
+import {validatedUser} from '../../validationTest/validateUser';
+import {HTTP_INTERNAL_SERVER_ERROR, HTTP_OK, NOT_FOUND_USER} from '../../variables/httpCode';
+import {UserRelationship} from '../../entities/userRelationshipEntity';
+import {ChatRoomService} from '../chatRoom/chatRoomService';
+import {ChatRoomsQueryDto} from '../chatRoom/dto/dto';
 dotenv.config();
 
 export class UserService {
@@ -126,13 +126,13 @@ export class UserService {
   }
 
   async getUserByUserId(userId: number): Promise<User | null> {
-      return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
+    return await this.userRepository.findOne({where: {id: userId, status: 'activated'}});
   }
-  
+
   // 사용자 정보 조회
   async getUserInfo(requestingUserId: number, targetUserId: number): Promise<BaseResponse<UserInfoResponseDto | null>> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: targetUserId } });
+      const user = await this.userRepository.findOne({where: {id: targetUserId}});
       if (!user) {
         return {
           isSuccess: false,
@@ -141,24 +141,25 @@ export class UserService {
           result: null,
         };
       }
-      // console.log('RequestId: ', requestingUserId);      
+      // console.log('RequestId: ', requestingUserId);
       // console.log('targetId: ', targetUserId);
 
       // 친구 여부
-      const isFriend = await this.userRelationshipRepository
-      .createQueryBuilder('relationship')
-      .where(
-        '(relationship.requesterId = :requestingUserId AND relationship.targetId = :targetUserId) OR ' +
-        '(relationship.requesterId = :targetUserId AND relationship.targetId = :requestingUserId)',
-        { requestingUserId, targetUserId }
-      )
-      .andWhere('relationship.requestStatus = :status', { status: 'accepted' })
-      .getCount() > 0;
+      const isFriend =
+        (await this.userRelationshipRepository
+          .createQueryBuilder('relationship')
+          .where(
+            '(relationship.requesterId = :requestingUserId AND relationship.targetId = :targetUserId) OR ' +
+              '(relationship.requesterId = :targetUserId AND relationship.targetId = :requestingUserId)',
+            {requestingUserId, targetUserId},
+          )
+          .andWhere('relationship.requestStatus = :status', {status: 'accepted'})
+          .getCount()) > 0;
 
       // let roomId: number | null = null;
       // if (isFriend) {
       //   const chatRooms = await this.chatRoomService.getChatRoomsByUser(user);
-      //   const chatRoom = chatRooms.find((room: ChatRoomsQueryDto) => 
+      //   const chatRoom = chatRooms.find((room: ChatRoomsQueryDto) =>
       //     (room.fromUser_id === requestingUserId && room.toUser_id === targetUserId) ||
       //     (room.fromUser_id === targetUserId && room.toUser_id === requestingUserId)
       //   );
@@ -196,12 +197,15 @@ export class UserService {
   }
 
   // 사용자 정보 수정
-  async updateUserInfo(userId: number, userRequestDto: UserInfoRequestDto): Promise<BaseResponse<UserInfoResponseDto | null>> {
+  async updateUserInfo(
+    userId: number,
+    userRequestDto: UserInfoRequestDto,
+  ): Promise<BaseResponse<UserInfoResponseDto | null>> {
     const queryRunner = this.userRepository.manager.connection.createQueryRunner();
-  
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
       const user = await validatedUser(userId);
       if (!user) {
@@ -213,15 +217,15 @@ export class UserService {
           result: null,
         };
       }
-  
+
       user.bio = userRequestDto.bio ?? '';
       user.nickname = userRequestDto.nickname ?? '';
       user.profilePictureUrl = userRequestDto.profilePictureUrl ?? '';
-  
+
       await queryRunner.manager.save(user);
-  
+
       await queryRunner.commitTransaction();
-  
+
       const userInfoResponseDto: UserInfoResponseDto = {
         id: user.id,
         name: user.name,
@@ -232,14 +236,13 @@ export class UserService {
         bio: user.bio,
         joinedAt: user.joinedAt,
       };
-  
+
       return {
         isSuccess: true,
         code: HTTP_OK.code,
         message: HTTP_OK.message,
         result: userInfoResponseDto,
       };
-  
     } catch (error) {
       await queryRunner.rollbackTransaction();
       console.error('Transaction rolled back due to an error:', error);
@@ -253,5 +256,11 @@ export class UserService {
       await queryRunner.release();
     }
   }
-  
+
+  async signOut(user: User): Promise<void> {
+    user.status = 'deactivated';
+    user.updatedAt = dayjs().toDate();
+    user.deletedAt = dayjs().toDate();
+    await this.userRepository.save(user);
+  }
 }
