@@ -528,6 +528,7 @@ export class PostService {
         content: post.content || null,
         styletags: styletags.length > 0 ? styletags : null,
         clothingInfo: clothingDetails.length > 0 ? clothingDetails : null,
+        isRepresentative: post.isRepresentative,
       };
 
       return {
