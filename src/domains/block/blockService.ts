@@ -1,5 +1,5 @@
-import { User } from '../../entities/userEntity';
-import { Block } from '../../entities/blockEntity';
+import {User} from '../../entities/userEntity';
+import {Block} from '../../entities/blockEntity';
 import myDataBase from '../../data-source';
 
 export class BlockService {
@@ -9,15 +9,15 @@ export class BlockService {
 
   // 차단/차단 해제 메서드
   async toggleBlock(userId: number, friendId: number): Promise<string | undefined> {
-    const requester = await this.userRepository.findOne({ where: { id: userId } });
-    const target = await this.userRepository.findOne({ where: { id: friendId } });
+    const requester = await this.userRepository.findOne({where: {id: userId}});
+    const target = await this.userRepository.findOne({where: {id: friendId}});
 
     if (!requester || !target) {
       throw new Error('User not found');
     }
 
     let block = await this.blockRepository.findOne({
-      where: { requester, target }
+      where: {requester, target},
     });
 
     if (!block) {
