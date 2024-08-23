@@ -134,11 +134,9 @@ router.get('/login/google', async (req: Request, res: Response) => {
   const code = req.query.code as string;
 
   if (!code) {
-    return (
-      res
-        //.status(status.GOOGLE_AUTH_FAIL.status)
-        .json({message: GOOGLE_AUTH_FAIL.message, err_code: GOOGLE_AUTH_FAIL.err_code})
-    );
+    return res
+      .status(status.GOOGLE_AUTH_FAIL.status)
+      .json({message: GOOGLE_AUTH_FAIL.message, err_code: GOOGLE_AUTH_FAIL.err_code});
   }
 
   let token;
@@ -146,7 +144,7 @@ router.get('/login/google', async (req: Request, res: Response) => {
     // 액세스 토큰 요청
     const url = 'https://oauth2.googleapis.com/token';
     const body = {
-      code,
+      code: code,
       client_id: googleOpt.clientId,
       client_secret: googleOpt.clientSecret,
       redirect_uri: googleOpt.redirectUri,
