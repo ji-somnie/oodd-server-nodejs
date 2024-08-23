@@ -150,4 +150,15 @@ userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: R
   return;
 });
 
+// 매칭 신청 리스트 조회
+userRelationshipRouter.get('/requested', async (req: Request, res: Response): Promise<void> => {
+  const user = req.user as User;
+
+  const userRelationships = await userRelationshipService.getRequestedUserRelationshipsByUser(user);
+  console.log(userRelationships);
+
+  res.status(200).json(new BaseResponse<UserRelationship[]>(true, HTTP_OK.code, HTTP_OK.message, userRelationships));
+  return;
+});
+
 export default userRelationshipRouter;

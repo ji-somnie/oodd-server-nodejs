@@ -29,6 +29,24 @@ export class UserRelationshipService {
     return userRelationship;
   }
 
+  async getRequestedUserRelationshipsByUser(fromUser: User): Promise<UserRelationship[]> {
+    const userRelationships = await this.userRelationshipRepository.find({
+      where: {requester: fromUser},
+      relations: ['target', 'requester'],
+    });
+
+    const promises = userRelationships.map(async userRelationship => {
+      userRelationship.target.representativePost = await this.postService.getRepresentativePostByUserId(
+        userRelationship.target.id,
+      );
+      return userRelationship;
+    });
+
+    const updatedUserRelationships = await Promise.all(promises);
+
+    return updatedUserRelationships;
+  }
+
   async getUserRelationshipsByUser(fromUser: User): Promise<UserRelationship[]> {
     const userRelationships = await this.userRelationshipRepository.find({
       where: {target: fromUser, requestStatus: 'pending', status: 'activated'},
