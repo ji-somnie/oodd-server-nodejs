@@ -61,29 +61,33 @@ export class UserRelationshipService {
   ): Promise<void> {
     const queryRunner = myDataBase.createQueryRunner();
     await queryRunner.startTransaction();
-
+    console.log(2);
     try {
       if (requestStatus === 'rejected') {
         userRelationship.requestStatus = 'rejected';
         userRelationship.status = 'deactivated';
         userRelationship.rejectedAt = dayjs().toDate();
 
-        await this.chatRoomService.deleteChatRoomByUserRelationshipRejected(userRelationship);
+        console.log(3);
         chatRoom.status = 'deactivated';
         chatRoom.requestStatus = 'rejected';
         chatRoom.updatedAt = dayjs().toDate();
         chatRoom.deletedAt = dayjs().toDate();
         await queryRunner.manager.save(chatRoom);
+        console.log(4);
       } else {
         userRelationship.requestStatus = 'accepted';
         userRelationship.acceptedAt = dayjs().toDate();
         chatRoom.requestStatus = 'accepted';
         chatRoom.updatedAt = dayjs().toDate();
         await queryRunner.manager.save(chatRoom);
+        console.log(5);
       }
       userRelationship.updatedAt = dayjs().toDate();
 
       await queryRunner.manager.save(userRelationship);
+
+      console.log(6);
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new Error('queryRunner Error');

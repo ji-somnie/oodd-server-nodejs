@@ -138,7 +138,7 @@ userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: R
   }
 
   const chatRoom = await chatRoomService.getChatRoomByUserRelationship(userRelationship);
-
+  console.log(1);
   await userRelationshipService.patchRequestStatus(userRelationship, requestStatus, chatRoom as ChatRoom);
 
   res.status(201).json(new BaseResponse<ChatRoom | null>(true, HTTP_OK.code, HTTP_OK.message, chatRoom));
