@@ -11,6 +11,7 @@ import {
   NO_AUTHORIZATION,
   NO_BODY_DATA,
   NO_PARAMETER,
+  NOT_FOUND_CHAT_ROOM,
   NOT_FOUND_USER,
   NOT_FOUND_USER_RELATIONSHIP,
   NOT_PENDING_REQUEST,
@@ -138,6 +139,10 @@ userRelationshipRouter.patch('/:userRelationshipId', async (req: Request, res: R
   }
 
   const chatRoom = await chatRoomService.getChatRoomByUserRelationship(userRelationship);
+  if (!chatRoom) {
+    res.status(404).json(new BaseResponse(false, NOT_FOUND_CHAT_ROOM.code, NOT_FOUND_CHAT_ROOM.message));
+    return;
+  }
 
   await userRelationshipService.patchRequestStatus(userRelationship, requestStatus, chatRoom as ChatRoom);
 
