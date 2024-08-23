@@ -86,8 +86,7 @@ export class UserRelationshipService {
       userRelationship.updatedAt = dayjs().toDate();
 
       await queryRunner.manager.save(userRelationship);
-
-      console.log(6);
+      await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new Error('queryRunner Error');
