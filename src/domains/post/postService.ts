@@ -91,16 +91,16 @@ export class PostService {
 
       // 스타일 태그 목록
       const allowedStyletags = [
-        '#street',
-        '#casual',
-        '#sporty',
-        '#feminine',
-        '#hip',
-        '#classic',
-        '#minimal',
-        '#formal',
-        '#luxury',
-        '#outdoor',
+        'classic',
+        'street',
+        'hip',
+        'casual',
+        'sporty',
+        'feminine',
+        'minimal',
+        'formal',
+        'outdoor',
+        'luxury',
       ];
 
       // 스타일 태그 저장
