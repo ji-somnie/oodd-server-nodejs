@@ -274,6 +274,7 @@ export class PostService {
           result: null,
         };
       }
+      console.log(1);
 
       const post = await validatePost(userId, postId);
       if (!post) {
@@ -285,6 +286,7 @@ export class PostService {
         };
       }
       const now = dayjs().toDate();
+      console.log(2);
 
       post.content = postRequestDto.content ?? '';
 
@@ -301,6 +303,7 @@ export class PostService {
           await this.postRepository.save(post);
         }
       }
+      console.log(3);
 
       // 이미지 업데이트 (완전 대체 방식)
       const existingImages = await this.imageRepository
@@ -310,20 +313,20 @@ export class PostService {
 
       const existingImageUrls = existingImages.map(image => image.url);
       const newImageUrls = postRequestDto.photoUrls || [];
-
+      console.log(4);
       // 삭제해야 할 이미지
       const imagesToDelete = existingImages.filter(image => !newImageUrls.includes(image.url));
       for (const image of imagesToDelete) {
         await this.imageRepository.remove(image);
       }
-
+      console.log(5);
       // 새로 추가해야 할 이미지
       const urlsToAdd = newImageUrls.filter(url => !existingImageUrls.includes(url));
       for (const url of urlsToAdd) {
         const newImage = this.imageRepository.create({url, post: updatedPost});
         await this.imageRepository.save(newImage);
       }
-
+      console.log(6);
       // order 값 업데이트
       const orderedImages = await this.imageRepository
         .createQueryBuilder('image')
@@ -335,19 +338,19 @@ export class PostService {
         orderedImages[i].order = i + 1;
         await this.imageRepository.save(orderedImages[i]);
       }
-
+      console.log(7);
       // 스타일 태그 업데이트 (완전 대체 방식)
       const allowedStyletags = [
-        '#street',
-        '#casual',
-        '#sporty',
-        '#feminine',
-        '#hip',
-        '#classic',
-        '#minimal',
-        '#formal',
-        '#luxury',
-        '#outdoor',
+        'classic',
+        'street',
+        'hip',
+        'casual',
+        'sporty',
+        'feminine',
+        'minimal',
+        'formal',
+        'outdoor',
+        'luxury',
       ];
 
       // 스타일 태그 업데이트 (완전 대체 방식)
@@ -356,7 +359,7 @@ export class PostService {
         .delete()
         .where('postId = :postId', {postId: updatedPost.id})
         .execute();
-
+      console.log(8);
       const updatedStyletags: string[] = [];
       for (const tag of postRequestDto.styletags || []) {
         if (!allowedStyletags.includes(tag)) {
@@ -384,7 +387,7 @@ export class PostService {
         .delete()
         .where('postId = :postId', {postId: updatedPost.id})
         .execute();
-
+      console.log(9);
       const updatedClothingInfos = [];
 
       for (const clothingItem of postRequestDto.clothingInfo || []) {
