@@ -141,30 +141,18 @@ export class UserService {
           result: null,
         };
       }
-      // console.log('RequestId: ', requestingUserId);
-      // console.log('targetId: ', targetUserId);
 
       // 친구 여부
       const isFriend =
         (await this.userRelationshipRepository
           .createQueryBuilder('relationship')
           .where(
-            '(relationship.requesterId = :requestingUserId AND relationship.targetId = :targetUserId) OR ' +
-              '(relationship.requesterId = :targetUserId AND relationship.targetId = :requestingUserId)',
+            '((relationship.requesterId = :requestingUserId AND relationship.targetId = :targetUserId) OR ' +
+              '(relationship.requesterId = :targetUserId AND relationship.targetId = :requestingUserId))',
             {requestingUserId, targetUserId},
           )
           .andWhere('relationship.requestStatus = :status', {status: 'accepted'})
           .getCount()) > 0;
-
-      // let roomId: number | null = null;
-      // if (isFriend) {
-      //   const chatRooms = await this.chatRoomService.getChatRoomsByUser(user);
-      //   const chatRoom = chatRooms.find((room: ChatRoomsQueryDto) =>
-      //     (room.fromUser_id === requestingUserId && room.toUser_id === targetUserId) ||
-      //     (room.fromUser_id === targetUserId && room.toUser_id === requestingUserId)
-      //   );
-      //   roomId = chatRoom ? chatRoom.chatRoom_id : null;
-      // }
 
       const userResponseDto: UserInfoResponseDto = {
         id: user.id,
