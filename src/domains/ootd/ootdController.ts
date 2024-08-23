@@ -32,10 +32,12 @@ router.get('/', authenticateJWT, async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    // 스타일태그 앞에 '#' 없으면, 자동으로 추가
     const styletagArray = Array.isArray(styletags) ? styletags : [styletags];
 
-    const ootdResponse = await ootdService.getOOTD(styletagArray);
+    const userId = req.user!.id;
+
+    const ootdResponse = await ootdService.getOOTD(userId, styletagArray);
+
 
     if (ootdResponse.isSuccess) {
       res.status(200).json(ootdResponse);

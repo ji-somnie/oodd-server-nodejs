@@ -10,7 +10,8 @@ export class JwtService {
   static verifyToken(token: string): any {
     try {
       return jwt.verify(token, process.env.JWT_SECRET_KEY as string);
-    } catch {
+    } catch (error: any) {
+      console.error('JWT Verification Error:', error.message);
       return null;
     }
   }
